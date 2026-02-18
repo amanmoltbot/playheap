@@ -1,13 +1,7 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
-import { games, getFeaturedGames, getPopularGames, getNewGames, categories } from '@/data/games';
+import { games, getFeaturedGames, getPopularGames, getNewGames, categories, categoryEmoji } from '@/data/games';
 import GameGrid from '@/components/GameGrid';
 import AdSlot from '@/components/AdSlot';
-
-export const metadata: Metadata = {
-  title: 'Free Online Games - Play Now | PlayHeap',
-  description: 'Play free HTML5 games online. No downloads, no installs. Action, puzzle, racing, shooting, and more — all free at PlayHeap.io',
-};
 
 export default function HomePage() {
   const featured = getFeaturedGames();
@@ -143,15 +137,3 @@ export default function HomePage() {
   );
 }
 
-const categoryEmoji: Record<string, string> = {
-  action: '⚔️',
-  puzzle: '🧩',
-  racing: '🏎️',
-  sports: '⚽',
-  shooting: '🎯',
-  adventure: '🗺️',
-  strategy: '♟️',
-  arcade: '👾',
-  multiplayer: '👥',
-  'io-games': '🌐',
-};

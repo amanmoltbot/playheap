@@ -20,7 +20,7 @@ export default function GameCard({ game, size = 'normal' }: GameCardProps) {
       href={`/game/${game.slug}`}
       className="group block rounded-xl overflow-hidden bg-[#1a1a2e] border border-gray-800 hover:border-[#8b5cf6]/60 shadow-lg hover:shadow-[#8b5cf6]/20 transition-all duration-300 hover:scale-105"
     >
-      <div className={`relative overflow-hidden ${size === 'large' ? 'aspect-[4/3]' : 'aspect-[4/3]'}`}>
+      <div className="relative overflow-hidden aspect-[4/3]">
         <Image
           src={game.thumbnailUrl}
           alt={game.title}

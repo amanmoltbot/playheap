@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { categories, getGamesByCategory } from '@/data/games';
+import { categories, getGamesByCategory, categoryEmoji } from '@/data/games';
 import GameGrid from '@/components/GameGrid';
 import AdSlot from '@/components/AdSlot';
 
@@ -23,19 +23,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-const categoryEmoji: Record<string, string> = {
-  action: '⚔️',
-  puzzle: '🧩',
-  racing: '🏎️',
-  sports: '⚽',
-  shooting: '🎯',
-  adventure: '🗺️',
-  strategy: '♟️',
-  arcade: '👾',
-  multiplayer: '👥',
-  'io-games': '🌐',
-};
-
 export default async function CategoryPage({ params }: Props) {
   const { slug } = await params;
   const cat = categories.find(c => c.slug === slug);
@@ -49,8 +36,6 @@ export default async function CategoryPage({ params }: Props) {
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
         <Link href="/" className="hover:text-[#8b5cf6] transition-colors">Home</Link>
-        <span>›</span>
-        <Link href="/games" className="hover:text-[#8b5cf6] transition-colors">Games</Link>
         <span>›</span>
         <span className="text-gray-300">{cat.label}</span>
       </nav>

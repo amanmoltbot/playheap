@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 
 interface GameEmbedProps {
   gameUrl: string;
@@ -10,10 +10,34 @@ interface GameEmbedProps {
 export default function GameEmbed({ gameUrl, title }: GameEmbedProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleLoad = useCallback(() => {
     setIsLoading(false);
+  }, []);
+
+  const handleError = useCallback(() => {
+    setIsLoading(false);
+    setHasError(true);
+  }, []);
+
+  // Sync fullscreen state when user presses Escape or otherwise exits fullscreen externally
+  useEffect(() => {
+    const handleFsChange = () => {
+      if (!document.fullscreenElement) {
+        setIsFullscreen(false);
+        if (containerRef.current) {
+          containerRef.current.style.position = '';
+          containerRef.current.style.inset = '';
+          containerRef.current.style.zIndex = '';
+          containerRef.current.style.width = '';
+          containerRef.current.style.height = '';
+        }
+      }
+    };
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => document.removeEventListener('fullscreenchange', handleFsChange);
   }, []);
 
   const toggleFullscreen = useCallback(async () => {
@@ -66,6 +90,17 @@ export default function GameEmbed({ gameUrl, title }: GameEmbedProps) {
           </div>
         )}
 
+        {/* Error state */}
+        {hasError && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0f0f1a] z-10">
+            <div className="text-5xl mb-4">🕹️</div>
+            <p className="text-white font-semibold mb-2">Game failed to load</p>
+            <p className="text-gray-400 text-sm text-center max-w-xs">
+              This game could not be loaded. Please try again later.
+            </p>
+          </div>
+        )}
+
         {/* Iframe */}
         <iframe
           src={gameUrl}
@@ -74,6 +109,7 @@ export default function GameEmbed({ gameUrl, title }: GameEmbedProps) {
           allow="fullscreen; autoplay; gamepad"
           allowFullScreen
           onLoad={handleLoad}
+          onError={handleError}
           referrerPolicy="no-referrer"
         />
 

@@ -62,6 +62,8 @@ export default function Header() {
               onClick={() => setMenuOpen(v => !v)}
               className="md:hidden p-2 text-gray-400 hover:text-white transition-colors"
               aria-label="Toggle menu"
+              aria-expanded={menuOpen}
+              aria-controls="mobile-menu"
             >
               <div className="w-5 h-4 flex flex-col justify-between">
                 <span className={`block h-0.5 bg-current transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
@@ -88,7 +90,7 @@ export default function Header() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-gray-800 bg-[#0a0a0a]">
+        <div id="mobile-menu" className="md:hidden border-t border-gray-800 bg-[#0a0a0a]">
           {/* Mobile search */}
           <div className="px-4 pt-4 pb-3">
             <form onSubmit={handleSearch} className="relative">

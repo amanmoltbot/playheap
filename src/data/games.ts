@@ -315,3 +315,16 @@ export function getRelatedGames(game: Game, limit = 4): Game[] {
     .filter(g => g.category === game.category && g.id !== game.id)
     .slice(0, limit);
 }
+
+export const categoryEmoji: Record<string, string> = {
+  action: '⚔️',
+  puzzle: '🧩',
+  racing: '🏎️',
+  sports: '⚽',
+  shooting: '🎯',
+  adventure: '🗺️',
+  strategy: '♟️',
+  arcade: '👾',
+  multiplayer: '👥',
+  'io-games': '🌐',
+};
