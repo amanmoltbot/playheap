@@ -71,10 +71,10 @@ export default function GameEmbed({ gameUrl, title }: GameEmbedProps) {
           src={gameUrl}
           title={title}
           className="w-full h-full border-0"
-          allow="fullscreen; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allow="fullscreen; autoplay; gamepad"
           allowFullScreen
           onLoad={handleLoad}
-          sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-popups"
+          sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
         />
 
         {/* Fullscreen button */}
