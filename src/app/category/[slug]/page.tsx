@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { categories, getGamesByCategory, categoryEmoji } from '@/data/games';
 import GameGrid from '@/components/GameGrid';
-import AdSlot from '@/components/AdSlot';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -49,11 +48,6 @@ export default async function CategoryPage({ params }: Props) {
         <p className="text-gray-400">
           Play {catGames.length} free {cat.label.toLowerCase()} games online — no download required.
         </p>
-      </div>
-
-      {/* Ad slot */}
-      <div className="mb-8 flex justify-center">
-        <AdSlot width={728} height={90} />
       </div>
 
       {/* Games grid */}

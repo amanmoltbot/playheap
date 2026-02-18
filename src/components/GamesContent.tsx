@@ -4,7 +4,6 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { games, categories } from '@/data/games';
 import GameGrid from '@/components/GameGrid';
-import AdSlot from '@/components/AdSlot';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
@@ -52,11 +51,6 @@ function GamesInner() {
         </nav>
         <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2">All Games</h1>
         <p className="text-gray-400">{games.length}+ free HTML5 games — play instantly, no downloads</p>
-      </div>
-
-      {/* Ad slot */}
-      <div className="mb-8 flex justify-center">
-        <AdSlot width={728} height={90} />
       </div>
 
       {/* Search & filters */}

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zombie Survivor</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f0f; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
+  canvas { display: block; cursor: crosshair; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  const W = Math.min(window.innerWidth, 700);
+  const H = Math.min(window.innerHeight, 700);
+  canvas.width = W; canvas.height = H;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const STATE = { MENU: 0, PLAY: 1, OVER: 2 };
+let state = STATE.MENU;
+
+let player, bullets, zombies, particles, score, wave, waveTimer, waveSize, frameCount;
+let keys = {}, mouseX = 0, mouseY = 0;
+let shootCooldown = 0;
+let ammo = 30, reloading = false, reloadTimer = 0;
+
+function initGame() {
+  player = { x: canvas.width/2, y: canvas.height/2, r: 14, hp: 5, maxHp: 5, speed: 3, angle: 0, iFrames: 0 };
+  bullets = []; zombies = []; particles = [];
+  score = 0; wave = 1; waveTimer = 180; waveSize = 5; frameCount = 0;
+  ammo = 30; reloading = false; reloadTimer = 0; shootCooldown = 0;
+  state = STATE.PLAY;
+}
+
+function spawnZombie() {
+  const W = canvas.width, H = canvas.height;
+  const side = Math.floor(Math.random()*4);
+  let x, y;
+  if (side===0) { x = Math.random()*W; y = -30; }
+  else if (side===1) { x = W+30; y = Math.random()*H; }
+  else if (side===2) { x = Math.random()*W; y = H+30; }
+  else { x = -30; y = Math.random()*H; }
+  const speed = 0.7 + wave*0.1 + Math.random()*0.5;
+  zombies.push({ x, y, r: 16, hp: 1+Math.floor(wave/3), maxHp: 1+Math.floor(wave/3), speed, angle: 0 });
+}
+
+function spawnParticles(x, y, color, n) {
+  for (let i=0; i<n; i++) {
+    const a = Math.random()*Math.PI*2, s = 1+Math.random()*3;
+    particles.push({ x, y, vx: Math.cos(a)*s, vy: Math.sin(a)*s, life: 20+Math.random()*10, color });
+  }
+}
+
+canvas.addEventListener('mousemove', e => {
+  const r = canvas.getBoundingClientRect();
+  const sc = canvas.width / r.width;
+  mouseX = (e.clientX - r.left)*sc;
+  mouseY = (e.clientY - r.top)*sc;
+});
+
+canvas.addEventListener('mousedown', e => {
+  if (state === STATE.MENU || state === STATE.OVER) { initGame(); return; }
+  if (e.button === 0) keys['shoot'] = true;
+});
+canvas.addEventListener('mouseup', e => { if (e.button === 0) keys['shoot'] = false; });
+document.addEventListener('keydown', e => {
+  keys[e.key.toLowerCase()] = true;
+  if (e.key === 'r' || e.key === 'R') startReload();
+});
+document.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+
+function startReload() {
+  if (reloading || ammo >= 30) return;
+  reloading = true; reloadTimer = 90;
+}
+
+function shoot() {
+  if (shootCooldown > 0 || reloading || ammo <= 0) return;
+  shootCooldown = 10;
+  ammo--;
+  const dx = mouseX - player.x, dy = mouseY - player.y;
+  const dist = Math.sqrt(dx*dx+dy*dy);
+  const spread = (Math.random()-0.5)*0.1;
+  bullets.push({ x: player.x, y: player.y, vx: (dx/dist)*12+spread, vy: (dy/dist)*12+spread, life: 45 });
+  if (ammo === 0) startReload();
+}
+
+function loop() {
+  requestAnimationFrame(loop);
+  const W = canvas.width, H = canvas.height;
+  ctx.fillStyle = '#0a0a12';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(139,92,246,0.07)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+  if (state === STATE.MENU) {
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = '#8b5cf6';
+    ctx.font = `bold ${W*0.1}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('ZOMBIE', W/2, H*0.3);
+    ctx.fillText('SURVIVOR', W/2, H*0.42);
+    ctx.fillStyle = '#aaa';
+    ctx.font = `${W*0.04}px sans-serif`;
+    ctx.fillText('WASD to move • Mouse to aim & shoot', W/2, H*0.57);
+    ctx.fillText('R to reload', W/2, H*0.63);
+    ctx.fillStyle = '#8b5cf6';
+    ctx.font = `bold ${W*0.055}px sans-serif`;
+    ctx.fillText('CLICK TO START', W/2, H*0.77);
+    return;
+  }
+
+  if (state === STATE.OVER) {
+    ctx.fillStyle = 'rgba(0,0,0,0.8)';
+    ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = '#ff4444';
+    ctx.font = `bold ${W*0.1}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('YOU DIED', W/2, H*0.35);
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${W*0.07}px sans-serif`;
+    ctx.fillText(`Score: ${score}`, W/2, H*0.5);
+    ctx.fillText(`Wave: ${wave}`, W/2, H*0.59);
+    ctx.fillStyle = '#8b5cf6';
+    ctx.font = `bold ${W*0.055}px sans-serif`;
+    ctx.fillText('CLICK TO RESTART', W/2, H*0.73);
+    return;
+  }
+
+  frameCount++;
+
+  // Player movement
+  let dx = 0, dy = 0;
+  if (keys['w']||keys['arrowup']) dy -= player.speed;
+  if (keys['s']||keys['arrowdown']) dy += player.speed;
+  if (keys['a']||keys['arrowleft']) dx -= player.speed;
+  if (keys['d']||keys['arrowright']) dx += player.speed;
+  if (dx && dy) { dx *= 0.707; dy *= 0.707; }
+  player.x = Math.max(player.r, Math.min(W-player.r, player.x+dx));
+  player.y = Math.max(player.r, Math.min(H-player.r, player.y+dy));
+  player.angle = Math.atan2(mouseY-player.y, mouseX-player.x);
+  if (player.iFrames > 0) player.iFrames--;
+
+  // Shoot
+  if (keys['shoot']) shoot();
+  if (shootCooldown > 0) shootCooldown--;
+
+  // Reload
+  if (reloading) {
+    reloadTimer--;
+    if (reloadTimer <= 0) { reloading = false; ammo = 30; }
+  }
+
+  // Wave spawning
+  waveTimer--;
+  if (waveTimer <= 0) { waveTimer = Math.max(60, 180-wave*10); spawnZombie(); waveSize--; if (waveSize <= 0) { wave++; waveSize = 5+wave*2; } }
+
+  // Update bullets
+  bullets.forEach(b => { b.x += b.vx; b.y += b.vy; b.life--; });
+  bullets = bullets.filter(b => b.life > 0 && b.x > 0 && b.x < W && b.y > 0 && b.y < H);
+
+  // Update zombies
+  zombies.forEach(z => {
+    const angle = Math.atan2(player.y-z.y, player.x-z.x);
+    z.x += Math.cos(angle)*z.speed;
+    z.y += Math.sin(angle)*z.speed;
+    z.angle = angle;
+    // Hit player
+    const dist = Math.sqrt((z.x-player.x)**2+(z.y-player.y)**2);
+    if (dist < z.r+player.r && player.iFrames <= 0) {
+      player.hp--; player.iFrames = 60;
+      spawnParticles(player.x, player.y, '#ff6666', 6);
+      if (player.hp <= 0) state = STATE.OVER;
+    }
+  });
+
+  // Bullet-zombie collision
+  bullets.forEach(b => {
+    zombies.forEach(z => {
+      const dist = Math.sqrt((b.x-z.x)**2+(b.y-z.y)**2);
+      if (dist < z.r + 5) {
+        z.hp--;
+        b.life = 0;
+        spawnParticles(z.x, z.y, '#4ade80', 5);
+        if (z.hp <= 0) { z.dead = true; score += 10*wave; spawnParticles(z.x, z.y, '#22c55e', 10); }
+      }
+    });
+  });
+  zombies = zombies.filter(z => !z.dead);
+
+  // Update particles
+  particles.forEach(p => { p.x+=p.vx; p.y+=p.vy; p.vx*=0.9; p.vy*=0.9; p.life--; });
+  particles = particles.filter(p => p.life > 0);
+
+  // Draw particles
+  particles.forEach(p => {
+    ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2);
+    ctx.fillStyle = p.color; ctx.globalAlpha = p.life/30; ctx.fill(); ctx.globalAlpha = 1;
+  });
+
+  // Draw zombies
+  zombies.forEach(z => {
+    ctx.save();
+    ctx.translate(z.x, z.y);
+    ctx.rotate(z.angle);
+    ctx.beginPath();
+    ctx.ellipse(0, 0, z.r, z.r*0.7, 0, 0, Math.PI*2);
+    ctx.fillStyle = '#2d5a1a';
+    ctx.shadowColor = '#4ade80';
+    ctx.shadowBlur = 8;
+    ctx.fill();
+    // Eyes
+    ctx.fillStyle = '#ff4444';
+    ctx.beginPath(); ctx.arc(z.r*0.4, -z.r*0.2, 3, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(z.r*0.4, z.r*0.2, 3, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+    // HP bar
+    const bw = z.r*2;
+    ctx.fillStyle = '#333';
+    ctx.fillRect(z.x-z.r, z.y-z.r-8, bw, 4);
+    ctx.fillStyle = '#4ade80';
+    ctx.fillRect(z.x-z.r, z.y-z.r-8, bw*(z.hp/z.maxHp), 4);
+  });
+
+  // Draw bullets
+  bullets.forEach(b => {
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, 4, 0, Math.PI*2);
+    ctx.fillStyle = '#f59e0b';
+    ctx.shadowColor = '#f59e0b';
+    ctx.shadowBlur = 10;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  });
+
+  // Draw player
+  ctx.save();
+  ctx.translate(player.x, player.y);
+  ctx.rotate(player.angle);
+  if (player.iFrames > 0 && Math.floor(player.iFrames/4)%2===0) ctx.globalAlpha = 0.4;
+  // Body
+  ctx.beginPath();
+  ctx.arc(0, 0, player.r, 0, Math.PI*2);
+  ctx.fillStyle = '#8b5cf6';
+  ctx.shadowColor = '#8b5cf6';
+  ctx.shadowBlur = 15;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  // Gun
+  ctx.fillStyle = '#ccc';
+  ctx.fillRect(player.r*0.2, -4, player.r*1.2, 8);
+  ctx.restore();
+  ctx.globalAlpha = 1;
+
+  // HUD
+  ctx.fillStyle = '#fff';
+  ctx.font = `bold ${W*0.04}px sans-serif`;
+  ctx.textAlign = 'left';
+  ctx.fillText(`Score: ${score}`, 12, 28);
+  ctx.textAlign = 'right';
+  ctx.fillText(`Wave ${wave}`, W-12, 28);
+
+  // HP
+  ctx.textAlign = 'center';
+  ctx.font = `${W*0.035}px sans-serif`;
+  let hpStr = '';
+  for (let i=0; i<player.hp; i++) hpStr += '❤️';
+  for (let i=player.hp; i<player.maxHp; i++) hpStr += '🖤';
+  ctx.fillText(hpStr, W/2, 28);
+
+  // Ammo
+  ctx.textAlign = 'left';
+  ctx.font = `bold ${W*0.035}px sans-serif`;
+  ctx.fillStyle = reloading ? '#f59e0b' : '#8b5cf6';
+  ctx.fillText(reloading ? `Reloading... ${Math.ceil(reloadTimer/30)}s` : `Ammo: ${ammo}/30`, 12, H-14);
+}
+
+loop();
+</script>
+</body>
+</html>

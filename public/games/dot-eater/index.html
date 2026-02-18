@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dot Eater</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a2a2a; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
+  canvas { display: block; cursor: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = Math.min(window.innerWidth, 700);
+const H = Math.min(window.innerHeight, 700);
+canvas.width = W; canvas.height = H;
+
+const STATE = { MENU: 0, PLAY: 1, OVER: 2 };
+let state = STATE.MENU;
+let player, dots, circles, particles, score, frameCount, mouseX, mouseY;
+
+const WORLD_COLS = ['#2dd4bf','#14b8a6','#0d9488','#0f766e','#115e59'];
+
+function initGame() {
+  player = { x: W/2, y: H/2, r: 15, color: '#2dd4bf', speed: 3.5 };
+  dots = []; circles = []; particles = []; score = 0; frameCount = 0;
+  mouseX = W/2; mouseY = H/2;
+  // Spawn initial dots
+  for (let i=0; i<80; i++) spawnDot();
+  // Spawn initial AI circles
+  for (let i=0; i<5; i++) spawnCircle();
+  state = STATE.PLAY;
+}
+
+function spawnDot() {
+  dots.push({ x: Math.random()*W, y: Math.random()*H, r: 5, color: WORLD_COLS[Math.floor(Math.random()*WORLD_COLS.length)] });
+}
+
+function spawnCircle(large=false) {
+  const r = large ? 35 + Math.random()*25 : 20 + Math.random()*20;
+  const side = Math.floor(Math.random()*4);
+  let x, y;
+  if (side===0) { x=Math.random()*W; y=-r; }
+  else if (side===1) { x=W+r; y=Math.random()*H; }
+  else if (side===2) { x=Math.random()*W; y=H+r; }
+  else { x=-r; y=Math.random()*H; }
+  const speed = 0.8 + Math.random()*0.8;
+  const hue = Math.floor(Math.random()*360);
+  circles.push({ x, y, r, speed, color: `hsl(${hue},70%,50%)`, angle: Math.random()*Math.PI*2, turnTimer: 60+Math.random()*120 });
+}
+
+function spawnParticles(x, y, color, n) {
+  for (let i=0; i<n; i++) {
+    const a=Math.random()*Math.PI*2, s=1+Math.random()*4;
+    particles.push({ x, y, vx:Math.cos(a)*s, vy:Math.sin(a)*s, life:20, color });
+  }
+}
+
+canvas.addEventListener('mousemove', e => {
+  const r = canvas.getBoundingClientRect();
+  const sc = canvas.width / r.width;
+  mouseX = (e.clientX-r.left)*sc;
+  mouseY = (e.clientY-r.top)*sc;
+});
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const r = canvas.getBoundingClientRect();
+  const sc = canvas.width / r.width;
+  mouseX = (e.touches[0].clientX-r.left)*sc;
+  mouseY = (e.touches[0].clientY-r.top)*sc;
+}, { passive: false });
+canvas.addEventListener('click', () => { if (state !== STATE.PLAY) initGame(); });
+canvas.addEventListener('touchend', e => { e.preventDefault(); if (state !== STATE.PLAY) initGame(); });
+
+function loop() {
+  requestAnimationFrame(loop);
+  ctx.fillStyle = '#0a2a2a';
+  ctx.fillRect(0, 0, W, H);
+
+  if (state === STATE.MENU) {
+    // Draw decorative circles
+    ctx.globalAlpha = 0.15;
+    for (let i=0; i<8; i++) {
+      const r = 20+i*30;
+      ctx.beginPath(); ctx.arc(W*0.3, H*0.5, r, 0, Math.PI*2);
+      ctx.fillStyle = '#2dd4bf'; ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = '#2dd4bf'; ctx.font = `bold ${W*0.1}px sans-serif`;
+    ctx.textAlign = 'center'; ctx.fillText('DOT EATER', W/2, H*0.33);
+    ctx.fillStyle = '#aaa'; ctx.font = `${W*0.047}px sans-serif`;
+    ctx.fillText('Move mouse to control', W/2, H*0.5);
+    ctx.fillText('Eat dots to grow bigger!', W/2, H*0.57);
+    ctx.fillText('Avoid bigger circles!', W/2, H*0.64);
+    ctx.fillStyle = '#2dd4bf'; ctx.font = `bold ${W*0.065}px sans-serif`;
+    ctx.fillText('CLICK TO START', W/2, H*0.78);
+    return;
+  }
+
+  if (state === STATE.OVER) {
+    ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = '#ff4444'; ctx.font = `bold ${W*0.1}px sans-serif`;
+    ctx.textAlign = 'center'; ctx.fillText('EATEN!', W/2, H*0.35);
+    ctx.fillStyle = '#fff'; ctx.font = `bold ${W*0.08}px sans-serif`;
+    ctx.fillText(`Score: ${score}`, W/2, H*0.5);
+    ctx.fillStyle = '#2dd4bf'; ctx.font = `bold ${W*0.065}px sans-serif`;
+    ctx.fillText('CLICK TO RESTART', W/2, H*0.67);
+    particles.forEach(p => { p.x+=p.vx; p.y+=p.vy; p.vx*=0.9; p.vy*=0.9; p.life--; });
+    particles = particles.filter(p=>p.life>0);
+    particles.forEach(p => { ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2); ctx.fillStyle=p.color; ctx.globalAlpha=p.life/20; ctx.fill(); ctx.globalAlpha=1; });
+    return;
+  }
+
+  frameCount++;
+
+  // Move player toward mouse
+  const dx = mouseX - player.x, dy = mouseY - player.y;
+  const dist = Math.sqrt(dx*dx+dy*dy);
+  if (dist > 2) {
+    const spd = Math.min(player.speed, dist);
+    player.x += (dx/dist)*spd;
+    player.y += (dy/dist)*spd;
+  }
+  player.x = Math.max(player.r, Math.min(W-player.r, player.x));
+  player.y = Math.max(player.r, Math.min(H-player.r, player.y));
+
+  // Eat dots
+  dots.forEach(d => {
+    const dist2 = Math.sqrt((d.x-player.x)**2+(d.y-player.y)**2);
+    if (dist2 < player.r + d.r) {
+      d.eaten = true;
+      player.r = Math.min(80, player.r + 0.5);
+      score += 1;
+      spawnParticles(d.x, d.y, d.color, 5);
+    }
+  });
+  dots = dots.filter(d=>!d.eaten);
+  while (dots.length < 80) spawnDot();
+
+  // Update AI circles
+  circles.forEach(c => {
+    c.turnTimer--;
+    if (c.turnTimer <= 0) {
+      c.angle += (Math.random()-0.5)*Math.PI;
+      c.turnTimer = 60+Math.random()*120;
+    }
+    // Larger circles hunt player
+    if (c.r > player.r) {
+      const dx2 = player.x - c.x, dy2 = player.y - c.y;
+      c.angle = Math.atan2(dy2, dx2);
+    }
+    c.x += Math.cos(c.angle)*c.speed;
+    c.y += Math.sin(c.angle)*c.speed;
+    // Bounce off walls
+    if (c.x-c.r<0||c.x+c.r>W) { c.angle=Math.PI-c.angle; c.x=Math.max(c.r,Math.min(W-c.r,c.x)); }
+    if (c.y-c.r<0||c.y+c.r>H) { c.angle=-c.angle; c.y=Math.max(c.r,Math.min(H-c.r,c.y)); }
+
+    // Check collision with player
+    const dist2 = Math.sqrt((c.x-player.x)**2+(c.y-player.y)**2);
+    if (dist2 < c.r + player.r) {
+      if (c.r < player.r) {
+        // Eat the circle!
+        c.dead = true;
+        player.r = Math.min(100, player.r + c.r*0.3);
+        score += Math.floor(c.r);
+        spawnParticles(c.x, c.y, c.color, 15);
+        spawnCircle(true);
+      } else {
+        // Eaten by bigger circle
+        spawnParticles(player.x, player.y, player.color, 20);
+        state = STATE.OVER;
+      }
+    }
+  });
+  circles = circles.filter(c=>!c.dead);
+  while (circles.length < 6) spawnCircle();
+
+  // Draw dots
+  dots.forEach(d => {
+    ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI*2);
+    ctx.fillStyle = d.color; ctx.shadowColor=d.color; ctx.shadowBlur=6; ctx.fill(); ctx.shadowBlur=0;
+  });
+
+  // Draw AI circles
+  circles.forEach(c => {
+    ctx.beginPath(); ctx.arc(c.x, c.y, c.r, 0, Math.PI*2);
+    ctx.fillStyle = c.color; ctx.shadowColor=c.color; ctx.shadowBlur=10; ctx.fill();
+    ctx.shadowBlur=0;
+    // Eyes
+    ctx.fillStyle = '#fff';
+    const ex = Math.cos(c.angle), ey = Math.sin(c.angle);
+    ctx.beginPath(); ctx.arc(c.x+ex*c.r*0.4-ey*c.r*0.2, c.y+ey*c.r*0.4+ex*c.r*0.2, c.r*0.18,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(c.x+ex*c.r*0.4+ey*c.r*0.2, c.y+ey*c.r*0.4-ex*c.r*0.2, c.r*0.18,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#000';
+    ctx.beginPath(); ctx.arc(c.x+ex*c.r*0.45-ey*c.r*0.2, c.y+ey*c.r*0.45+ex*c.r*0.2, c.r*0.09,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(c.x+ex*c.r*0.45+ey*c.r*0.2, c.y+ey*c.r*0.45-ex*c.r*0.2, c.r*0.09,0,Math.PI*2); ctx.fill();
+    // Size indicator
+    if (c.r > player.r) {
+      ctx.fillStyle='#ff6666'; ctx.font=`bold ${c.r*0.35}px sans-serif`;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('⚠', c.x, c.y+c.r+10); ctx.textBaseline='alphabetic';
+    }
+  });
+
+  // Draw player
+  ctx.beginPath(); ctx.arc(player.x, player.y, player.r, 0, Math.PI*2);
+  ctx.fillStyle = '#2dd4bf'; ctx.shadowColor='#2dd4bf'; ctx.shadowBlur=20; ctx.fill(); ctx.shadowBlur=0;
+  // Player eyes follow mouse
+  const pex = mouseX-player.x, pey = mouseY-player.y;
+  const ped = Math.sqrt(pex*pex+pey*pey)||1;
+  const px2 = pex/ped, py2 = pey/ped;
+  const eyeOff = player.r*0.4;
+  ctx.fillStyle='#fff';
+  ctx.beginPath(); ctx.arc(player.x+px2*eyeOff-py2*player.r*0.2, player.y+py2*eyeOff+px2*player.r*0.2, player.r*0.2,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(player.x+px2*eyeOff+py2*player.r*0.2, player.y+py2*eyeOff-px2*player.r*0.2, player.r*0.2,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#000';
+  ctx.beginPath(); ctx.arc(player.x+px2*eyeOff*1.1-py2*player.r*0.2, player.y+py2*eyeOff*1.1+px2*player.r*0.2, player.r*0.1,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(player.x+px2*eyeOff*1.1+py2*player.r*0.2, player.y+py2*eyeOff*1.1-px2*player.r*0.2, player.r*0.1,0,Math.PI*2); ctx.fill();
+
+  // Particles
+  particles.forEach(p => { p.x+=p.vx; p.y+=p.vy; p.vx*=0.9; p.vy*=0.9; p.life--; });
+  particles = particles.filter(p=>p.life>0);
+  particles.forEach(p => { ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fillStyle=p.color; ctx.globalAlpha=p.life/20; ctx.fill(); ctx.globalAlpha=1; });
+
+  // HUD
+  ctx.fillStyle='#fff'; ctx.font=`bold ${W*0.045}px sans-serif`;
+  ctx.textAlign='left'; ctx.fillText(`Score: ${score}`, 12, 30);
+  ctx.textAlign='right'; ctx.fillText(`Size: ${Math.floor(player.r)}`, W-12, 30);
+}
+
+loop();
+</script>
+</body>
+</html>

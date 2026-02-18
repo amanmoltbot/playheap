@@ -5,7 +5,6 @@ import { games, getGameBySlug, getRelatedGames, categories } from '@/data/games'
 import GameEmbed from '@/components/GameEmbed';
 import GameGrid from '@/components/GameGrid';
 import CategoryBadge from '@/components/CategoryBadge';
-import AdSlot from '@/components/AdSlot';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -60,11 +59,6 @@ export default async function GamePage({ params }: Props) {
           {/* Game embed */}
           <GameEmbed gameUrl={game.gameUrl} title={game.title} />
 
-          {/* Below game ad */}
-          <div className="mt-6 flex justify-center">
-            <AdSlot width={728} height={90} />
-          </div>
-
           {/* Game info */}
           <div className="mt-8 bg-[#1a1a2e] border border-gray-800 rounded-xl p-6">
             <div className="flex flex-wrap items-center gap-3 mb-4">
@@ -109,12 +103,9 @@ export default async function GamePage({ params }: Props) {
 
         {/* Sidebar */}
         <div className="lg:w-[300px] flex-shrink-0 space-y-6">
-          {/* Sidebar ad */}
           <div className="sticky top-24">
-            <AdSlot width={300} height={250} label="Advertisement" />
-
             {/* Categories list */}
-            <div className="mt-6 bg-[#1a1a2e] border border-gray-800 rounded-xl p-5">
+            <div className="bg-[#1a1a2e] border border-gray-800 rounded-xl p-5">
               <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">Browse Categories</h3>
               <div className="space-y-1">
                 {categories.map(cat => (
@@ -136,10 +127,27 @@ export default async function GamePage({ params }: Props) {
               </div>
             </div>
 
-            {/* Second sidebar ad */}
-            <div className="mt-6">
-              <AdSlot width={300} height={250} />
-            </div>
+            {/* Related quick links */}
+            {related.length > 0 && (
+              <div className="mt-6 bg-[#1a1a2e] border border-gray-800 rounded-xl p-5">
+                <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">Related Games</h3>
+                <div className="space-y-2">
+                  {related.map(g => (
+                    <Link
+                      key={g.slug}
+                      href={`/game/${g.slug}`}
+                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 transition-colors group"
+                    >
+                      <div className="w-10 h-10 rounded-md overflow-hidden flex-shrink-0 bg-gray-800">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={g.thumbnailUrl} alt={g.title} className="w-full h-full object-cover" />
+                      </div>
+                      <span className="text-gray-400 group-hover:text-white text-sm transition-colors line-clamp-1">{g.title}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

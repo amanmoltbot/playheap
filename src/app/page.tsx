@@ -1,23 +1,26 @@
 import Link from 'next/link';
 import { games, getFeaturedGames, getPopularGames, getNewGames, categories, categoryEmoji } from '@/data/games';
 import GameGrid from '@/components/GameGrid';
-import AdSlot from '@/components/AdSlot';
 
 export default function HomePage() {
   const featured = getFeaturedGames();
   const popular = getPopularGames(8);
   const newGames = getNewGames().slice(0, 8);
 
-  // Pick a couple category sections
-  const actionGames = games.filter(g => g.category === 'action').slice(0, 4);
-  const puzzleGames = games.filter(g => g.category === 'puzzle').slice(0, 4);
-  const ioGames = games.filter(g => g.category === 'io-games').slice(0, 4);
+  // Build category sections — only show categories that have games
+  const categorySections = categories
+    .map(cat => ({
+      slug: cat.slug,
+      label: `${categoryEmoji[cat.slug] ?? '🎮'} ${cat.label} Games`,
+      games: games.filter(g => g.category === cat.slug).slice(0, 4),
+    }))
+    .filter(section => section.games.length > 0)
+    .slice(0, 4); // Show top 4 category sections on homepage
 
   return (
     <div>
       {/* Hero */}
       <section className="relative bg-gradient-to-b from-[#0d0d1a] to-[#0f0f0f] py-16 px-4 text-center overflow-hidden">
-        {/* Decorative glow */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#8b5cf6]/10 rounded-full blur-3xl" />
         </div>
@@ -27,10 +30,10 @@ export default function HomePage() {
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
             Play Free Games Online —<br />
-            <span className="text-[#8b5cf6]">Free HTML5 Games</span>
+            <span className="text-[#8b5cf6]">No Downloads, Just Play</span>
           </h1>
           <p className="text-gray-400 text-lg md:text-xl mb-8 max-w-2xl mx-auto">
-            No downloads. No installs. Just click and play free browser games instantly.
+            Over {games.length} free browser games. Click and play instantly — no installs, no sign-ups.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
@@ -49,13 +52,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Top ad slot */}
-      <div className="max-w-7xl mx-auto px-4 py-6 flex justify-center">
-        <AdSlot width={728} height={90} />
-      </div>
-
       {/* Featured Games */}
-      <section className="max-w-7xl mx-auto px-4 py-8">
+      <section className="max-w-7xl mx-auto px-4 py-10">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-white">⭐ Featured Games</h2>
           <Link href="/games" className="text-[#8b5cf6] hover:text-violet-400 text-sm font-medium transition-colors">
@@ -64,11 +62,6 @@ export default function HomePage() {
         </div>
         <GameGrid games={featured} cols={3} />
       </section>
-
-      {/* Ad between sections */}
-      <div className="max-w-7xl mx-auto px-4 py-4 flex justify-center">
-        <AdSlot width={728} height={90} label="Advertisement" />
-      </div>
 
       {/* Popular Games */}
       <section className="max-w-7xl mx-auto px-4 py-8">
@@ -81,11 +74,6 @@ export default function HomePage() {
         <GameGrid games={popular} cols={4} />
       </section>
 
-      {/* Ad between sections */}
-      <div className="max-w-7xl mx-auto px-4 py-4 flex justify-center">
-        <AdSlot width={728} height={90} />
-      </div>
-
       {/* New Games */}
       <section className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
@@ -97,20 +85,16 @@ export default function HomePage() {
         <GameGrid games={newGames} cols={4} />
       </section>
 
-      {/* Category sections */}
-      {[
-        { label: '⚔️ Action Games', games: actionGames, category: 'action' },
-        { label: '🧩 Puzzle Games', games: puzzleGames, category: 'puzzle' },
-        { label: '🌐 IO Games', games: ioGames, category: 'io-games' },
-      ].map(section => (
-        <section key={section.category} className="max-w-7xl mx-auto px-4 py-8">
+      {/* Category sections — only non-empty */}
+      {categorySections.map(section => (
+        <section key={section.slug} className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-white">{section.label}</h2>
             <Link
-              href={`/category/${section.category}`}
+              href={`/category/${section.slug}`}
               className="text-[#8b5cf6] hover:text-violet-400 text-sm font-medium transition-colors"
             >
-              More {section.category.replace('-', ' ')} games →
+              More {section.slug.replace('-', ' ')} games →
             </Link>
           </div>
           <GameGrid games={section.games} cols={4} />
@@ -136,4 +120,3 @@ export default function HomePage() {
     </div>
   );
 }
-
