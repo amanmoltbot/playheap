@@ -1,0 +1,341 @@
+export interface Game {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  category: string;
+  thumbnailUrl: string;
+  gameUrl: string;
+  controls: string;
+  featured: boolean;
+  isNew: boolean;
+  plays: number;
+}
+
+export const categories = [
+  { slug: 'action', label: 'Action' },
+  { slug: 'puzzle', label: 'Puzzle' },
+  { slug: 'racing', label: 'Racing' },
+  { slug: 'sports', label: 'Sports' },
+  { slug: 'shooting', label: 'Shooting' },
+  { slug: 'adventure', label: 'Adventure' },
+  { slug: 'strategy', label: 'Strategy' },
+  { slug: 'arcade', label: 'Arcade' },
+  { slug: 'multiplayer', label: 'Multiplayer' },
+  { slug: 'io-games', label: 'IO Games' },
+];
+
+export const games: Game[] = [
+  {
+    id: '1',
+    slug: 'pixel-warrior',
+    title: 'Pixel Warrior',
+    description: 'Battle through hordes of enemies in this intense pixel-art action game. Collect power-ups, defeat bosses, and save the kingdom from darkness.',
+    category: 'action',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Pixel+Warrior',
+    gameUrl: '/games/pixel-warrior/index.html',
+    controls: 'WASD / Arrow Keys to move, Space to attack, Shift to dash',
+    featured: true,
+    isNew: false,
+    plays: 128500,
+  },
+  {
+    id: '2',
+    slug: 'block-puzzle-master',
+    title: 'Block Puzzle Master',
+    description: 'Arrange falling blocks to clear lines and score points. A modern twist on the classic puzzle formula with special blocks and power modes.',
+    category: 'puzzle',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Block+Puzzle',
+    gameUrl: '/games/block-puzzle-master/index.html',
+    controls: 'Arrow Keys to move/rotate, Space to drop fast',
+    featured: true,
+    isNew: false,
+    plays: 95200,
+  },
+  {
+    id: '3',
+    slug: 'turbo-drift',
+    title: 'Turbo Drift',
+    description: 'Race through neon-lit city streets and drift around corners at breakneck speeds. Unlock new cars and tracks as you dominate the competition.',
+    category: 'racing',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Turbo+Drift',
+    gameUrl: '/games/turbo-drift/index.html',
+    controls: 'WASD / Arrow Keys to drive, Space to brake/handbrake',
+    featured: true,
+    isNew: true,
+    plays: 74300,
+  },
+  {
+    id: '4',
+    slug: 'galaxy-shooter',
+    title: 'Galaxy Shooter',
+    description: 'Defend the galaxy from alien invaders in this classic space shooter. Upgrade your ship, dodge enemy fire, and blast your way through 30 levels.',
+    category: 'shooting',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Galaxy+Shooter',
+    gameUrl: '/games/galaxy-shooter/index.html',
+    controls: 'Mouse to aim and shoot, WASD to move',
+    featured: true,
+    isNew: true,
+    plays: 112000,
+  },
+  {
+    id: '5',
+    slug: 'dungeon-quest',
+    title: 'Dungeon Quest',
+    description: 'Explore procedurally generated dungeons, fight monsters, collect loot, and level up your hero in this epic RPG adventure.',
+    category: 'adventure',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Dungeon+Quest',
+    gameUrl: '/games/dungeon-quest/index.html',
+    controls: 'WASD to move, Mouse to interact, E to pick up items',
+    featured: true,
+    isNew: false,
+    plays: 89600,
+  },
+  {
+    id: '6',
+    slug: 'tower-defense-pro',
+    title: 'Tower Defense Pro',
+    description: 'Build towers, upgrade defenses, and stop waves of enemies from reaching your base. 50 challenging levels across 5 unique worlds.',
+    category: 'strategy',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Tower+Defense',
+    gameUrl: '/games/tower-defense-pro/index.html',
+    controls: 'Mouse to place and upgrade towers, Right-click to sell',
+    featured: false,
+    isNew: false,
+    plays: 67800,
+  },
+  {
+    id: '7',
+    slug: 'snake-evolution',
+    title: 'Snake Evolution',
+    description: 'Grow your snake by eating glowing orbs and evolving into more powerful forms. Avoid other snakes and walls in this addictive multiplayer arena.',
+    category: 'io-games',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Snake+Evolution',
+    gameUrl: '/games/snake-evolution/index.html',
+    controls: 'Mouse to control direction, Click to boost speed',
+    featured: true,
+    isNew: true,
+    plays: 203400,
+  },
+  {
+    id: '8',
+    slug: 'soccer-stars',
+    title: 'Soccer Stars',
+    description: 'Score goals in this fast-paced online soccer game. Choose your team, master power shots, and compete in tournaments to become the champion.',
+    category: 'sports',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Soccer+Stars',
+    gameUrl: '/games/soccer-stars/index.html',
+    controls: 'WASD to run, Space to kick, Shift to sprint',
+    featured: false,
+    isNew: true,
+    plays: 56700,
+  },
+  {
+    id: '9',
+    slug: 'retro-platformer',
+    title: 'Retro Platformer',
+    description: 'Jump and run through classic platformer levels filled with secrets, enemies, and epic boss fights. Collect coins and unlock new characters.',
+    category: 'arcade',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Retro+Platformer',
+    gameUrl: '/games/retro-platformer/index.html',
+    controls: 'Arrow Keys to move, Z to jump, X to attack',
+    featured: false,
+    isNew: false,
+    plays: 88900,
+  },
+  {
+    id: '10',
+    slug: 'battle-royale-2d',
+    title: 'Battle Royale 2D',
+    description: 'Drop into the arena and be the last player standing in this intense 2D battle royale. Scavenge for weapons and survive the shrinking zone.',
+    category: 'multiplayer',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Battle+Royale',
+    gameUrl: '/games/battle-royale-2d/index.html',
+    controls: 'WASD to move, Mouse to aim, Left click to shoot, R to reload',
+    featured: false,
+    isNew: true,
+    plays: 145600,
+  },
+  {
+    id: '11',
+    slug: 'zombie-apocalypse',
+    title: 'Zombie Apocalypse',
+    description: 'Survive endless waves of zombies with limited ammo and resources. Barricade, craft, and fight to stay alive as long as possible.',
+    category: 'action',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Zombie+Apocalypse',
+    gameUrl: '/games/zombie-apocalypse/index.html',
+    controls: 'WASD to move, Mouse to aim and shoot, E to interact',
+    featured: false,
+    isNew: false,
+    plays: 93200,
+  },
+  {
+    id: '12',
+    slug: 'word-master',
+    title: 'Word Master',
+    description: 'Guess the hidden word in 6 tries. Each guess reveals which letters are correct. A brain-teasing word puzzle for vocabulary enthusiasts.',
+    category: 'puzzle',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Word+Master',
+    gameUrl: '/games/word-master/index.html',
+    controls: 'Keyboard to type letters, Enter to submit, Backspace to delete',
+    featured: false,
+    isNew: true,
+    plays: 178900,
+  },
+  {
+    id: '13',
+    slug: 'mountain-rally',
+    title: 'Mountain Rally',
+    description: 'Race up treacherous mountain trails in this physics-based rally game. Navigate sharp turns and rough terrain to reach the finish line.',
+    category: 'racing',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Mountain+Rally',
+    gameUrl: '/games/mountain-rally/index.html',
+    controls: 'Arrow Keys to drive, Space for nitro boost',
+    featured: false,
+    isNew: false,
+    plays: 41200,
+  },
+  {
+    id: '14',
+    slug: 'sniper-elite',
+    title: 'Sniper Elite',
+    description: 'Take down targets from long range with precision shooting. Account for wind, distance, and bullet drop in this realistic sniper simulation.',
+    category: 'shooting',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Sniper+Elite',
+    gameUrl: '/games/sniper-elite/index.html',
+    controls: 'Mouse to aim, Left click to shoot, Right click to scope, Hold breath with Shift',
+    featured: false,
+    isNew: false,
+    plays: 62400,
+  },
+  {
+    id: '15',
+    slug: 'pirate-adventure',
+    title: 'Pirate Adventure',
+    description: 'Sail the high seas, discover hidden islands, and hunt for legendary treasure in this swashbuckling pirate adventure.',
+    category: 'adventure',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Pirate+Adventure',
+    gameUrl: '/games/pirate-adventure/index.html',
+    controls: 'WASD to move, Mouse to interact, Space to attack',
+    featured: false,
+    isNew: true,
+    plays: 53800,
+  },
+  {
+    id: '16',
+    slug: 'city-builder',
+    title: 'City Builder',
+    description: 'Build and manage a thriving metropolis. Balance resources, keep citizens happy, and expand your city from a small village to a massive capital.',
+    category: 'strategy',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=City+Builder',
+    gameUrl: '/games/city-builder/index.html',
+    controls: 'Mouse to place buildings, Scroll to zoom, Right-click to pan',
+    featured: false,
+    isNew: false,
+    plays: 71500,
+  },
+  {
+    id: '17',
+    slug: 'pac-frenzy',
+    title: 'Pac Frenzy',
+    description: 'Eat all the dots and avoid ghosts in this turbo-charged arcade classic. New power-ups and maze layouts keep every game fresh and exciting.',
+    category: 'arcade',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Pac+Frenzy',
+    gameUrl: '/games/pac-frenzy/index.html',
+    controls: 'Arrow Keys or WASD to move',
+    featured: false,
+    isNew: false,
+    plays: 115300,
+  },
+  {
+    id: '18',
+    slug: 'agar-blast',
+    title: 'Agar Blast',
+    description: 'Grow by consuming smaller cells and avoid being eaten by larger ones in this addictive multiplayer .io game. Dominate the leaderboard!',
+    category: 'io-games',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Agar+Blast',
+    gameUrl: '/games/agar-blast/index.html',
+    controls: 'Mouse to move, Space to split, W to eject mass',
+    featured: false,
+    isNew: false,
+    plays: 189200,
+  },
+  {
+    id: '19',
+    slug: 'basketball-fever',
+    title: 'Basketball Fever',
+    description: 'Shoot hoops and outscore your opponents in this physics-based basketball game. Master trick shots and compete in championship tournaments.',
+    category: 'sports',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Basketball+Fever',
+    gameUrl: '/games/basketball-fever/index.html',
+    controls: 'Mouse to aim and set power, Left click to shoot',
+    featured: false,
+    isNew: true,
+    plays: 38900,
+  },
+  {
+    id: '20',
+    slug: 'tank-wars',
+    title: 'Tank Wars',
+    description: 'Control a powerful tank and blow up enemy forces across explosive battlefield levels. Upgrade your tank and unlock powerful special weapons.',
+    category: 'multiplayer',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Tank+Wars',
+    gameUrl: '/games/tank-wars/index.html',
+    controls: 'WASD to move tank, Mouse to aim turret, Left click to fire',
+    featured: false,
+    isNew: false,
+    plays: 84700,
+  },
+  {
+    id: '21',
+    slug: 'ninja-dash',
+    title: 'Ninja Dash',
+    description: 'Slice through enemies and wall-jump through obstacle-filled levels in this lightning-fast ninja action game. Unleash devastating combo attacks.',
+    category: 'action',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Ninja+Dash',
+    gameUrl: '/games/ninja-dash/index.html',
+    controls: 'Arrow Keys to move, Z to attack, X to throw shuriken, C to dash',
+    featured: false,
+    isNew: true,
+    plays: 67300,
+  },
+  {
+    id: '22',
+    slug: 'match-3-gems',
+    title: 'Match 3 Gems',
+    description: 'Swap colorful gems to make matches of 3 or more. Create combos, clear special tiles, and complete hundreds of increasingly tricky levels.',
+    category: 'puzzle',
+    thumbnailUrl: 'https://placehold.co/400x300/1a1a2e/8b5cf6?text=Match+3+Gems',
+    gameUrl: '/games/match-3-gems/index.html',
+    controls: 'Mouse drag or click two adjacent gems to swap',
+    featured: false,
+    isNew: false,
+    plays: 224600,
+  },
+];
+
+export function getGameBySlug(slug: string): Game | undefined {
+  return games.find(g => g.slug === slug);
+}
+
+export function getGamesByCategory(category: string): Game[] {
+  return games.filter(g => g.category === category);
+}
+
+export function getFeaturedGames(): Game[] {
+  return games.filter(g => g.featured);
+}
+
+export function getNewGames(): Game[] {
+  return games.filter(g => g.isNew);
+}
+
+export function getPopularGames(limit = 8): Game[] {
+  return [...games].sort((a, b) => b.plays - a.plays).slice(0, limit);
+}
+
+export function getRelatedGames(game: Game, limit = 4): Game[] {
+  return games
+    .filter(g => g.category === game.category && g.id !== game.id)
+    .slice(0, limit);
+}
