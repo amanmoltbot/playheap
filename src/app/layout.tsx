@@ -5,7 +5,7 @@ import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: 'Free Online Games - Play Now | PlayHeap',
-  description: 'Play thousands of free HTML5 games online. No downloads, no installs. Action, puzzle, racing, shooting, and more — all free at PlayHeap.io',
+  description: 'Play free HTML5 games online. No downloads, no installs. Action, puzzle, racing, shooting, and more — all free at PlayHeap.io',
   keywords: 'free online games, HTML5 games, browser games, play now, no download games',
   openGraph: {
     siteName: 'PlayHeap',

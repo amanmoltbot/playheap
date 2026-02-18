@@ -16,7 +16,7 @@ export default function PrivacyPage() {
       </nav>
 
       <h1 className="text-4xl font-extrabold text-white mb-3">Privacy Policy</h1>
-      <p className="text-gray-500 text-sm mb-10">Last updated: January 2025</p>
+      <p className="text-gray-500 text-sm mb-10">Last updated: February 2026</p>
 
       <div className="space-y-8 text-gray-400 leading-relaxed">
         {[

@@ -74,7 +74,7 @@ export default function GameEmbed({ gameUrl, title }: GameEmbedProps) {
           allow="fullscreen; autoplay; gamepad"
           allowFullScreen
           onLoad={handleLoad}
-          sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+          referrerPolicy="no-referrer"
         />
 
         {/* Fullscreen button */}

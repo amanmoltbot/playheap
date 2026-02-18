@@ -16,7 +16,7 @@ export default function TermsPage() {
       </nav>
 
       <h1 className="text-4xl font-extrabold text-white mb-3">Terms of Service</h1>
-      <p className="text-gray-500 text-sm mb-10">Last updated: January 2025</p>
+      <p className="text-gray-500 text-sm mb-10">Last updated: February 2026</p>
 
       <div className="space-y-6 text-gray-400 leading-relaxed">
         <div className="bg-[#1a1a2e] border border-gray-800 rounded-xl p-6">

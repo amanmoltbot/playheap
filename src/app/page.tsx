@@ -6,7 +6,7 @@ import AdSlot from '@/components/AdSlot';
 
 export const metadata: Metadata = {
   title: 'Free Online Games - Play Now | PlayHeap',
-  description: 'Play thousands of free HTML5 games online. No downloads, no installs. Action, puzzle, racing, shooting, and more — all free at PlayHeap.io',
+  description: 'Play free HTML5 games online. No downloads, no installs. Action, puzzle, racing, shooting, and more — all free at PlayHeap.io',
 };
 
 export default function HomePage() {
@@ -29,14 +29,14 @@ export default function HomePage() {
         </div>
         <div className="relative max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 bg-[#8b5cf6]/10 border border-[#8b5cf6]/30 text-[#8b5cf6] text-sm font-medium px-4 py-1.5 rounded-full mb-6">
-            <span>🎮</span> 1000+ Free HTML5 Games
+            <span>🎮</span> Free Online Games
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
             Play Free Games Online —<br />
-            <span className="text-[#8b5cf6]">Thousands of HTML5 Games</span>
+            <span className="text-[#8b5cf6]">Free HTML5 Games</span>
           </h1>
           <p className="text-gray-400 text-lg md:text-xl mb-8 max-w-2xl mx-auto">
-            No downloads. No installs. Just click and play hundreds of free browser games instantly.
+            No downloads. No installs. Just click and play free browser games instantly.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link

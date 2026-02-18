@@ -28,7 +28,7 @@ export default function AboutPage() {
           <h2 className="text-xl font-bold text-white mb-4">Our Mission</h2>
           <p>
             At PlayHeap, we believe gaming should be accessible to everyone — no downloads, no installs, no paywalls.
-            Our mission is to bring you thousands of high-quality HTML5 games that you can play instantly in your browser,
+            Our mission is to bring you high-quality HTML5 games that you can play instantly in your browser,
             on any device, for free.
           </p>
         </section>
@@ -37,7 +37,7 @@ export default function AboutPage() {
           <h2 className="text-xl font-bold text-white mb-4">What We Offer</h2>
           <ul className="space-y-3">
             {[
-              '🕹️ 1000+ free HTML5 games across 10+ categories',
+              '🕹️ Free HTML5 games across 10 categories',
               '🚀 Instant play — no downloads or accounts required',
               '📱 Mobile-friendly games for all devices',
               '🔄 New games added regularly',
