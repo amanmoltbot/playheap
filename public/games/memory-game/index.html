@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory Game</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0f0f1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+    color: #e0e0e0;
+    padding: 20px;
+  }
+  h1 { font-size: 2rem; color: #7c3aed; margin-bottom: 8px; letter-spacing: 2px; }
+  #hud { display: flex; gap: 30px; margin-bottom: 20px; font-size: 0.95rem; color: #a0a0c0; }
+  #hud span { color: #c084fc; font-weight: bold; font-size: 1.1rem; }
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(4, 80px);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .card {
+    width: 80px;
+    height: 80px;
+    perspective: 600px;
+    cursor: pointer;
+  }
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.4s ease;
+    border-radius: 10px;
+  }
+  .card.flipped .card-inner { transform: rotateY(180deg); }
+  .card.matched .card-inner { transform: rotateY(180deg); }
+  .card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+  }
+  .card-back {
+    background: #1e1b4b;
+    border: 2px solid #3b0764;
+    background-image: radial-gradient(circle at 30% 30%, #2e1065 0%, #1e1b4b 100%);
+    font-size: 1.5rem;
+    color: #4c1d95;
+  }
+  .card-front {
+    background: #1a1a2e;
+    border: 2px solid #7c3aed;
+    transform: rotateY(180deg);
+    box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
+  }
+  .card.matched .card-front {
+    border-color: #22c55e;
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+  }
+  #message {
+    font-size: 1.2rem;
+    color: #c084fc;
+    min-height: 28px;
+    text-align: center;
+  }
+  button {
+    margin-top: 16px;
+    background: #7c3aed;
+    color: white;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  button:hover { background: #6d28d9; }
+  #difficulty { display: flex; gap: 10px; margin-bottom: 16px; }
+  #difficulty button {
+    background: #1e1b4b;
+    margin: 0;
+    padding: 6px 16px;
+    font-size: 0.85rem;
+    border: 1px solid #3b0764;
+  }
+  #difficulty button.active { background: #7c3aed; border-color: #7c3aed; }
+</style>
+</head>
+<body>
+<h1>🃏 MEMORY</h1>
+<div id="difficulty">
+  <button onclick="setDiff(4,4)" id="d-easy" class="active">Easy (4×4)</button>
+  <button onclick="setDiff(4,5)" id="d-med">Medium (4×5)</button>
+  <button onclick="setDiff(6,4)" id="d-hard">Hard (6×4)</button>
+</div>
+<div id="hud">Moves: <span id="moves">0</span> &nbsp;|&nbsp; Matches: <span id="matches">0</span> &nbsp;|&nbsp; Time: <span id="time">0s</span></div>
+<div id="grid"></div>
+<div id="message">Find all matching pairs!</div>
+<button onclick="newGame()">🔄 New Game</button>
+
+<script>
+const EMOJIS = ['🎮','🎯','🎲','🎸','🚀','🌟','🦊','🐉','🍕','🎩','💎','🔥','🌈','🎃','⚡','🦋','🎵','🌺','🎭','🏆','🦄','🍀','🎪','🎨'];
+
+let cols = 4, rows = 4;
+let cards = [], flipped = [], matched = 0, moves = 0, canClick = true;
+let startTime, timerInt;
+
+function setDiff(c, r) {
+  cols = c; rows = r;
+  document.getElementById('grid').style.gridTemplateColumns = `repeat(${cols}, 80px)`;
+  document.querySelectorAll('#difficulty button').forEach(b => b.classList.remove('active'));
+  if (c===4&&r===4) document.getElementById('d-easy').classList.add('active');
+  else if (c===4&&r===5) document.getElementById('d-med').classList.add('active');
+  else document.getElementById('d-hard').classList.add('active');
+  newGame();
+}
+
+function newGame() {
+  clearInterval(timerInt);
+  moves = 0; matched = 0; flipped = []; canClick = true;
+  const total = cols * rows;
+  const emojis = EMOJIS.slice(0, total/2);
+  cards = shuffle([...emojis, ...emojis]).map((e, i) => ({ id: i, emoji: e, matched: false, flipped: false }));
+  updateHUD();
+  render();
+  document.getElementById('message').textContent = 'Find all matching pairs!';
+  startTime = null;
+}
+
+function render() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  grid.style.gridTemplateColumns = `repeat(${cols}, 80px)`;
+  cards.forEach(card => {
+    const el = document.createElement('div');
+    el.className = 'card' + (card.flipped ? ' flipped' : '') + (card.matched ? ' matched' : '');
+    el.innerHTML = `<div class="card-inner"><div class="card-back">✦</div><div class="card-front">${card.emoji}</div></div>`;
+    el.addEventListener('click', () => clickCard(card.id));
+    grid.appendChild(el);
+  });
+}
+
+function clickCard(id) {
+  if (!canClick) return;
+  const card = cards[id];
+  if (card.matched || card.flipped) return;
+  if (!startTime) {
+    startTime = Date.now();
+    timerInt = setInterval(updateTimer, 1000);
+  }
+  card.flipped = true;
+  flipped.push(id);
+  render();
+  if (flipped.length === 2) {
+    moves++;
+    updateHUD();
+    canClick = false;
+    const [a, b] = flipped;
+    if (cards[a].emoji === cards[b].emoji) {
+      cards[a].matched = cards[b].matched = true;
+      matched++;
+      flipped = [];
+      canClick = true;
+      updateHUD();
+      render();
+      if (matched === (cols * rows) / 2) {
+        clearInterval(timerInt);
+        document.getElementById('message').textContent = `🎉 You won in ${moves} moves! Time: ${document.getElementById('time').textContent}`;
+      }
+    } else {
+      setTimeout(() => {
+        cards[a].flipped = cards[b].flipped = false;
+        flipped = [];
+        canClick = true;
+        render();
+      }, 900);
+    }
+  }
+}
+
+function updateHUD() {
+  document.getElementById('moves').textContent = moves;
+  document.getElementById('matches').textContent = `${matched}/${(cols*rows)/2}`;
+}
+
+function updateTimer() {
+  const elapsed = Math.floor((Date.now() - startTime) / 1000);
+  document.getElementById('time').textContent = elapsed + 's';
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+newGame();
+</script>
+</body>
+</html>

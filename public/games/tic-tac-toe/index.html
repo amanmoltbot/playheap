@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0f0f1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+    color: #e0e0e0;
+  }
+  h1 { font-size: 2rem; color: #7c3aed; margin-bottom: 8px; letter-spacing: 2px; }
+  #status { font-size: 1.1rem; color: #a0a0c0; margin-bottom: 20px; min-height: 28px; }
+  #board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 6px;
+    background: #2e1065;
+    padding: 6px;
+    border-radius: 12px;
+    box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+  }
+  .cell {
+    width: 100px; height: 100px;
+    background: #13131f;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    border: 2px solid transparent;
+  }
+  .cell:hover:not(.taken) { background: #1a1a2e; border-color: #7c3aed; transform: scale(1.03); }
+  .cell.x { color: #c084fc; }
+  .cell.o { color: #f43f5e; }
+  .cell.win { background: #1e1b4b; border-color: #7c3aed; box-shadow: 0 0 15px rgba(124,58,237,0.5); }
+  #score-wrap { display: flex; gap: 40px; margin: 20px 0; }
+  .score-box { text-align: center; }
+  .score-box .name { font-size: 0.8rem; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+  .score-box .num { font-size: 2rem; font-weight: bold; color: #c084fc; }
+  .score-box.o .num { color: #f43f5e; }
+  .score-box .sub { font-size: 0.75rem; color: #4b5563; margin-top: 2px; }
+  #mode-wrap { display: flex; gap: 10px; margin-bottom: 16px; }
+  #mode-wrap button, #restart-btn {
+    background: #1e1b4b;
+    color: #a0a0c0;
+    border: 1px solid #3b0764;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  #mode-wrap button.active { background: #7c3aed; border-color: #7c3aed; color: white; }
+  #mode-wrap button:hover, #restart-btn:hover { background: #7c3aed; border-color: #7c3aed; color: white; }
+  #restart-btn { margin-top: 20px; padding: 10px 28px; font-size: 0.95rem; }
+</style>
+</head>
+<body>
+<h1>❌ TIC TAC TOE ⭕</h1>
+<div id="mode-wrap">
+  <button id="pvp-btn" onclick="setMode('pvp')">👥 2 Players</button>
+  <button id="ai-btn" class="active" onclick="setMode('ai')">🤖 vs AI</button>
+  <button id="ai-hard-btn" onclick="setMode('aihard')">💀 Hard AI</button>
+</div>
+<div id="status">Your turn (X)</div>
+<div id="board"></div>
+<div id="score-wrap">
+  <div class="score-box" id="sx">
+    <div class="name">X (You)</div>
+    <div class="num" id="score-x">0</div>
+    <div class="sub">wins</div>
+  </div>
+  <div class="score-box">
+    <div class="name">Draws</div>
+    <div class="num" id="score-d" style="color:#6b7280">0</div>
+    <div class="sub">&nbsp;</div>
+  </div>
+  <div class="score-box o" id="so">
+    <div class="name">O (AI)</div>
+    <div class="num" id="score-o">0</div>
+    <div class="sub">wins</div>
+  </div>
+</div>
+<button id="restart-btn" onclick="newGame()">🔄 New Game</button>
+
+<script>
+let board = Array(9).fill('');
+let current = 'X', gameOver = false;
+let scores = {X:0, O:0, D:0};
+let mode = 'ai'; // pvp, ai, aihard
+
+const WINS = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('#mode-wrap button').forEach(b => b.classList.remove('active'));
+  document.getElementById(m === 'pvp' ? 'pvp-btn' : m === 'ai' ? 'ai-btn' : 'ai-hard-btn').classList.add('active');
+  const oName = m === 'pvp' ? 'Player 2 (O)' : 'AI (O)';
+  document.querySelector('#so .name').textContent = oName;
+  const xName = m === 'pvp' ? 'Player 1 (X)' : 'You (X)';
+  document.querySelector('#sx .name').textContent = xName;
+  newGame();
+}
+
+function newGame() {
+  board = Array(9).fill('');
+  current = 'X';
+  gameOver = false;
+  render();
+  setStatus(mode === 'pvp' ? "Player X's turn" : "Your turn (X)");
+}
+
+function render() {
+  const el = document.getElementById('board');
+  el.innerHTML = '';
+  board.forEach((v, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'cell' + (v ? ` ${v.toLowerCase()} taken` : '');
+    cell.textContent = v;
+    cell.addEventListener('click', () => onClick(i));
+    el.appendChild(cell);
+  });
+}
+
+function onClick(i) {
+  if (gameOver || board[i]) return;
+  if (mode !== 'pvp' && current === 'O') return;
+  place(i, current);
+}
+
+function place(i, player) {
+  board[i] = player;
+  render();
+  const win = checkWin(board);
+  if (win) {
+    highlightWin(win);
+    scores[player]++;
+    updateScores();
+    gameOver = true;
+    const msg = mode === 'pvp' ? `Player ${player} wins! 🎉` : (player === 'X' ? '🎉 You win!' : '🤖 AI wins!');
+    setStatus(msg);
+    return;
+  }
+  if (board.every(c => c)) {
+    scores.D++;
+    updateScores();
+    gameOver = true;
+    setStatus("It's a draw! 🤝");
+    return;
+  }
+  current = current === 'X' ? 'O' : 'X';
+  if (mode === 'pvp') setStatus(`Player ${current}'s turn`);
+  else if (current === 'O') {
+    setStatus('🤖 AI thinking...');
+    setTimeout(doAI, 300);
+  } else {
+    setStatus('Your turn (X)');
+  }
+}
+
+function doAI() {
+  if (gameOver) return;
+  let idx;
+  if (mode === 'aihard') {
+    idx = minimax(board, 'O').index;
+  } else {
+    // Easy AI: block or random
+    idx = aiMove(board);
+  }
+  if (idx !== undefined) place(idx, 'O');
+}
+
+function aiMove(b) {
+  // Try to win
+  for (const w of WINS) {
+    const [a,c,d] = w;
+    if (b[a]==='O' && b[c]==='O' && !b[d]) return d;
+    if (b[a]==='O' && !b[c] && b[d]==='O') return c;
+    if (!b[a] && b[c]==='O' && b[d]==='O') return a;
+  }
+  // Block player
+  for (const w of WINS) {
+    const [a,c,d] = w;
+    if (b[a]==='X' && b[c]==='X' && !b[d]) return d;
+    if (b[a]==='X' && !b[c] && b[d]==='X') return c;
+    if (!b[a] && b[c]==='X' && b[d]==='X') return a;
+  }
+  // Center
+  if (!b[4]) return 4;
+  // Random empty
+  const empty = b.map((v,i) => !v ? i : null).filter(v => v !== null);
+  return empty[Math.floor(Math.random() * empty.length)];
+}
+
+function minimax(b, player, alpha = -Infinity, beta = Infinity) {
+  const win = checkWin(b);
+  if (win) return { score: b[win[0]] === 'O' ? 10 : -10 };
+  if (b.every(c => c)) return { score: 0 };
+  const empty = b.map((v,i) => !v ? i : null).filter(v => v !== null);
+  let best = player === 'O' ? { score: -Infinity } : { score: Infinity };
+  for (const idx of empty) {
+    b[idx] = player;
+    const val = minimax(b, player === 'O' ? 'X' : 'O', alpha, beta);
+    b[idx] = '';
+    val.index = idx;
+    if (player === 'O') {
+      if (val.score > best.score) best = val;
+      alpha = Math.max(alpha, val.score);
+    } else {
+      if (val.score < best.score) best = val;
+      beta = Math.min(beta, val.score);
+    }
+    if (beta <= alpha) break;
+  }
+  return best;
+}
+
+function checkWin(b) {
+  for (const w of WINS) {
+    const [a,c,d] = w;
+    if (b[a] && b[a] === b[c] && b[a] === b[d]) return w;
+  }
+  return null;
+}
+
+function highlightWin(w) {
+  const cells = document.querySelectorAll('.cell');
+  w.forEach(i => cells[i].classList.add('win'));
+}
+
+function setStatus(msg) { document.getElementById('status').textContent = msg; }
+function updateScores() {
+  document.getElementById('score-x').textContent = scores.X;
+  document.getElementById('score-o').textContent = scores.O;
+  document.getElementById('score-d').textContent = scores.D;
+}
+
+newGame();
+</script>
+</body>
+</html>

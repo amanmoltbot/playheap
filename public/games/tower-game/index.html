@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tower Stack</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0f0f1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+    color: #e0e0e0;
+    user-select: none;
+    overflow: hidden;
+  }
+  h1 { font-size: 1.8rem; color: #7c3aed; margin-bottom: 8px; letter-spacing: 2px; }
+  #hud { display: flex; gap: 40px; margin-bottom: 10px; font-size: 0.95rem; color: #a0a0c0; }
+  #hud span { color: #c084fc; font-weight: bold; font-size: 1.2rem; }
+  canvas {
+    border: 2px solid #3b0764;
+    border-radius: 4px;
+    box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+  }
+  #ctrl { margin-top: 10px; color: #555; font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<h1>🏗 TOWER STACK</h1>
+<div id="hud">Score: <span id="score">0</span> &nbsp;|&nbsp; Best: <span id="best">0</span></div>
+<canvas id="c" width="320" height="480"></canvas>
+<div id="ctrl">Click / Space / Tap to drop block</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+
+const BLOCK_H = 20;
+const BASE_W = 260;
+const COLORS = ['#7c3aed','#6d28d9','#8b5cf6','#a855f7','#c084fc','#5b21b6','#4c1d95','#9333ea'];
+
+let state = 'title', score = 0, best = 0;
+let blocks, current, camY, speed;
+
+function newGame() {
+  blocks = [];
+  // Base block
+  blocks.push({ x: (W - BASE_W)/2, y: H - BLOCK_H, w: BASE_W, h: BLOCK_H, color: '#4c1d95' });
+  score = 0;
+  camY = 0;
+  speed = 2;
+  spawnBlock();
+  state = 'playing';
+  updateHUD();
+}
+
+function spawnBlock() {
+  const prev = blocks[blocks.length - 1];
+  const w = prev.w;
+  const y = prev.y - BLOCK_H - 2;
+  current = {
+    x: 0, y: y,
+    w: w, h: BLOCK_H,
+    color: COLORS[blocks.length % COLORS.length],
+    dir: 1
+  };
+}
+
+const TICK_SPEED = 16;
+let lastTime = 0;
+function drop() {
+  if (state !== 'playing') return;
+  const prev = blocks[blocks.length - 1];
+  const overlap_x = Math.max(prev.x, current.x);
+  const overlap_r = Math.min(prev.x + prev.w, current.x + current.w);
+  const overlapW = overlap_r - overlap_x;
+  if (overlapW <= 0) {
+    // Missed completely
+    state = 'gameover';
+    if (score > best) best = score;
+    updateHUD();
+    return;
+  }
+  // Perfect bonus
+  if (Math.abs(current.x - prev.x) <= 3) {
+    // Snap perfectly
+    blocks.push({ x: prev.x, y: current.y, w: prev.w, h: BLOCK_H, color: current.color });
+    score += 2;
+  } else {
+    blocks.push({ x: overlap_x, y: current.y, w: overlapW, h: BLOCK_H, color: current.color });
+    score++;
+  }
+  updateHUD();
+  // Scroll camera up if tower is getting tall
+  const topY = current.y;
+  const visibleTop = camY;
+  if (topY < visibleTop + H * 0.4) {
+    // Will scroll in draw
+  }
+  speed = Math.min(5, 2 + blocks.length * 0.1);
+  spawnBlock();
+}
+
+function tick(ts) {
+  if (state !== 'playing') return;
+  if (!lastTime) lastTime = ts;
+  const dt = Math.min(ts - lastTime, 32);
+  lastTime = ts;
+  // Move current
+  current.x += current.dir * speed * (dt / TICK_SPEED);
+  const maxX = W - current.w;
+  if (current.x <= 0) { current.x = 0; current.dir = 1; }
+  if (current.x >= maxX) { current.x = maxX; current.dir = -1; }
+  // Scroll camera to keep current visible
+  const idealCamY = current.y - H * 0.4;
+  camY = Math.min(camY, idealCamY);
+}
+
+function draw() {
+  ctx.fillStyle = '#0f0f1a';
+  ctx.fillRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(0, -camY);
+  // Draw placed blocks
+  blocks.forEach((b, i) => {
+    const grad = ctx.createLinearGradient(b.x, b.y, b.x, b.y + b.h);
+    grad.addColorStop(0, lighten(b.color, 30));
+    grad.addColorStop(1, b.color);
+    ctx.fillStyle = grad;
+    ctx.shadowBlur = 6;
+    ctx.shadowColor = b.color;
+    ctx.fillRect(b.x, b.y, b.w, b.h);
+    ctx.shadowBlur = 0;
+    // Shine
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.fillRect(b.x+2, b.y+2, b.w-4, 4);
+  });
+  // Draw current block
+  if (state === 'playing') {
+    const b = current;
+    ctx.fillStyle = b.color;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = '#c084fc';
+    ctx.fillRect(b.x, b.y, b.w, b.h);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.fillRect(b.x+2, b.y+2, b.w-4, 4);
+  }
+  ctx.restore();
+  // UI overlays
+  if (state === 'title') {
+    ctx.fillStyle = 'rgba(15,15,26,0.9)';
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#7c3aed';
+    ctx.font = 'bold 32px Segoe UI';
+    ctx.textAlign = 'center';
+    ctx.fillText('TOWER STACK', W/2, H/2 - 40);
+    ctx.fillStyle = '#a0a0c0';
+    ctx.font = '15px Segoe UI';
+    ctx.fillText('Stack blocks as high as you can!', W/2, H/2);
+    ctx.fillStyle = '#c084fc';
+    ctx.font = '18px Segoe UI';
+    ctx.fillText('[ Click to Start ]', W/2, H/2 + 44);
+  } else if (state === 'gameover') {
+    ctx.fillStyle = 'rgba(15,15,26,0.9)';
+    ctx.fillRect(0, H/2 - 80, W, 160);
+    ctx.strokeStyle = '#7c3aed';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(20, H/2 - 80, W-40, 160);
+    ctx.fillStyle = '#f43f5e';
+    ctx.font = 'bold 28px Segoe UI';
+    ctx.textAlign = 'center';
+    ctx.fillText('GAME OVER', W/2, H/2 - 30);
+    ctx.fillStyle = '#a0a0c0';
+    ctx.font = '15px Segoe UI';
+    ctx.fillText(`Score: ${score}  |  Best: ${best}`, W/2, H/2 + 4);
+    ctx.fillStyle = '#c084fc';
+    ctx.font = '16px Segoe UI';
+    ctx.fillText('[ Click to Play Again ]', W/2, H/2 + 40);
+  }
+}
+
+function lighten(hex, amt) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgb(${Math.min(255,r+amt)},${Math.min(255,g+amt)},${Math.min(255,b+amt)})`;
+}
+
+function updateHUD() {
+  document.getElementById('score').textContent = score;
+  document.getElementById('best').textContent = best;
+}
+
+function handleAction() {
+  if (state === 'title' || state === 'gameover') newGame();
+  else if (state === 'playing') drop();
+}
+
+canvas.addEventListener('click', handleAction);
+document.addEventListener('keydown', e => {
+  if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); handleAction(); }
+});
+canvas.addEventListener('touchstart', e => { e.preventDefault(); handleAction(); }, {passive: false});
+
+function loop(ts) {
+  tick(ts);
+  draw();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
