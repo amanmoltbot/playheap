@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bubble Shooter</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0f0f1a; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; font-family:'Segoe UI',sans-serif; color:#e0e0e0; overflow:hidden; }
+canvas { display:block; border:2px solid #3b0764; border-radius:8px; box-shadow:0 0 30px rgba(124,58,237,0.3); touch-action:none; cursor:crosshair; }
+#hud { display:flex; gap:30px; font-size:0.85rem; color:#9ca3af; margin-bottom:8px; }
+#hud b { color:#c084fc; font-size:1rem; }
+#overlay { position:fixed; inset:0; background:rgba(6,6,15,0.9); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10; }
+#overlay h2 { font-size:2rem; color:#c084fc; margin-bottom:8px; }
+#overlay p { color:#9ca3af; font-size:0.9rem; margin-bottom:4px; }
+#overlay button { margin-top:16px; background:#7c3aed; color:#fff; border:none; padding:12px 36px; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; }
+</style>
+</head>
+<body>
+<div id="hud">Score: <b id="score">0</b> &nbsp; Best: <b id="best">0</b> &nbsp; Level: <b id="level">1</b></div>
+<canvas id="c"></canvas>
+<div id="overlay">
+  <h2>🫧 Bubble Shooter</h2>
+  <p>Aim and shoot to match 3+ bubbles!</p>
+  <p style="font-size:0.8rem">Click/tap to aim and shoot</p>
+  <button onclick="startGame()">▶ Play!</button>
+</div>
+
+<script>
+const C=document.getElementById('c'), ctx=C.getContext('2d');
+const W=380, H=560; C.width=W; C.height=H;
+const R=22, COLS=11, COLORS=['#ef4444','#3b82f6','#22c55e','#f59e0b','#8b5cf6','#ec4899'];
+let grid=[], shooter, nextColor, bullet=null, score, best, level, raf, gameActive=false, aimAngle=Math.PI/2;
+best=parseInt(localStorage.getItem('bs_best')||'0');
+
+function colX(c,row){ return R+(c*(R*2))+(row%2===0?0:R); }
+function rowY(r){ return R+r*(R*1.73); }
+function randColor(){ return COLORS[Math.floor(Math.random()*Math.min(COLORS.length,3+level))]; }
+
+function buildGrid(){
+  grid=[];
+  const rows=5+level;
+  for(let r=0;r<rows;r++){
+    grid[r]=[];
+    for(let c=0;c<(r%2===0?COLS:COLS-1);c++) grid[r][c]=randColor();
+  }
+}
+
+function startGame(){
+  document.getElementById('overlay').style.display='none';
+  score=0; level=1; gameActive=true;
+  buildGrid();
+  shooter={x:W/2, y:H-30, color:randColor()};
+  nextColor=randColor(); bullet=null;
+  updateHUD(); if(raf)cancelAnimationFrame(raf); loop();
+}
+
+function updateHUD(){
+  document.getElementById('score').textContent=score;
+  document.getElementById('best').textContent=best;
+  document.getElementById('level').textContent=level;
+}
+
+function shoot(angle){
+  if(bullet||!gameActive) return;
+  bullet={x:shooter.x,y:shooter.y,vx:Math.cos(angle)*8,vy:-Math.sin(angle)*8,color:shooter.color};
+  shooter.color=nextColor; nextColor=randColor();
+}
+
+function snapBubble(){
+  if(!bullet) return;
+  // Find nearest grid slot
+  let bestDist=Infinity, bestR=-1, bestC=-1;
+  for(let r=0;r<=grid.length;r++){
+    if(r===grid.length) grid.push([]);
+    const cols=r%2===0?COLS:COLS-1;
+    for(let c=0;c<cols;c++){
+      if(r<grid.length&&grid[r][c]) continue;
+      const dx=bullet.x-colX(c,r), dy=bullet.y-rowY(r);
+      const d=Math.hypot(dx,dy);
+      if(d<bestDist){ bestDist=d; bestR=r; bestC=c; }
+    }
+  }
+  if(bestR>=0){ if(!grid[bestR]) grid[bestR]=[]; grid[bestR][bestC]=bullet.color; }
+  bullet=null;
+  // Check matches
+  const matches=findMatches(bestR,bestC);
+  if(matches.length>=3){
+    score+=matches.length*10;
+    if(score>best){ best=score; localStorage.setItem('bs_best',best); }
+    matches.forEach(([r,c])=>{ grid[r][c]=null; });
+    // Remove floating
+    removeFloating();
+    updateHUD();
+    if(countBubbles()===0){ level++; buildGrid(); updateHUD(); }
+  }
+  if(rowY(bestR)>H-100){ endGame(); }
+}
+
+function findMatches(r,c){
+  if(r<0||!grid[r]||!grid[r][c]) return [];
+  const color=grid[r][c], visited=new Set(), queue=[[r,c]];
+  while(queue.length){
+    const [cr,cc]=queue.pop();
+    const key=`${cr},${cc}`;
+    if(visited.has(key)) continue; visited.add(key);
+    getNeighbors(cr,cc).forEach(([nr,nc])=>{ if(nr>=0&&nr<grid.length&&grid[nr]&&grid[nr][nc]===color&&!visited.has(`${nr},${nc}`)) queue.push([nr,nc]); });
+  }
+  return [...visited].map(k=>k.split(',').map(Number));
+}
+
+function getNeighbors(r,c){
+  const even=r%2===0;
+  const dirs=[[0,-1],[0,1],[-1,even?-1:0],[-1,even?0:1],[1,even?-1:0],[1,even?0:1]];
+  return dirs.map(([dr,dc])=>[r+dr,c+dc]).filter(([nr,nc])=>nr>=0&&nr<grid.length&&nc>=0);
+}
+
+function removeFloating(){
+  const connected=new Set();
+  for(let c=0;c<COLS;c++) if(grid[0]&&grid[0][c]) dfsConnect(0,c,connected);
+  for(let r=0;r<grid.length;r++) for(let c=0;c<(r%2===0?COLS:COLS-1);c++){
+    if(grid[r]&&grid[r][c]&&!connected.has(`${r},${c}`)){ grid[r][c]=null; score+=5; }
+  }
+}
+
+function dfsConnect(r,c,visited){
+  const key=`${r},${c}`;
+  if(visited.has(key)||r<0||r>=grid.length||!grid[r]||!grid[r][c]) return;
+  visited.add(key);
+  getNeighbors(r,c).forEach(([nr,nc])=>dfsConnect(nr,nc,visited));
+}
+
+function countBubbles(){ let n=0; for(const row of grid) if(row) for(const c of row) if(c) n++; return n; }
+
+function drawBubble(x,y,color,r2=R){
+  ctx.beginPath(); ctx.arc(x,y,r2-1,0,Math.PI*2);
+  ctx.fillStyle=color; ctx.fill();
+  // Shine
+  ctx.beginPath(); ctx.arc(x-r2*0.25,y-r2*0.3,r2*0.3,0,Math.PI*2);
+  ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.fill();
+  ctx.beginPath(); ctx.arc(x,y,r2-1,0,Math.PI*2);
+  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=2; ctx.stroke();
+}
+
+function drawAimLine(){
+  ctx.setLineDash([6,8]); ctx.strokeStyle='rgba(192,132,252,0.4)'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(shooter.x,shooter.y);
+  let x=shooter.x,y=shooter.y,vx=Math.cos(aimAngle)*8,vy=-Math.sin(aimAngle)*8;
+  for(let i=0;i<30;i++){
+    x+=vx; y+=vy;
+    if(x<R){x=R;vx=-vx;} if(x>W-R){x=W-R;vx=-vx;}
+    if(y<0) break;
+    ctx.lineTo(x,y);
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+}
+
+function loop(){
+  raf=requestAnimationFrame(loop);
+  ctx.fillStyle='#06060f'; ctx.fillRect(0,0,W,H);
+  
+  // Draw grid
+  for(let r=0;r<grid.length;r++) if(grid[r]) for(let c=0;c<grid[r].length;c++) if(grid[r][c]) drawBubble(colX(c,r),rowY(r),grid[r][c]);
+  
+  // Draw bullet
+  if(bullet){
+    bullet.x+=bullet.vx; bullet.y+=bullet.vy;
+    if(bullet.x<R){bullet.x=R;bullet.vx=-bullet.vx;}
+    if(bullet.x>W-R){bullet.x=W-R;bullet.vx=-bullet.vx;}
+    // Collision with grid
+    let hit=false;
+    for(let r=0;r<grid.length&&!hit;r++) if(grid[r]) for(let c=0;c<grid[r].length&&!hit;c++){
+      if(grid[r][c]&&Math.hypot(bullet.x-colX(c,r),bullet.y-rowY(r))<R*2-2){ hit=true; snapBubble(); }
+    }
+    if(bullet&&bullet.y<R) snapBubble();
+    if(bullet) drawBubble(bullet.x,bullet.y,bullet.color);
+  }
+  
+  // Danger line
+  ctx.strokeStyle='rgba(239,68,68,0.3)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(0,H-80); ctx.lineTo(W,H-80); ctx.stroke(); ctx.setLineDash([]);
+  
+  // Draw aim
+  if(!bullet) drawAimLine();
+  
+  // Draw shooter
+  drawBubble(shooter.x,shooter.y,shooter.color,R*1.1);
+  // Next bubble indicator
+  ctx.font='11px Segoe UI'; ctx.fillStyle='#9ca3af'; ctx.textAlign='left';
+  ctx.fillText('NEXT:',10,H-20);
+  drawBubble(65,H-22,nextColor,R*0.7);
+}
+
+function endGame(){
+  gameActive=false; cancelAnimationFrame(raf);
+  const ov=document.getElementById('overlay');
+  ov.innerHTML=`<h2>💥 Game Over</h2><p>Score: <b style="color:#c084fc;font-size:1.2rem">${score}</b></p><p>Best: ${best}</p><button onclick="startGame()">▶ Try Again</button>`;
+  ov.style.display='flex';
+}
+
+C.addEventListener('mousemove',e=>{
+  const rect=C.getBoundingClientRect();
+  const mx=(e.clientX-rect.left)*(W/rect.width), my=(e.clientY-rect.top)*(H/rect.height);
+  aimAngle=Math.atan2(shooter.y-my,mx-shooter.x);
+  aimAngle=Math.max(0.2,Math.min(Math.PI-0.2,aimAngle));
+});
+
+C.addEventListener('click',e=>{
+  const rect=C.getBoundingClientRect();
+  const mx=(e.clientX-rect.left)*(W/rect.width), my=(e.clientY-rect.top)*(H/rect.height);
+  aimAngle=Math.atan2(shooter.y-my,mx-shooter.x);
+  aimAngle=Math.max(0.2,Math.min(Math.PI-0.2,aimAngle));
+  shoot(aimAngle);
+});
+
+C.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  const rect=C.getBoundingClientRect();
+  const mx=(e.touches[0].clientX-rect.left)*(W/rect.width), my=(e.touches[0].clientY-rect.top)*(H/rect.height);
+  aimAngle=Math.atan2(shooter.y-my,mx-shooter.x);
+  aimAngle=Math.max(0.2,Math.min(Math.PI-0.2,aimAngle));
+},{passive:false});
+
+C.addEventListener('touchend',e=>{
+  e.preventDefault(); shoot(aimAngle);
+},{passive:false});
+</script>
+</body>
+</html>

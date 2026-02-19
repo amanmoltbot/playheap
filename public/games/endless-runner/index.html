@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Endless Runner</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0f0f1a; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; font-family:'Segoe UI',sans-serif; color:#e0e0e0; overflow:hidden; }
+canvas { display:block; border:2px solid #3b0764; border-radius:8px; box-shadow:0 0 30px rgba(124,58,237,0.3); }
+#hud { display:flex; gap:30px; font-size:0.85rem; color:#9ca3af; margin-bottom:8px; }
+#hud b { color:#c084fc; font-size:1rem; }
+p.hint { font-size:0.8rem; color:#6b7280; margin-top:6px; }
+</style>
+</head>
+<body>
+<div id="hud">Score: <b id="score">0</b> &nbsp; Best: <b id="best">0</b></div>
+<canvas id="c" width="600" height="200"></canvas>
+<p class="hint">Space / Tap to jump • Double jump allowed!</p>
+
+<script>
+const C=document.getElementById('c'), ctx=C.getContext('2d');
+const W=C.width, H=C.height;
+const GND=H-40;
+let best=parseInt(localStorage.getItem('er_best')||'0');
+document.getElementById('best').textContent=best;
+
+let runner,obstacles,clouds,score,speed,raf,frame,gameState='idle',jumpQueue=0;
+
+function init(){
+  runner={x:80,y:GND,w:32,h:44,vy:0,jumps:0,run:0};
+  obstacles=[]; clouds=[{x:W,y:40,w:80,speed:0.5},{x:W+200,y:25,w:60,speed:0.3}];
+  score=0; speed=4; frame=0; gameState='running';
+}
+
+function jump(){
+  if(gameState==='idle'||gameState==='over'){ init(); return; }
+  if(runner.jumps<2){ runner.vy=-12; runner.jumps++; }
+}
+
+const LEGS=[[0,0],[4,-2],[4,2]]; // run cycle
+function drawRunner(){
+  const r=runner, t=r.run;
+  // Body
+  ctx.fillStyle='#7c3aed';
+  ctx.fillRect(r.x-r.w/2+2,r.y-r.h+4,r.w-4,r.h-20);
+  // Head
+  ctx.fillStyle='#c084fc';
+  ctx.beginPath(); ctx.arc(r.x,r.y-r.h+4,10,0,Math.PI*2); ctx.fill();
+  // Eye
+  ctx.fillStyle='#f0f0f0'; ctx.fillRect(r.x+2,r.y-r.h+1,5,5);
+  ctx.fillStyle='#06060f'; ctx.fillRect(r.x+3,r.y-r.h+2,3,3);
+  // Legs
+  ctx.strokeStyle='#8b5cf6'; ctx.lineWidth=3; ctx.lineCap='round';
+  const lx=r.x-6, rx=r.x+6, ly=r.y-20;
+  const a1=Math.sin(t*0.4)*0.5, a2=Math.sin(t*0.4+Math.PI)*0.5;
+  ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(lx+Math.sin(a1)*16,r.y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(rx,ly); ctx.lineTo(rx+Math.sin(a2)*16,r.y); ctx.stroke();
+  // Arms
+  ctx.beginPath(); ctx.moveTo(r.x-4,r.y-r.h+14); ctx.lineTo(r.x-14+Math.sin(a2)*8,r.y-r.h+24); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(r.x+4,r.y-r.h+14); ctx.lineTo(r.x+14+Math.sin(a1)*8,r.y-r.h+24); ctx.stroke();
+}
+
+function drawObstacle(o){
+  // Spiky cactus-style obstacle
+  ctx.fillStyle='#16a34a';
+  ctx.fillRect(o.x-8,o.y-o.h,16,o.h);
+  // Spikes
+  for(let i=0;i<3;i++){
+    ctx.fillStyle='#22c55e';
+    ctx.fillRect(o.x+6,o.y-o.h+i*18,12,8);
+    ctx.fillRect(o.x-18,o.y-o.h+i*18+6,12,8);
+  }
+  // Top
+  ctx.fillStyle='#4ade80';
+  ctx.fillRect(o.x-6,o.y-o.h-12,12,14);
+}
+
+function drawClouds(){
+  ctx.fillStyle='rgba(139,92,246,0.12)';
+  clouds.forEach(c=>{
+    ctx.beginPath(); ctx.ellipse(c.x,c.y,c.w/2,15,0,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(c.x-c.w*0.3,c.y+5,c.w*0.35,10,0,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(c.x+c.w*0.3,c.y+5,c.w*0.35,10,0,0,Math.PI*2); ctx.fill();
+  });
+}
+
+function loop(){
+  raf=requestAnimationFrame(loop);
+  ctx.fillStyle='#08080f'; ctx.fillRect(0,0,W,H);
+  
+  if(gameState==='idle'){
+    ctx.fillStyle='#c084fc'; ctx.font='bold 20px Segoe UI'; ctx.textAlign='center';
+    ctx.fillText('ENDLESS RUNNER',W/2,H/2-20);
+    ctx.fillStyle='#9ca3af'; ctx.font='14px Segoe UI';
+    ctx.fillText('Press Space or Tap to start!',W/2,H/2+10);
+    drawGround(); return;
+  }
+  
+  frame++; score=Math.floor(frame/6);
+  document.getElementById('score').textContent=score;
+  if(score>best){ best=score; localStorage.setItem('er_best',best); document.getElementById('best').textContent=best; }
+  speed=4+Math.floor(score/200)*0.5;
+  
+  // Clouds
+  clouds.forEach(c=>{ c.x-=c.speed; if(c.x<-c.w) c.x=W+c.w; });
+  drawClouds();
+  
+  drawGround();
+  
+  // Obstacles
+  if(frame%Math.max(50,90-Math.floor(score/100)*3)===0) obstacles.push({x:W+20,y:GND,h:40+Math.random()*30,w:20});
+  obstacles.forEach(o=>{ o.x-=speed; });
+  obstacles=obstacles.filter(o=>o.x>-50);
+  obstacles.forEach(drawObstacle);
+  
+  // Runner physics
+  runner.vy+=0.6; runner.y+=runner.vy;
+  if(runner.y>=GND){ runner.y=GND; runner.vy=0; runner.jumps=0; }
+  runner.run++;
+  drawRunner();
+  
+  // Collision
+  for(const o of obstacles){
+    if(runner.x+12>o.x-8 && runner.x-12<o.x+8 && runner.y-runner.h+4<o.y && runner.y>o.y-o.h){
+      endGame(); return;
+    }
+  }
+  
+  // Stars
+  if(frame%3===0){
+    ctx.fillStyle='rgba(192,132,252,0.5)';
+    ctx.beginPath(); ctx.arc(Math.random()*W,Math.random()*GND*0.7,1,0,Math.PI*2); ctx.fill();
+  }
+  
+  // Score display
+  ctx.fillStyle='rgba(192,132,252,0.8)'; ctx.font='bold 14px Segoe UI'; ctx.textAlign='right';
+  const lv=Math.floor(score/200)+1;
+  ctx.fillText(`Level ${lv}`,W-10,20);
+}
+
+function drawGround(){
+  // Ground
+  ctx.fillStyle='#1e1b4b'; ctx.fillRect(0,GND,W,H-GND);
+  ctx.fillStyle='#7c3aed'; ctx.fillRect(0,GND,W,3);
+  // Ground tiles
+  ctx.fillStyle='#2a2060'; ctx.font='10px serif';
+  for(let i=0;i<8;i++){
+    const ox=((frame*speed)%(W/4))-W/4;
+    ctx.fillRect(i*(W/4)+ox, GND, W/8, H-GND);
+  }
+}
+
+function endGame(){
+  gameState='over'; cancelAnimationFrame(raf);
+  ctx.fillStyle='rgba(6,6,15,0.85)'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#f43f5e'; ctx.font='bold 24px Segoe UI'; ctx.textAlign='center';
+  ctx.fillText('💀 Game Over!',W/2,H/2-20);
+  ctx.fillStyle='#c084fc'; ctx.font='16px Segoe UI';
+  ctx.fillText(`Score: ${score}   Best: ${best}`,W/2,H/2+10);
+  ctx.fillStyle='#9ca3af'; ctx.font='13px Segoe UI';
+  ctx.fillText('Space / Tap to restart',W/2,H/2+35);
+  raf=requestAnimationFrame(loop);
+}
+
+document.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='ArrowUp'){e.preventDefault();jump();} });
+C.addEventListener('touchstart',e=>{e.preventDefault();jump();},{passive:false});
+C.addEventListener('click',jump);
+raf=requestAnimationFrame(loop);
+</script>
+</body>
+</html>

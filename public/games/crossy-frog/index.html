@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crossy Frog</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0f0f1a; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; font-family:'Segoe UI',sans-serif; color:#e0e0e0; overflow:hidden; }
+canvas { display:block; border:2px solid #3b0764; border-radius:8px; box-shadow:0 0 30px rgba(124,58,237,0.3); }
+#hud { display:flex; gap:30px; font-size:0.85rem; color:#9ca3af; margin-bottom:8px; }
+#hud b { color:#c084fc; font-size:1rem; }
+#touch-ctrl { display:grid; grid-template-columns:60px 60px 60px; grid-template-rows:60px 60px; gap:6px; margin-top:10px; }
+.tch { display:flex; align-items:center; justify-content:center; background:#1e1b4b; border:1px solid #3b0764; border-radius:10px; font-size:1.6rem; cursor:pointer; user-select:none; -webkit-user-select:none; }
+.tch:active { background:#7c3aed; }
+#tc-up { grid-column:2; grid-row:1; }
+#tc-left { grid-column:1; grid-row:2; }
+#tc-down { grid-column:2; grid-row:2; }
+#tc-right { grid-column:3; grid-row:2; }
+#overlay { position:fixed; inset:0; background:rgba(6,6,15,0.9); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10; }
+#overlay h2 { font-size:2rem; color:#c084fc; margin-bottom:8px; }
+#overlay p { color:#9ca3af; font-size:0.9rem; margin-bottom:4px; }
+#overlay button { margin-top:16px; background:#7c3aed; color:#fff; border:none; padding:12px 36px; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; }
+</style>
+</head>
+<body>
+<div id="hud">Score: <b id="score">0</b> &nbsp; Best: <b id="best">0</b> &nbsp; Lives: <b id="lives">3</b></div>
+<canvas id="c"></canvas>
+<div id="touch-ctrl">
+  <div class="tch" id="tc-up">⬆️</div>
+  <div class="tch" id="tc-left">⬅️</div>
+  <div class="tch" id="tc-down">⬇️</div>
+  <div class="tch" id="tc-right">➡️</div>
+</div>
+<div id="overlay">
+  <h2>🐸 Crossy Frog</h2>
+  <p>Cross the road without getting hit!</p>
+  <p style="font-size:0.8rem">Arrow keys or WASD to move</p>
+  <button onclick="startGame()">▶ Hop In!</button>
+</div>
+
+<script>
+const C=document.getElementById('c'), ctx=C.getContext('2d');
+const CELL=48, COLS=9, ROWS=11;
+C.width=CELL*COLS; C.height=CELL*ROWS;
+const W=C.width, H=C.height;
+
+const COLORS={road:'#1c1c2e',grass:'#0f2d0f',safe:'#1a2e1a',water:'#0e1f3a',log:'#5c3d1e'};
+const CARS=['🚗','🚕','🚙','🚌','🏎️','🚐'];
+const speed_mult = [1,1.2,1.5,1.8,2.2];
+
+let frog,lanes,score,best,lives,gameActive=false,raf,level=1;
+best=parseInt(localStorage.getItem('cf_best')||'0');
+
+function makeLanes(){
+  lanes=[];
+  // Bottom safe zone
+  lanes.push({type:'safe',y:ROWS-1,objects:[]});
+  // Road lanes (moving up means rows 1-9 from bottom)
+  for(let i=1;i<ROWS-1;i++){
+    const t=Math.random()<0.6?'road':'grass';
+    const dir=Math.random()<0.5?1:-1;
+    const spd=(0.5+Math.random()*1.5)*(speed_mult[Math.min(level-1,4)]);
+    const objs=[];
+    if(t==='road'){
+      const n=2+Math.floor(Math.random()*3);
+      for(let j=0;j<n;j++) objs.push({x:j*(COLS/n)*CELL+Math.random()*30,w:CELL*1.5,h:CELL*0.7,speed:spd*dir,emoji:CARS[Math.floor(Math.random()*CARS.length)]});
+    }
+    lanes.push({type:t,y:ROWS-1-i,objects:objs,dir});
+  }
+  // Top safe
+  lanes[ROWS-2]={type:'safe',y:1,objects:[]};
+}
+
+function startGame(){
+  document.getElementById('overlay').style.display='none';
+  score=0; lives=3; level=1; gameActive=true;
+  frog={x:Math.floor(COLS/2),y:ROWS-1,anim:0};
+  makeLanes(); updateHUD();
+  if(raf)cancelAnimationFrame(raf);
+  loop();
+}
+
+function updateHUD(){
+  document.getElementById('score').textContent=score;
+  document.getElementById('best').textContent=best;
+  document.getElementById('lives').textContent=lives;
+}
+
+function moveFrog(dx,dy){
+  if(!gameActive) return;
+  const nx=frog.x+dx, ny=frog.y+dy;
+  if(nx<0||nx>=COLS||ny<0||ny>=ROWS) return;
+  frog.x=nx; frog.y=ny; frog.anim=6;
+  if(frog.y===0){ score+=10*(level); if(score>best){best=score;localStorage.setItem('cf_best',best);} level++; makeLanes(); frog.y=ROWS-1; updateHUD(); }
+}
+
+function loop(){
+  raf=requestAnimationFrame(loop);
+  ctx.clearRect(0,0,W,H);
+  
+  // Draw lanes
+  for(const lane of lanes){
+    const y=lane.y*CELL;
+    ctx.fillStyle=lane.type==='road'?COLORS.road:lane.type==='grass'?COLORS.grass:COLORS.safe;
+    ctx.fillRect(0,y,W,CELL);
+    // Lane line for road
+    if(lane.type==='road'){
+      ctx.strokeStyle='#2a2a3e'; ctx.lineWidth=1;
+      ctx.setLineDash([15,15]);
+      ctx.beginPath(); ctx.moveTo(0,y+CELL/2); ctx.lineTo(W,y+CELL/2); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    // Move objects
+    for(const obj of lane.objects){
+      obj.x+=obj.speed;
+      if(obj.speed>0&&obj.x>W+10) obj.x=-obj.w;
+      if(obj.speed<0&&obj.x<-obj.w) obj.x=W+10;
+      // Draw car
+      ctx.font=`${CELL*0.8}px serif`;
+      ctx.save(); if(obj.speed<0){ctx.translate(obj.x+obj.w,lane.y*CELL+CELL*0.8);ctx.scale(-1,1);}
+      else ctx.translate(obj.x,lane.y*CELL+CELL*0.8);
+      ctx.fillText(obj.emoji,0,0);
+      ctx.restore();
+    }
+  }
+  
+  // Check collision
+  if(gameActive){
+    const lane=lanes.find(l=>l.y===frog.y);
+    if(lane&&lane.type==='road'){
+      const fx=frog.x*CELL, fy=frog.y*CELL;
+      for(const obj of lane.objects){
+        if(fx+CELL*0.8>obj.x&&fx<obj.x+obj.w&&fy+CELL>fy&&true){
+          hit(); break;
+        }
+      }
+    }
+  }
+  
+  // Draw frog
+  if(gameActive){
+    frog.anim=Math.max(0,frog.anim-1);
+    const scale=1+frog.anim*0.04;
+    ctx.save();
+    ctx.translate(frog.x*CELL+CELL/2,frog.y*CELL+CELL*0.8);
+    ctx.scale(scale,scale);
+    ctx.font=`${CELL*0.85}px serif`;
+    ctx.textAlign='center';
+    ctx.fillText('🐸',0,0);
+    ctx.restore();
+  }
+}
+
+function hit(){
+  lives--;
+  updateHUD();
+  // Flash
+  ctx.fillStyle='rgba(239,68,68,0.3)'; ctx.fillRect(0,0,W,H);
+  frog.x=Math.floor(COLS/2); frog.y=ROWS-1;
+  if(lives<=0){
+    gameActive=false; cancelAnimationFrame(raf);
+    setTimeout(()=>{
+      const ov=document.getElementById('overlay');
+      ov.innerHTML=`<h2>🐸 Splat!</h2><p>Score: <b style="color:#c084fc;font-size:1.2rem">${score}</b></p><p>Best: ${best}</p><button onclick="startGame()">▶ Try Again</button>`;
+      ov.style.display='flex';
+    },500);
+  }
+}
+
+// Keyboard
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowUp'||e.key==='w')    {e.preventDefault();moveFrog(0,-1);}
+  if(e.key==='ArrowDown'||e.key==='s')  {e.preventDefault();moveFrog(0,1);}
+  if(e.key==='ArrowLeft'||e.key==='a')  {e.preventDefault();moveFrog(-1,0);}
+  if(e.key==='ArrowRight'||e.key==='d') {e.preventDefault();moveFrog(1,0);}
+});
+
+// Touch buttons
+document.getElementById('tc-up').addEventListener('touchstart',e=>{e.preventDefault();moveFrog(0,-1);},{passive:false});
+document.getElementById('tc-down').addEventListener('touchstart',e=>{e.preventDefault();moveFrog(0,1);},{passive:false});
+document.getElementById('tc-left').addEventListener('touchstart',e=>{e.preventDefault();moveFrog(-1,0);},{passive:false});
+document.getElementById('tc-right').addEventListener('touchstart',e=>{e.preventDefault();moveFrog(1,0);},{passive:false});
+document.getElementById('tc-up').onclick=()=>moveFrog(0,-1);
+document.getElementById('tc-down').onclick=()=>moveFrog(0,1);
+document.getElementById('tc-left').onclick=()=>moveFrog(-1,0);
+document.getElementById('tc-right').onclick=()=>moveFrog(1,0);
+
+document.getElementById('best').textContent=best;
+</script>
+</body>
+</html>

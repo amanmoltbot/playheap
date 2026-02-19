@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whack-a-Mole</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0f0f1a; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; font-family:'Segoe UI',sans-serif; color:#e0e0e0; padding:16px; }
+h1 { font-size:1.8rem; color:#7c3aed; margin-bottom:6px; font-weight:900; letter-spacing:2px; }
+#hud { display:flex; gap:30px; font-size:0.9rem; color:#9ca3af; margin:10px 0; }
+#hud b { color:#c084fc; font-size:1.2rem; }
+#hud .time-b { color:#fbbf24; }
+#grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:14px;
+  max-width:360px; width:100%; margin:14px 0;
+}
+.hole {
+  aspect-ratio:1; border-radius:50%; background:#1a1a2e; border:3px solid #3b0764;
+  display:flex; align-items:center; justify-content:center;
+  font-size:clamp(36px,10vw,72px); cursor:pointer;
+  transition:transform 0.1s, border-color 0.15s;
+  position:relative; overflow:hidden;
+  box-shadow:inset 0 8px 20px rgba(0,0,0,0.5);
+}
+.hole .mole { display:none; transition:transform 0.15s; }
+.hole.up .mole { display:flex; align-items:center; justify-content:center; width:100%; height:100%; }
+.hole:hover { border-color:#7c3aed; }
+.hole.bonk { border-color:#f43f5e; transform:scale(0.92); }
+.hole.up:hover { transform:scale(1.05); }
+#score-pop { position:fixed; pointer-events:none; font-size:1.4rem; font-weight:900; color:#34d399; animation:pop 0.7s ease forwards; z-index:999; }
+@keyframes pop { 0%{opacity:1;transform:translateY(0);} 100%{opacity:0;transform:translateY(-50px);} }
+#start-btn { background:#7c3aed; color:#fff; border:none; padding:12px 32px; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; margin-top:8px; }
+#start-btn:hover { background:#6d28d9; }
+#overlay {
+  position:fixed; inset:0; background:rgba(15,15,26,0.9); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; z-index:50;
+}
+#overlay h2 { font-size:2rem; color:#c084fc; margin-bottom:12px; }
+#overlay .final { font-size:1.2rem; color:#fbbf24; margin-bottom:8px; }
+#overlay .hi { font-size:0.9rem; color:#9ca3af; margin-bottom:20px; }
+#diff-wrap { display:flex; gap:8px; margin-bottom:14px; }
+.diff-btn { background:#1e1b4b; color:#9ca3af; border:1px solid #3b0764; padding:8px 18px; border-radius:6px; font-size:0.85rem; cursor:pointer; }
+.diff-btn.active { background:#7c3aed; color:#fff; border-color:#7c3aed; }
+</style>
+</head>
+<body>
+<h1>🔨 WHACK-A-MOLE</h1>
+<div id="hud">Score: <b id="score">0</b> &nbsp; Best: <b id="best">0</b> &nbsp; Time: <b id="timer" class="time-b">30</b>s</div>
+<div id="grid"></div>
+
+<div id="overlay">
+  <h2>🐹 Whack-a-Mole!</h2>
+  <p style="color:#9ca3af;margin-bottom:14px">Tap the moles before they hide!</p>
+  <div id="diff-wrap">
+    <button class="diff-btn" onclick="setDiff('easy')">🐢 Easy</button>
+    <button class="diff-btn active" onclick="setDiff('normal')">⚡ Normal</button>
+    <button class="diff-btn" onclick="setDiff('hard')">🔥 Hard</button>
+  </div>
+  <div id="final-score" class="final" style="display:none"></div>
+  <div id="hi-score" class="hi"></div>
+  <button id="start-btn" onclick="startGame()">▶ Start!</button>
+</div>
+
+<script>
+const MOLES = ['🐹','🐭','🐀','🦡','🦦'];
+const DIFFS = { easy:{min:900,max:2000,dur:30}, normal:{min:600,max:1400,dur:30}, hard:{min:400,max:900,dur:30} };
+let score=0, best=parseInt(localStorage.getItem('wam_best')||'0'), timeLeft=30, diff='normal';
+let holes=[], timeouts=[], gameActive=false;
+const COLS=9;
+
+function setDiff(d) { diff=d; document.querySelectorAll('.diff-btn').forEach(b=>b.classList.toggle('active',b.textContent.includes({easy:'Easy',normal:'Normal',hard:'Hard'}[d]))); }
+
+function buildGrid() {
+  const grid=document.getElementById('grid');
+  grid.innerHTML=''; holes=[];
+  for (let i=0;i<COLS;i++) {
+    const div=document.createElement('div'); div.className='hole';
+    const mole=document.createElement('div'); mole.className='mole';
+    div.appendChild(mole); grid.appendChild(div); holes.push(div);
+    div.onclick=()=>whack(i);
+    div.addEventListener('touchend',e=>{e.preventDefault();whack(i);},{passive:false});
+  }
+}
+
+function whack(i) {
+  if (!gameActive||!holes[i].classList.contains('up')) return;
+  holes[i].classList.remove('up'); holes[i].classList.add('bonk');
+  setTimeout(()=>holes[i].classList.remove('bonk'),300);
+  score++; document.getElementById('score').textContent=score;
+  showPop(holes[i]);
+}
+
+function showPop(el) {
+  const rect=el.getBoundingClientRect();
+  const pop=document.createElement('div'); pop.className='score-pop'; pop.textContent='+1';
+  pop.style.left=(rect.left+rect.width/2-20)+'px'; pop.style.top=(rect.top+rect.height/2)+'px';
+  document.body.appendChild(pop); setTimeout(()=>pop.remove(),700);
+}
+
+function peekMole() {
+  if (!gameActive) return;
+  const cfg=DIFFS[diff];
+  const empty=holes.map((h,i)=>i).filter(i=>!holes[i].classList.contains('up'));
+  if (!empty.length) { setTimeout(peekMole,200); return; }
+  const idx=empty[Math.floor(Math.random()*empty.length)];
+  const mole=MOLES[Math.floor(Math.random()*MOLES.length)];
+  holes[idx].querySelector('.mole').textContent=mole;
+  holes[idx].classList.add('up');
+  const dur=cfg.min+Math.random()*(cfg.max-cfg.min);
+  const t=setTimeout(()=>{ holes[idx].classList.remove('up'); },dur);
+  timeouts.push(t);
+  const next=cfg.min/2+Math.random()*(cfg.min/2);
+  const t2=setTimeout(peekMole,next); timeouts.push(t2);
+}
+
+function startGame() {
+  document.getElementById('overlay').style.display='none';
+  document.getElementById('final-score').style.display='none';
+  score=0; timeLeft=DIFFS[diff].dur; gameActive=true;
+  document.getElementById('score').textContent=0;
+  document.getElementById('best').textContent=best;
+  document.getElementById('timer').textContent=timeLeft;
+  timeouts.forEach(clearTimeout); timeouts=[];
+  holes.forEach(h=>{h.classList.remove('up','bonk');});
+  peekMole(); peekMole(); peekMole();
+  const countDown=setInterval(()=>{
+    timeLeft--;
+    document.getElementById('timer').textContent=timeLeft;
+    if (timeLeft<=0) { clearInterval(countDown); endGame(); }
+  },1000);
+}
+
+function endGame() {
+  gameActive=false; timeouts.forEach(clearTimeout);
+  holes.forEach(h=>h.classList.remove('up'));
+  if (score>best) { best=score; localStorage.setItem('wam_best',best); }
+  document.getElementById('best').textContent=best;
+  document.getElementById('final-score').textContent=`You scored: ${score} 🎯`;
+  document.getElementById('final-score').style.display='block';
+  document.getElementById('hi-score').textContent=`Best: ${best}`;
+  document.getElementById('start-btn').textContent='▶ Play Again';
+  document.getElementById('overlay').style.display='flex';
+}
+
+buildGrid(); document.getElementById('best').textContent=best;
+</script>
+</body>
+</html>

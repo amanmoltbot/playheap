@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fruit Catcher</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0f0f1a; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; font-family:'Segoe UI',sans-serif; color:#e0e0e0; overflow:hidden; }
+canvas { display:block; border:2px solid #3b0764; border-radius:8px; box-shadow:0 0 30px rgba(124,58,237,0.3); touch-action:none; }
+#hud { display:flex; gap:30px; font-size:0.85rem; color:#9ca3af; margin-bottom:8px; }
+#hud b { color:#c084fc; font-size:1rem; }
+#overlay { position:fixed; inset:0; background:rgba(6,6,15,0.9); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10; }
+#overlay h2 { font-size:2rem; color:#c084fc; margin-bottom:8px; }
+#overlay p { color:#9ca3af; font-size:0.9rem; margin-bottom:4px; }
+#overlay button { margin-top:16px; background:#7c3aed; color:#fff; border:none; padding:12px 36px; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; }
+</style>
+</head>
+<body>
+<div id="hud">Score: <b id="score">0</b> &nbsp; Best: <b id="best">0</b> &nbsp; Lives: <b id="lives">❤️❤️❤️</b> &nbsp; Level: <b id="level">1</b></div>
+<canvas id="c"></canvas>
+<div id="overlay">
+  <h2>🍎 Fruit Catcher</h2>
+  <p>Catch falling fruits, avoid bombs! 💣</p>
+  <p style="font-size:0.8rem">Mouse/touch to move basket · Arrow keys work too</p>
+  <button onclick="startGame()">▶ Start!</button>
+</div>
+
+<script>
+const C=document.getElementById('c'), ctx=C.getContext('2d');
+const W=400,H=560; C.width=W; C.height=H;
+const FRUITS=['🍎','🍊','🍋','🍇','🍓','🍑','🥝','🍒','🍍','🥭'];
+const BOMBS=['💣','🔥'];
+let basket,items,score,best,lives,level,raf,gameActive=false,spawnT=0,mouseX=W/2;
+best=parseInt(localStorage.getItem('fc_best')||'0');
+
+function startGame(){
+  document.getElementById('overlay').style.display='none';
+  score=0; lives=3; level=1; items=[]; spawnT=0; gameActive=true;
+  basket={x:W/2,y:H-50,w:90,h:24};
+  updateHUD(); if(raf)cancelAnimationFrame(raf); loop();
+}
+
+function updateHUD(){
+  document.getElementById('score').textContent=score;
+  document.getElementById('best').textContent=best;
+  document.getElementById('lives').textContent='❤️'.repeat(lives);
+  document.getElementById('level').textContent=level;
+}
+
+function spawnItem(){
+  const isBomb=Math.random()<0.15;
+  items.push({
+    x:20+Math.random()*(W-40), y:-30,
+    emoji:isBomb?BOMBS[Math.floor(Math.random()*BOMBS.length)]:FRUITS[Math.floor(Math.random()*FRUITS.length)],
+    speed:2+level*0.5+Math.random()*2,
+    isBomb, r:22, spin:0, dSpin:(Math.random()-0.5)*0.1
+  });
+}
+
+function loop(){
+  raf=requestAnimationFrame(loop);
+  ctx.fillStyle='rgba(15,15,26,0.3)'; ctx.fillRect(0,0,W,H);
+  
+  // Background gradient
+  const bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#08080f'); bg.addColorStop(1,'#0f0f1a');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+  
+  spawnT++;
+  const spawnRate=Math.max(30,80-level*8);
+  if(spawnT>=spawnRate){ spawnItem(); spawnT=0; }
+  
+  // Move basket toward mouseX
+  basket.x+=(mouseX-basket.x)*0.25;
+  basket.x=Math.max(basket.w/2,Math.min(W-basket.w/2,basket.x));
+  
+  // Draw basket
+  const bx=basket.x-basket.w/2, by=basket.y-basket.h/2;
+  ctx.fillStyle='#4b1d96'; ctx.strokeStyle='#7c3aed'; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.roundRect(bx,by,basket.w,basket.h,8); ctx.fill(); ctx.stroke();
+  // Basket pattern
+  ctx.strokeStyle='#6d28d9'; ctx.lineWidth=1;
+  for(let i=1;i<4;i++){ ctx.beginPath();ctx.moveTo(bx+basket.w*i/4,by);ctx.lineTo(bx+basket.w*i/4,by+basket.h);ctx.stroke(); }
+  
+  // Update and draw items
+  items=items.filter(item=>{
+    item.y+=item.speed; item.spin+=item.dSpin;
+    // Draw
+    ctx.save(); ctx.translate(item.x,item.y); ctx.rotate(item.spin);
+    ctx.font='36px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(item.emoji,0,0);
+    ctx.restore();
+    
+    // Catch?
+    const caught=item.y+item.r>basket.y-basket.h/2 && item.y-item.r<basket.y+basket.h/2 && item.x+item.r>bx && item.x-item.r<bx+basket.w;
+    if(caught){
+      if(item.isBomb){ lives--; updateHUD(); flashRed(); if(lives<=0){endGame();return false;} }
+      else{ score+=10*level; if(score>best){best=score;localStorage.setItem('fc_best',best);} showPop(item.x,item.y,'+'+10*level); updateHUD(); }
+      return false;
+    }
+    // Missed fruit
+    if(item.y>H+40){ if(!item.isBomb){ lives--; updateHUD(); if(lives<=0){endGame();return false;} } return false; }
+    return true;
+  });
+  
+  // Level up
+  if(score>=level*100){ level++; updateHUD(); }
+}
+
+function showPop(x,y,txt){
+  ctx.fillStyle='#34d399'; ctx.font='bold 18px Segoe UI'; ctx.textAlign='center';
+  ctx.fillText(txt,x,y);
+}
+
+function flashRed(){
+  ctx.fillStyle='rgba(239,68,68,0.3)'; ctx.fillRect(0,0,W,H);
+}
+
+function endGame(){
+  gameActive=false; cancelAnimationFrame(raf);
+  setTimeout(()=>{
+    const ov=document.getElementById('overlay');
+    ov.innerHTML=`<h2>🍎 Game Over!</h2><p>Score: <b style="color:#c084fc;font-size:1.2rem">${score}</b></p><p>Best: ${best}</p><button onclick="startGame()">▶ Try Again</button>`;
+    ov.style.display='flex';
+  },400);
+}
+
+C.addEventListener('mousemove',e=>{ const r=C.getBoundingClientRect(); mouseX=(e.clientX-r.left)*(W/r.width); });
+C.addEventListener('touchmove',e=>{ e.preventDefault(); const r=C.getBoundingClientRect(); mouseX=(e.touches[0].clientX-r.left)*(W/r.width); },{passive:false});
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft')  mouseX=Math.max(40,mouseX-30);
+  if(e.key==='ArrowRight') mouseX=Math.min(W-40,mouseX+30);
+});
+
+document.getElementById('best').textContent=best;
+</script>
+</body>
+</html>

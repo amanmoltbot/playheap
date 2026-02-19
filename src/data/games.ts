@@ -727,6 +727,332 @@ Slither Solo sessions typically run 5-15 minutes, scaling with your skill and lu
     aspectRatio: '16/9',
     mobileSupported: true,
   },
+  // ─── Cycle 3 Games ────────────────────────────────────────────────────────
+  {
+    id: '50',
+    slug: 'wordle',
+    title: 'Wordle',
+    description: `Wordle is the sensational word-guessing game that took the world by storm in 2022 and became a daily ritual for millions of people worldwide. The rules are brilliantly simple: you have six attempts to guess a secret five-letter word. After each guess, the game gives you color-coded feedback — green tiles tell you a letter is correct and in the right position, yellow tiles show a correct letter in the wrong position, and gray tiles mean the letter doesn't appear in the word at all.
+
+What makes Wordle special is how much strategy fits inside such simple rules. Your first guess is crucial: experienced players favor "starter words" that cover the most common letters — words like CRANE, SLATE, AUDIO, or RAISE, chosen to maximize information gain on the first try. A perfect opener can immediately eliminate 10+ letters from contention and reveal 2-3 correctly placed ones, putting you in a strong position for guess two.
+
+From there, every guess is a logic puzzle. You're using Boolean algebra in your head — ruling out letter positions, confirming letter presence, combining clues from multiple rows to narrow the solution space. The satisfaction of cracking a difficult word in three guesses feels like a genuine intellectual triumph. The frustration of hitting guess six with multiple possibilities remaining is equally intense.
+
+Our version of Wordle lets you play unlimited games with a rotating dictionary of common English words. Unlike the original daily Wordle, you can play as many rounds as you like. The game tracks your streak — how many consecutive puzzles you've solved — which quickly becomes addictive. Six guesses. Five letters. Can you crack the code?
+
+The game also makes an excellent vocabulary-building tool. You'll inevitably encounter words you didn't know and learn them from context. Wordle has introduced millions of people to unusual but legitimate English words, turning a daily brain teaser into a genuine learning experience.
+
+**Tips:** Use a strong opener covering vowels and common consonants. Track yellow letters carefully — they must appear elsewhere in the word. Avoid reusing gray letters in later guesses. And never guess a word you already know contains an impossible letter.`,
+    category: 'puzzle',
+    thumbnailUrl: '/thumbnails/wordle.webp',
+    gameUrl: '/games/wordle/index.html',
+    controls: 'Type letters with keyboard or click the on-screen keyboard. Enter to submit, Backspace to delete.',
+    featured: true,
+    isNew: true,
+    plays: 523000,
+    aspectRatio: '3/4',
+    mobileSupported: true,
+  },
+  {
+    id: '51',
+    slug: 'sudoku',
+    title: 'Sudoku',
+    description: `Sudoku is the world's most popular number puzzle, played by hundreds of millions of people in newspapers, apps, and online every single day. Despite its name sounding Japanese, Sudoku has mathematical roots in 18th-century Europe and was popularized globally in its modern form in the 1980s. The objective is elegantly simple: fill a 9×9 grid with digits 1 through 9 such that each row, each column, and each of the nine 3×3 subgrids contains every digit exactly once.
+
+No arithmetic is involved — Sudoku is pure logic. You don't add, multiply, or measure anything. You reason: if this row already contains digits 1, 2, 3, 4, 5, 6, 7, and 8, then the empty cell must be 9. If this 3×3 box already has a 7 in three of its cells, then the remaining six cells cannot contain 7. Layer these simple deductions across 81 cells and the puzzle reveals itself — or stubbornly resists, demanding ever more sophisticated techniques.
+
+Beginner players start with "naked singles" — cells where only one digit can possibly fit given the current state of the puzzle. Intermediate players use "hidden singles," where a digit can only go in one cell within a row, column, or box even if that cell has multiple possibilities. Advanced players employ "naked pairs," "X-wings," "swordfish," and "coloring" techniques that feel like mathematical magic once you see them snap into place.
+
+Our Sudoku features three difficulty levels. Easy puzzles are solved almost entirely with basic deductions. Medium requires occasional backtracking and multi-step logic chains. Hard puzzles are genuinely challenging and may require the kind of advanced techniques competitive Sudoku solvers study for years.
+
+The game includes a notes mode — tap any cell and enter multiple candidate digits — plus a hint system for when you're truly stuck. A timer tracks your solve time, which is the standard metric for Sudoku improvement.
+
+**Tips:** Start by scanning each 3×3 box for missing digits. Look for rows or columns with 7-8 filled digits first — they're easiest to complete. Use pencil marks (Notes mode) for hard puzzles. Never guess — every Sudoku has a logical solution.`,
+    category: 'puzzle',
+    thumbnailUrl: '/thumbnails/sudoku.webp',
+    gameUrl: '/games/sudoku/index.html',
+    controls: 'Click a cell to select it, then click a number or press keyboard 1-9. Arrow keys to navigate. N for notes mode.',
+    featured: false,
+    isNew: true,
+    plays: 341000,
+    aspectRatio: '3/4',
+    mobileSupported: true,
+  },
+  {
+    id: '52',
+    slug: 'sliding-puzzle',
+    title: 'Sliding Puzzle',
+    description: `The Sliding Puzzle — also known as the 15-puzzle, gem puzzle, or boss puzzle — is one of the oldest and most enduring logic puzzles in history. Invented in the 1870s, it swept the world in a craze that predated both chess and crossword puzzles as a mass entertainment phenomenon. The premise is timeless: a grid of numbered tiles with one space missing. Slide tiles into the empty space to rearrange them into numerical order.
+
+Our version offers three grid sizes — 3×3 (8 tiles), 4×4 (15 tiles), and 5×5 (24 tiles) — each dramatically different in difficulty. The 3×3 puzzle can typically be solved in under 30 moves by a beginner. The 4×4 puzzle is where the real challenge begins: the minimum possible solution for a scrambled 15-puzzle can exceed 80 moves, and finding an efficient path requires systematic thinking. The 5×5 is a beast — a puzzle that can humble even experienced solvers.
+
+The mathematics of the sliding puzzle are fascinating. Not every scrambled arrangement is solvable — exactly half of all configurations are impossible to solve. Our game generates only solvable puzzles, verified by counting inversions. The minimum number of moves to solve any 15-puzzle (the "God's Number" equivalent) can be surprisingly large, making optimization a worthy challenge for perfectionist solvers.
+
+Strategies range from informal (work from top to bottom, left to right, placing the top row first then the left column) to formal algorithms used in competitive speedsolving. The "human" approach focuses on inserting individual tiles into position without disrupting already-placed tiles — a skill that develops through practice and pattern recognition.
+
+The game tracks your move count and time, making every solve a new personal best opportunity. Can you beat the 4×4 in under 100 moves? Under 60? The puzzle scales infinitely with skill level.
+
+**Tips:** Solve top row first, then left column, then repeat for the remaining grid. Don't try to "force" individual tiles into position — cycle them around carefully. The last two tiles in a row require a special rotation move.`,
+    category: 'puzzle',
+    thumbnailUrl: '/thumbnails/sliding-puzzle.webp',
+    gameUrl: '/games/sliding-puzzle/index.html',
+    controls: 'Click tiles adjacent to the empty space to slide them. Keyboard arrow keys move the blank space. Swipe on mobile.',
+    featured: false,
+    isNew: true,
+    plays: 156000,
+    aspectRatio: '3/4',
+    mobileSupported: true,
+  },
+  {
+    id: '53',
+    slug: 'whack-a-mole',
+    title: 'Whack-a-Mole',
+    description: `Whack-a-Mole is one of the most beloved arcade games ever created — a perfect blend of reaction speed, hand-eye coordination, and pure, unfiltered fun. The concept is delightfully simple: moles pop up from holes in the ground, and you need to whack them back down before they retreat. Miss too many, and the round ends. Hit as many as you can in 30 seconds to build your high score.
+
+Originally a physical arcade cabinet game in the 1970s, Whack-a-Mole has since become a cultural touchstone. It's the game everyone has played at a fair, arcade, or birthday party. Our digital version captures that same frantic energy: nine holes, moles popping up at increasing speed, and your score climbing with every successful whack.
+
+The game features three difficulty modes. Easy gives you plenty of time to react — the moles peek out slowly and linger long enough for comfortable targeting. Normal matches a classic arcade experience with moderate speed and timing. Hard is the true test: moles flash in and out so quickly that even seasoned players struggle to maintain 80% hit rate. At Hard difficulty, the game becomes as much about pattern recognition as raw speed — experienced players learn to anticipate where moles tend to cluster and position their attention accordingly.
+
+The difficulty ramping within a single round adds another layer. Even on Easy mode, the moles speed up as the clock ticks down, so the final 10 seconds are always a frantic scramble. This dynamic progression ensures the game never feels static, building genuine tension toward the end of each round.
+
+Your best score is saved locally so every session is a personal best attempt. Each mole type — hamsters, mice, rats, badgers — has slightly different peek timing, rewarding players who notice the behavioral patterns.
+
+**Tips:** Don't fixate on a single hole after a miss — immediately scan the whole grid. Peripheral vision is key. Position your cursor in the center of the grid for fastest average reach. Watch for "double pops" where two moles appear simultaneously.`,
+    category: 'arcade',
+    thumbnailUrl: '/thumbnails/whack-a-mole.webp',
+    gameUrl: '/games/whack-a-mole/index.html',
+    controls: 'Click or tap moles to whack them. Works great on touchscreen devices.',
+    featured: false,
+    isNew: true,
+    plays: 218000,
+    aspectRatio: '3/4',
+    mobileSupported: true,
+  },
+  {
+    id: '54',
+    slug: 'simon-says',
+    title: 'Simon Says',
+    description: `Simon Says is the iconic electronic memory game that has challenged and delighted players since 1978. Named after the children's game of the same name, the electronic version — the classic round device with four colored buttons — became one of the best-selling games of the late 20th century. Our digital recreation faithfully captures the essence of the original: watch the sequence of flashing lights and sounds, then reproduce it exactly.
+
+The game starts simply. One button flashes and plays a tone. You repeat it. Then two in sequence. Then three. Each round adds one more step to the growing pattern. The catch: you must remember the entire sequence from the beginning every single time, not just the new addition. By round 10, you're replaying a 10-step sequence from memory. By round 20, it's a genuine feat of concentration.
+
+Simon Says is primarily a test of sequential working memory — your brain's ability to hold an ordered list of items in mind and reproduce them accurately. Research has shown that the game genuinely improves short-term memory capacity with regular practice. The combination of visual (colored flashes) and auditory (distinct tones for each color) cues engages multiple memory systems simultaneously, which is why the game feels different from, say, memorizing a number list.
+
+Different players develop different strategies. Some focus purely on visual patterns, watching the sequence like a dance. Others listen to the tones and internalize the melody (each color has a fixed musical pitch). The most effective players combine both, creating a multisensory memory trace that's harder to forget under pressure.
+
+Our version features full audio with authentic tones — each color produces a distinct musical note, just like the original device. The game tracks your best score (highest sequence achieved) and plays a satisfying celebratory sequence when you hit milestones.
+
+**Tips:** Say each color aloud as it flashes (or subvocalize it). Creating a verbal label for each step dramatically improves recall. Try to hear the "melody" of the sequence rather than individual notes.`,
+    category: 'arcade',
+    thumbnailUrl: '/thumbnails/simon-says.webp',
+    gameUrl: '/games/simon-says/index.html',
+    controls: 'Click or tap the colored buttons in the correct sequence. Watch and listen carefully!',
+    featured: false,
+    isNew: true,
+    plays: 189000,
+    aspectRatio: '1/1',
+    mobileSupported: true,
+  },
+  {
+    id: '55',
+    slug: 'asteroids',
+    title: 'Asteroids',
+    description: `Asteroids is one of the most legendary arcade games ever made — a golden-age classic from Atari (1979) that defined an era of gaming and remains deeply playable over four decades later. You pilot a lone triangular spaceship adrift in an asteroid field, using rotation thrusters and a forward engine to navigate, while firing bullets to shatter the rocks hurtling toward you. Large asteroids break into medium ones; medium ones break into small fast-moving fragments. Clear every rock to advance to the next level.
+
+What makes Asteroids timeless is its physics. Your ship has inertia: thrust in one direction and you keep moving that way until you thrust again or friction slows you down. There is no friction in space, so poor thrusting decisions can send you drifting helplessly into a rock. Mastering the momentum — applying brief thrust pulses to reposition rather than holding down the accelerator — is the core skill that separates novices from veterans.
+
+The asteroid-splitting mechanic creates a cascade of danger. Shooting a large asteroid feels like progress until the two medium pieces rocket off in unpredictable directions, and you realize you've traded one slow threat for two faster ones. Shooting those creates four small asteroids — the fastest, most maneuverable, hardest-to-hit fragments. Managing this cascading danger while dodging everything is genuine spatial intelligence under pressure.
+
+Our version features the iconic vector-art aesthetic translated into glowing purple graphics, a thrust flame that animates during acceleration, screen-wrapping where ships and rocks teleport from one edge to the opposite, and escalating difficulty through faster rocks and denser fields at higher levels. The double-jump allows maneuvering through tight gaps.
+
+The game supports both keyboard and on-screen touch controls, making it fully playable on mobile — though the spacious experience of a desktop and keyboard is arguably optimal for the split-second decisions this game demands.
+
+**Tips:** Always keep moving but in controlled bursts. Shoot large rocks near the edges so fragments have room to spread. When overwhelmed, stay near the center for maximum escape routes in all directions.`,
+    category: 'shooting',
+    thumbnailUrl: '/thumbnails/asteroids.webp',
+    gameUrl: '/games/asteroids/index.html',
+    controls: 'Arrow keys / WASD to rotate and thrust. Space to shoot. On mobile: use on-screen buttons.',
+    featured: true,
+    isNew: true,
+    plays: 267000,
+    aspectRatio: '1/1',
+    mobileSupported: true,
+  },
+  {
+    id: '56',
+    slug: 'air-hockey',
+    title: 'Air Hockey',
+    description: `Air Hockey brings the fast-paced excitement of the classic arcade table game directly to your browser. Two paddles, one puck, and a frictionless table: the first player to score 7 goals wins. Simple in concept, endlessly thrilling in execution. You control the bottom paddle with your mouse or finger, trying to slam the puck past your AI opponent while defending your own goal.
+
+The original air hockey table, invented in the early 1970s, works by blowing air through tiny holes in the table surface, creating a cushion that allows the puck to glide with minimal friction. This friction-free environment creates extraordinarily fast gameplay — professional air hockey tournaments feature pucks traveling at over 80 mph on physical tables. Our digital version captures that speed, with puck physics that feel genuinely snappy and satisfying.
+
+Playing against the AI reveals the game's strategic depth. A raw power game — just hammering the puck as hard as possible — works on Easy mode but gets read and blocked at higher difficulty. Skilled play involves positioning: keeping your paddle slightly forward of center to cut off angles, using bank shots off the side rails to approach from unexpected directions, and baiting the AI into an aggressive position before quickly redirecting.
+
+Bank shots — where you intentionally bounce the puck off a side wall to send it around the opponent's paddle — are the most satisfying advanced technique. A well-executed bank shot gives the puck a trajectory the AI didn't anticipate, sliding around an outstretched paddle and into the net. Learning to read the geometry of bank shots — imagining the reflection angle before you hit — is the skill that separates casual players from consistent winners.
+
+Three difficulty levels provide a complete progression path. Easy lets you practice offensive patterns. Normal gives a fair fight. Hard requires genuine strategic play, as the AI reacts quickly and positions itself intelligently.
+
+**Tips:** Don't chase the puck to the opponent's side — stay near your goal. Use controlled hits rather than maximum power. Bank shots work best when the AI is positioned centrally. Watch the puck's trajectory, not the AI's paddle.`,
+    category: 'sports',
+    thumbnailUrl: '/thumbnails/air-hockey.webp',
+    gameUrl: '/games/air-hockey/index.html',
+    controls: 'Move mouse or drag finger to control your paddle. First to 7 goals wins.',
+    featured: false,
+    isNew: true,
+    plays: 198000,
+    aspectRatio: '9/16',
+    mobileSupported: true,
+  },
+  {
+    id: '57',
+    slug: 'crossy-frog',
+    title: 'Crossy Frog',
+    description: `Crossy Frog is a modern take on the classic Frogger arcade game — one of the most recognizable and beloved game concepts in history. Your mission: guide a determined little frog across a dangerous road filled with speeding vehicles, hopping one tile at a time until you reach safety on the other side. Each successful crossing scores points and increases the challenge.
+
+Frogger, the original, was released by Konami in 1981 and became one of the top-grossing arcade games of its era. The concept resonated because it's universally relatable — we've all seen a frog (or squirrel, or turtle) trying to cross a road. The game distilled that moment into pure tension: wait for a gap, commit to the hop, don't get hit. The elegance of the design has made it endlessly remakeable.
+
+Our version features a colorful emoji-based aesthetic with frogs, cars, buses, and race cars creating genuinely varied traffic patterns. Each lane moves at a different speed and in a different direction, requiring you to track multiple simultaneous threats and find windows through the chaos. The road alternates with grassy safe zones — strip malls and medians where your frog can pause, breathe, and plan the next crossing.
+
+The game progressively increases difficulty. Level 1 has modest traffic with generous gaps. Higher levels add more vehicles per lane, faster speeds, and shorter safe windows. Reaching high levels requires reading traffic flow patterns in advance — learning to anticipate where gaps will be two or three moves ahead rather than reacting moment-to-moment.
+
+Lives give you breathing room but not much. Three failed crossings and it's back to square one. The simple grid-based movement (one hop per button press) makes the game accessible on both mobile and desktop, with responsive touch controls for on-screen directional buttons.
+
+**Tips:** Don't rush. Wait for gaps rather than dashing between cars. Move horizontally on safe zones to align with better lanes. Look ahead, not just at the immediate lane. Cars come in patterns — watch the rhythm and hop between volleys.`,
+    category: 'adventure',
+    thumbnailUrl: '/thumbnails/crossy-frog.webp',
+    gameUrl: '/games/crossy-frog/index.html',
+    controls: 'Arrow keys or WASD to move the frog. On mobile: use on-screen directional buttons.',
+    featured: false,
+    isNew: true,
+    plays: 234000,
+    aspectRatio: '9/16',
+    mobileSupported: true,
+  },
+  {
+    id: '58',
+    slug: 'fruit-catcher',
+    title: 'Fruit Catcher',
+    description: `Fruit Catcher is a fast-paced reflex game where you control a basket at the bottom of the screen, catching falling fruit while dodging bombs. As you catch more fruit, the falling speed increases and the variety of items multiplies — plus bombs appear more frequently, threatening to steal your lives. Simple to learn, increasingly frantic, and impossible to stop playing once you start.
+
+The core appeal of catch-style games is their primal satisfaction: things fall, you catch them, you score. The basket movement — smooth and momentum-based — creates a satisfying feel that makes the act of catching itself pleasurable. Every piece of fruit caught registers as a small win. The game becomes a flow state machine, where your attention fully locks onto the falling items and your hands respond automatically.
+
+The real tension arrives with the bombs. Each bomb that lands in your basket costs a life, and you only have three. This forces split-second triage decisions: catch the apple, dodge the bomb, position for the next cluster. When multiple items are falling simultaneously — two fruits and a bomb — you have to quickly evaluate trajectories and make a snap decision that maximizes catches while avoiding penalties.
+
+Fruit Catcher scales through a level system. Every 100 points earned advances you one level. Each level increases falling speed, adds more simultaneous items, and slightly increases bomb frequency. Early levels are approachable; late levels create genuine chaos that tests both your reaction time and strategic composure.
+
+The game tracks your best score locally, creating a personal best progression system. Chasing your own record is the primary long-term motivation — can you beat 500 points? 1000? The skill ceiling is high enough that there's always room to improve.
+
+**Tips:** Keep your basket in the middle of the screen by default — it gives you the fastest reach to either side. Watch the top of the screen for incoming items early, not just when they're halfway down. Priority: avoid bombs over catching fruit when both are incoming simultaneously.`,
+    category: 'action',
+    thumbnailUrl: '/thumbnails/fruit-catcher.webp',
+    gameUrl: '/games/fruit-catcher/index.html',
+    controls: 'Move mouse or drag finger to move the basket. Arrow keys also work.',
+    featured: false,
+    isNew: true,
+    plays: 177000,
+    aspectRatio: '9/16',
+    mobileSupported: true,
+  },
+  {
+    id: '59',
+    slug: 'endless-runner',
+    title: 'Endless Runner',
+    description: `Endless Runner is a pure, distilled version of one of gaming's most beloved genres — the side-scrolling infinite runner. You play as a nimble character sprinting through an ever-accelerating obstacle course, jumping over barriers with a tap, click, or spacebar press. The world rushes past at increasing speed, and the goal is deceptively simple: survive as long as possible.
+
+The endless runner genre exploded in the early 2010s with games like Temple Run and Subway Surfers on mobile, but its roots trace back much further — to classic platformers and even the T-Rex runner hidden in Google Chrome's offline mode. That iconic dino game proved the concept's brilliance: no tutorial needed, instant to understand, yet requiring genuine skill to master.
+
+What makes our Endless Runner special is the double-jump mechanic. Your first jump clears ground-level obstacles. The second jump — activated mid-air — lets you hurdle tall barriers or chains of sequential obstacles. Knowing when to save your double jump versus spending it early is a key decision point that adds depth beyond pure reaction time.
+
+The game features procedurally generated obstacle placement: cactus-style barriers appear in variable patterns and heights, ensuring no two runs are identical. Early in a run, obstacles are spaced generously, allowing comfortable reaction time. As speed increases, the spacing tightens and obstacle clusters appear — groups of barriers that require careful jump timing to navigate.
+
+The scoring system rewards longevity. Every second of survival translates directly to points, with multipliers kicking in at higher levels. Your best score is saved locally, creating a personal benchmark that drives improvement. The "just one more run" compulsion loop is strong with this one — a failed run at 300 meters immediately motivates another attempt.
+
+**Tips:** Stay calm rather than jumping preemptively — wait until an obstacle is close before committing to a jump. Save your double jump for emergencies. Watch the horizon for clusters of obstacles coming in sequence. Rhythm matters: the obstacle patterns have subtle timing you can internalize.`,
+    category: 'action',
+    thumbnailUrl: '/thumbnails/endless-runner.webp',
+    gameUrl: '/games/endless-runner/index.html',
+    controls: 'Space bar or click/tap to jump. Double-tap/press for a second jump mid-air.',
+    featured: false,
+    isNew: true,
+    plays: 312000,
+    aspectRatio: '16/9',
+    mobileSupported: true,
+  },
+  {
+    id: '60',
+    slug: 'blackjack',
+    title: 'Blackjack',
+    description: `Blackjack is the world's most popular casino card game — a compelling combination of luck, strategy, and psychology that has been played in casinos and card rooms for over three centuries. The goal is elegantly simple: build a hand value closer to 21 than the dealer's without going over (busting). Number cards are worth their face value, face cards (Jack, Queen, King) are worth 10, and Aces are worth either 1 or 11 — whichever is more beneficial.
+
+Each round begins with you placing a bet and receiving two cards, both face up. The dealer also receives two cards but keeps one face down (the "hole card"). You then choose: Hit (take another card), Stand (keep your current hand), or Double Down (double your bet and take exactly one more card). The dealer then reveals their hole card and must hit until reaching 17 or higher.
+
+The strategic depth of Blackjack comes from the extensive "basic strategy" — a mathematically derived chart that specifies the optimal decision for every possible player hand versus dealer upcard combination. Following basic strategy reduces the house edge to under 0.5%, making Blackjack the casino game with the best odds for the player. Deviating from basic strategy — hitting when you should stand, standing when you should double — is where most players give away their edge.
+
+Our version features a real chip-based betting system with denominations from $1 to $500. You start with $1,000 and can bet freely. The double-down option is available on any two-card hand. Blackjack — an Ace plus a 10-value card — pays 1.5x your bet, just like real casinos.
+
+The dealer follows house rules: stands on all 17s, including soft 17. This is the most player-favorable rule variant and gives you the best possible odds.
+
+**Tips:** Always hit when your total is 11 or less (you can't bust). Always stand on 17 or higher. Double down on 11 when the dealer shows 2-10. Never take insurance — it's a losing bet over time. Learn basic strategy for the best long-term results.`,
+    category: 'strategy',
+    thumbnailUrl: '/thumbnails/blackjack.webp',
+    gameUrl: '/games/blackjack/index.html',
+    controls: 'Click chip buttons to place bets. Click Deal, Hit, Stand, or Double to play your hand.',
+    featured: false,
+    isNew: true,
+    plays: 298000,
+    aspectRatio: '3/4',
+    mobileSupported: true,
+  },
+  {
+    id: '61',
+    slug: 'word-search',
+    title: 'Word Search',
+    description: `Word Search is one of the most universally beloved word puzzles in the world — a staple of newspapers, puzzle books, waiting rooms, and educational classrooms for over 50 years. A grid of letters conceals a list of hidden words, arranged horizontally, vertically, or diagonally (and sometimes backwards). Your job: find every word before the timer runs out, circling each discovery with a satisfying drag.
+
+The Word Search puzzle was invented in 1968 and immediately became a mass-market success. Unlike crosswords that demand vocabulary knowledge, Word Search is accessible to anyone who can recognize letter patterns. Yet there's genuine skill involved: experienced solvers develop pattern-recognition abilities that let them spot words almost automatically, scanning grid sections in seconds rather than letter-by-letter.
+
+Our version features themed word sets — from programming languages and ocean life to animals, foods, sports, and space. Each puzzle uses a 10×10 grid with 7 hidden words, a difficulty level that's challenging without being overwhelming. Words can run in any of eight directions (including diagonals and backwards), and the grid is filled with random letters to obscure the targets.
+
+The drag-to-select interface makes finding words satisfying and intuitive. Click (or tap) the first letter of a word, drag to the last letter, and the word highlights and locks in if correct. Incorrect selections simply deselect, letting you try again. Correct finds are crossed off the word list, giving you clear progress feedback throughout the puzzle.
+
+A timer tracks your solve time, making each puzzle a speed challenge. Can you find all seven words in under 2 minutes? Under 90 seconds? Word Search is also a surprisingly effective vocabulary and focus exercise — the sustained attention required to scan letter grids is good mental practice.
+
+**Tips:** Start by looking for the shortest words — they're easiest to spot. Scan each row and column methodically rather than randomly. Look for unusual letter combinations (double letters, Q, X, Z) that stand out from the filler letters. Diagonal words are hardest to spot — check those last.`,
+    category: 'puzzle',
+    thumbnailUrl: '/thumbnails/word-search.webp',
+    gameUrl: '/games/word-search/index.html',
+    controls: 'Click and drag to select words in the grid. Works great on touchscreen.',
+    featured: false,
+    isNew: true,
+    plays: 143000,
+    aspectRatio: '3/4',
+    mobileSupported: true,
+  },
+  {
+    id: '62',
+    slug: 'bubble-shooter',
+    title: 'Bubble Shooter',
+    description: `Bubble Shooter is one of the most played casual games in history — a genre with billions of plays across Flash, mobile, and browser platforms since the late 1990s. The mechanics are intuitive: colored bubbles fill the top of the screen, and you shoot colored bubbles from the bottom, aiming to create groups of three or more matching colors. When a group forms, it pops and the bubbles above may cascade down. Clear the entire board to win.
+
+The magic of Bubble Shooter lies in its trajectory system. Bubbles don't just travel in straight lines — they bounce off the side walls. This creates a rich geometry puzzle layered beneath the color-matching gameplay. A direct shot might not reach a difficult cluster, but a precise bank shot off the left wall can thread the needle perfectly. Learning to calculate these reflection angles — imagining where the bubble will end up after bouncing — is the defining skill of the game.
+
+Combo chains are the second major skill layer. Popping a large cluster often detaches bubbles hanging below it, causing them to fall and clear additional space. Skilled players deliberately set up these chain reactions, shooting strategically to maximize cascades rather than just matching the nearest available group. A well-orchestrated chain that clears half the board in one shot is genuinely thrilling.
+
+Our version features six colors, with the variety expanding at higher levels. The physics-based trajectory system includes a visual aim guide showing where your bubble will travel — including bounced paths. A "next bubble" preview lets you plan two shots ahead.
+
+The game progressively adds new rows as you play (if you take too long) and increases the color variety at higher levels, making late-game decisions more complex. Unlike some puzzle games, Bubble Shooter rewards both quick decision-making and careful deliberate play.
+
+**Tips:** Aim for large clusters, not isolated bubbles. Use bank shots to reach awkward positions. Try to pop bubbles in ways that detach hanging clusters beneath them. Save "rare" colored bubbles for when they're most needed — use them to pop clusters that are otherwise unreachable.`,
+    category: 'arcade',
+    thumbnailUrl: '/thumbnails/bubble-shooter.webp',
+    gameUrl: '/games/bubble-shooter/index.html',
+    controls: 'Move mouse to aim, click to shoot. Bubbles bounce off walls. On mobile: touch to aim and release to shoot.',
+    featured: true,
+    isNew: true,
+    plays: 456000,
+    aspectRatio: '9/16',
+    mobileSupported: true,
+  },
 ];
 
 export function getGameBySlug(slug: string): Game | undefined {

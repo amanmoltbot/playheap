@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { games, getFeaturedGames, getPopularGames, getNewGames, categories, categoryEmoji } from '@/data/games';
 import GameGrid from '@/components/GameGrid';
 import RecentlyPlayed from '@/components/RecentlyPlayed';
+import HeroSearch from '@/components/HeroSearch';
 
 export default function HomePage() {
   const featured = getFeaturedGames();
@@ -33,9 +34,13 @@ export default function HomePage() {
             Play Free Games Online —<br />
             <span className="text-[#8b5cf6]">No Downloads, Just Play</span>
           </h1>
-          <p className="text-gray-400 text-lg md:text-xl mb-8 max-w-2xl mx-auto">
+          <p className="text-gray-400 text-lg md:text-xl mb-2 max-w-2xl mx-auto">
             {games.length}+ free browser games. Click and play instantly — no installs, no sign-ups.
           </p>
+
+          {/* Search bar — prominent in hero */}
+          <HeroSearch />
+
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/games"

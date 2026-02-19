@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Search</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0f0f1a; display:flex; flex-direction:column; align-items:center; min-height:100vh; font-family:'Segoe UI',sans-serif; color:#e0e0e0; padding:16px; }
+h1 { font-size:1.8rem; color:#7c3aed; margin:10px 0 4px; font-weight:900; letter-spacing:2px; }
+#info { display:flex; gap:20px; font-size:0.82rem; color:#9ca3af; margin-bottom:10px; }
+#info b { color:#c084fc; }
+#grid-wrap { display:grid; margin-bottom:14px; user-select:none; -webkit-user-select:none; }
+.ws-cell {
+  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; font-size:0.95rem; font-weight:700; text-transform:uppercase;
+  border-radius:4px; cursor:pointer; color:#9ca3af;
+  transition:background 0.1s;
+}
+.ws-cell:hover { background:#1e1b4b; color:#c084fc; }
+.ws-cell.selected { background:#2e1065; color:#c084fc; }
+.ws-cell.found { background:#15803d; color:#d1fae5; }
+.ws-cell.found.sel { background:#166534; }
+#word-list { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:340px; margin-bottom:10px; }
+.word-badge {
+  padding:4px 12px; border-radius:20px; font-size:0.8rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:1px;
+  background:#1e1b4b; border:1px solid #3b0764; color:#c084fc;
+}
+.word-badge.done { background:#166534; border-color:#16a34a; color:#d1fae5; text-decoration:line-through; }
+#msg { font-size:1rem; font-weight:700; color:#fbbf24; min-height:24px; text-align:center; }
+#new-btn { background:#7c3aed; color:#fff; border:none; padding:10px 28px; border-radius:6px; font-size:0.95rem; cursor:pointer; margin-top:8px; }
+#new-btn:hover { background:#6d28d9; }
+</style>
+</head>
+<body>
+<h1>🔍 WORD SEARCH</h1>
+<div id="info">Found: <b id="found-count">0</b>/<b id="total-count">0</b> &nbsp; ⏱ <b id="timer">0:00</b></div>
+<div id="msg"></div>
+<div id="grid-wrap"></div>
+<div id="word-list"></div>
+<button id="new-btn" onclick="newGame()">🔄 New Puzzle</button>
+
+<script>
+const WORD_SETS=[
+  ['PYTHON','JAVA','RUBY','SWIFT','RUST','CODE','BUG','LOOP'],
+  ['OCEAN','RIVER','CLOUD','STORM','BEACH','CORAL','WAVE','TIDE'],
+  ['TIGER','SHARK','EAGLE','COBRA','PANDA','WHALE','BISON','MOOSE'],
+  ['PIZZA','SUSHI','TACOS','PASTA','CURRY','BREAD','SALAD','MANGO'],
+  ['CHESS','POKER','DARTS','RUGBY','TENNIS','GOLF','SWIM','RACE'],
+  ['SOLAR','COMET','ORBIT','LUNAR','NOVA','MARS','VENUS','STAR'],
+];
+
+const DIRS=[[0,1],[1,0],[1,1],[-1,1],[0,-1],[-1,0],[-1,-1],[1,-1]];
+const ROWS=12,COLS=12;
+let grid,words,placed,selected=[],selecting=false,found=new Set(),timerInt,seconds=0;
+
+function newGame(){
+  clearInterval(timerInt); seconds=0; found=new Set(); selected=[]; selecting=false;
+  const set=WORD_SETS[Math.floor(Math.random()*WORD_SETS.length)];
+  words=set.slice(0,7);
+  grid=Array.from({length:ROWS},()=>Array(COLS).fill(''));
+  placed={};
+  words.forEach(w=>placeWord(w));
+  fillBlanks();
+  document.getElementById('total-count').textContent=words.length;
+  document.getElementById('found-count').textContent=0;
+  document.getElementById('msg').textContent='';
+  timerInt=setInterval(()=>{seconds++;const m=Math.floor(seconds/60),s=seconds%60;document.getElementById('timer').textContent=`${m}:${s.toString().padStart(2,'0')}`;},1000);
+  renderGrid(); renderWords();
+}
+
+function placeWord(word){
+  for(let attempt=0;attempt<200;attempt++){
+    const dir=DIRS[Math.floor(Math.random()*DIRS.length)];
+    const sr=Math.floor(Math.random()*ROWS), sc=Math.floor(Math.random()*COLS);
+    const cells=[];
+    let ok=true;
+    for(let i=0;i<word.length;i++){
+      const r=sr+dir[0]*i, c=sc+dir[1]*i;
+      if(r<0||r>=ROWS||c<0||c>=COLS){ok=false;break;}
+      if(grid[r][c]!==''&&grid[r][c]!==word[i]){ok=false;break;}
+      cells.push([r,c]);
+    }
+    if(ok){ cells.forEach(([r,c],i)=>{grid[r][c]=word[i];}); placed[word]=cells; return true; }
+  }
+  return false;
+}
+
+function fillBlanks(){
+  const alpha='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(!grid[r][c]) grid[r][c]=alpha[Math.floor(Math.random()*alpha.length)];
+}
+
+function renderGrid(){
+  const wrap=document.getElementById('grid-wrap');
+  wrap.style.gridTemplateColumns=`repeat(${COLS},30px)`;
+  wrap.style.gridTemplateRows=`repeat(${ROWS},30px)`;
+  wrap.innerHTML='';
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    const cell=document.createElement('div');
+    cell.className='ws-cell'; cell.textContent=grid[r][c]; cell.dataset.r=r; cell.dataset.c=c;
+    const isFound=[...found].some(w=>placed[w]&&placed[w].some(([pr,pc])=>pr===r&&pc===c));
+    if(isFound) cell.classList.add('found');
+    cell.addEventListener('mousedown',e=>{e.preventDefault();selecting=true;startSel(r,c);});
+    cell.addEventListener('mouseenter',()=>{if(selecting) extendSel(r,c);});
+    cell.addEventListener('touchstart',e=>{e.preventDefault();selecting=true;startSel(r,c);},{passive:false});
+    cell.addEventListener('touchmove',e=>{
+      e.preventDefault();
+      const t=e.touches[0], el=document.elementFromPoint(t.clientX,t.clientY);
+      if(el&&el.dataset.r!==undefined) extendSel(parseInt(el.dataset.r),parseInt(el.dataset.c));
+    },{passive:false});
+    wrap.appendChild(cell);
+  }
+}
+
+document.addEventListener('mouseup',endSel);
+document.addEventListener('touchend',endSel);
+
+function startSel(r,c){ selected=[[r,c]]; highlightSelected(); }
+
+function extendSel(r,c){
+  if(!selected.length) return;
+  const [sr,sc]=selected[0];
+  const dr=Math.sign(r-sr),dc=Math.sign(c-sc);
+  if(dr===0&&dc===0){selected=[[sr,sc]];highlightSelected();return;}
+  const dist=Math.max(Math.abs(r-sr),Math.abs(c-sc));
+  selected=[];
+  for(let i=0;i<=dist;i++) selected.push([sr+dr*i,sc+dc*i]);
+  highlightSelected();
+}
+
+function endSel(){
+  if(!selecting||!selected.length){selecting=false;return;}
+  selecting=false;
+  // Check if selected spells a word
+  const letters=selected.map(([r,c])=>grid[r][c]).join('');
+  const rev=letters.split('').reverse().join('');
+  const match=words.find(w=>w===letters||w===rev);
+  if(match&&!found.has(match)){
+    found.add(match);
+    document.getElementById('found-count').textContent=found.size;
+    if(found.size===words.length){ clearInterval(timerInt); document.getElementById('msg').textContent=`🎉 Solved in ${document.getElementById('timer').textContent}!`; }
+    else { document.getElementById('msg').textContent=`✅ Found: ${match}!`; setTimeout(()=>document.getElementById('msg').textContent='',1500); }
+  }
+  selected=[];
+  renderGrid();
+}
+
+function highlightSelected(){
+  document.querySelectorAll('.ws-cell.selected').forEach(c=>c.classList.remove('selected'));
+  selected.forEach(([r,c])=>{
+    const cell=document.querySelector(`[data-r="${r}"][data-c="${c}"]`);
+    if(cell) cell.classList.add('selected');
+  });
+}
+
+function renderWords(){
+  const wl=document.getElementById('word-list'); wl.innerHTML='';
+  words.forEach(w=>{
+    const span=document.createElement('span');
+    span.className='word-badge'+(found.has(w)?' done':'');
+    span.id=`wb-${w}`; span.textContent=w; wl.appendChild(span);
+  });
+}
+
+newGame();
+</script>
+</body>
+</html>

@@ -5,6 +5,7 @@ import { games, getGameBySlug, getRelatedGames, categories } from '@/data/games'
 import GameEmbed from '@/components/GameEmbed';
 import GameGrid from '@/components/GameGrid';
 import CategoryBadge from '@/components/CategoryBadge';
+import ShareButtons from '@/components/ShareButtons';
 import { videoGameSchema, breadcrumbSchema } from '@/lib/schema';
 
 interface Props {
@@ -126,9 +127,14 @@ export default async function GamePage({ params }: Props) {
             <h2 className="text-lg font-bold text-white mb-2">About {game.title}</h2>
             <p className="text-gray-400 leading-relaxed mb-6">{game.description}</p>
 
-            <div className="border-t border-gray-700 pt-4">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-2">🕹️ Controls</h3>
-              <p className="text-gray-400 text-sm">{game.controls}</p>
+            <div className="border-t border-gray-700 pt-4 space-y-4">
+              <div>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-2">🕹️ Controls</h3>
+                <p className="text-gray-400 text-sm">{game.controls}</p>
+              </div>
+              <div className="border-t border-gray-800 pt-4">
+                <ShareButtons title={game.title} slug={game.slug} />
+              </div>
             </div>
           </div>
 
