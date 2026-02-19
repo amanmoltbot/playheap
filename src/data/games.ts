@@ -152,7 +152,7 @@ Hextris is one of the most innovative browser puzzle games available. It runs en
     isNew: true,
     plays: 265432,
     license: 'GPL-3.0',
-    author: 'Hextris Team',
+    author: 'Logan Engstrom, Hextris Team',
     sourceUrl: 'https://github.com/Hextris/hextris',
     aspectRatio: '1/1',
     mobileSupported: true,
@@ -187,9 +187,9 @@ Snake is perfect for short sessions (a few minutes while waiting) and marathon h
   },
   {
     id: '4',
-    slug: 'breakout',
-    title: 'Breakout',
-    description: `Breakout is the foundational arcade game that launched an entire genre — and directly inspired the creation of one of the most important companies in tech history. Originally designed by Nolan Bushnell and Steve Jobs for Atari in 1976 (with Steve Wozniak doing the engineering), Breakout took Pong's ball-and-paddle concept and turned it into a solo game where you bounce a ball upward to destroy rows of colorful bricks. The profits from the original arcade cabinet, the story goes, helped fund the early Apple Computer.
+    slug: 'brick-breaker',
+    title: 'Brick Breaker',
+    description: `Brick Breaker is a classic arcade-style game that launched an entire genre — and directly inspired the creation of one of the most important companies in tech history. Originally designed by Nolan Bushnell and Steve Jobs for Atari in 1976 (with Steve Wozniak doing the engineering), Breakout took Pong's ball-and-paddle concept and turned it into a solo game where you bounce a ball upward to destroy rows of colorful bricks. The profits from the original arcade cabinet, the story goes, helped fund the early Apple Computer.
 
 The mechanics are timeless: control a paddle at the bottom of the screen, keeping a ball bouncing against the wall of bricks above. Every brick you destroy earns points. Miss the ball and you lose a life. Clear all the bricks to advance to the next level, where the ball moves faster and the brick formations grow more complex.
 
@@ -201,8 +201,8 @@ Breakout is the perfect casual game — easy enough to start playing instantly, 
 
 **Tips:** Control ball angle deliberately using paddle edges. Target the same column repeatedly to create a channel to the top. Catching the ball on the paddle's edge creates unpredictable angles that clear bricks faster.`,
     category: 'arcade',
-    thumbnailUrl: '/thumbnails/breakout.webp',
-    gameUrl: '/games/breakout/index.html',
+    thumbnailUrl: '/thumbnails/brick-breaker.webp',
+    gameUrl: '/games/brick-breaker/index.html',
     controls: 'Mouse or ← → arrow keys to move paddle. Click or Space to launch. Mobile: touch-drag the paddle.',
     featured: true,
     isNew: true,
@@ -262,9 +262,9 @@ Our version is a pixel-perfect HTML5 implementation with responsive physics, aut
     featured: false,
     isNew: false,
     plays: 376543,
-    license: 'MIT',
+    license: 'Apache-2.0',
     author: 'Nebez Briefkani',
-    sourceUrl: 'https://github.com/nebez/flern',
+    sourceUrl: 'https://github.com/nebez/floppybird',
     aspectRatio: '4/3',
     mobileSupported: true,
   },
@@ -290,8 +290,8 @@ Our browser version plays identically to the original Clumsy Bird web game — n
     featured: false,
     isNew: false,
     plays: 332109,
-    license: 'MIT',
-    author: 'ellisonleao',
+    license: 'GPL-3.0',
+    author: 'Ellison Leão',
     sourceUrl: 'https://github.com/ellisonleao/clumsy-bird',
     aspectRatio: '4/3',
     mobileSupported: true,
@@ -321,8 +321,8 @@ This is a game for players who love old-school arcade shooters but want somethin
     isNew: false,
     plays: 143210,
     license: 'MIT',
-    author: 'Matt Hackmann',
-    sourceUrl: 'https://github.com/mattbdean/radius-raid',
+    author: 'Jack Rugile',
+    sourceUrl: 'https://github.com/jackrugile/radius-raid-js13k',
     aspectRatio: '1/1',
     mobileSupported: false,
   },
@@ -349,9 +349,9 @@ Astray is a showcase of what's possible with HTML5 and modern JavaScript game en
     featured: false,
     isNew: false,
     plays: 123456,
-    license: 'MIT',
-    author: 'wwwtyro',
-    sourceUrl: 'https://github.com/wwwtyro/astray',
+    license: 'Unlicense (Public Domain)',
+    author: 'Rye Terrell',
+    sourceUrl: 'https://github.com/wwwtyro/Astray',
     aspectRatio: '16/9',
     mobileSupported: false,
   },
@@ -632,13 +632,13 @@ No screen peeking — the map is fully visible to both players, so strategy is e
   },
   {
     id: '26',
-    slug: 'connect-four',
-    title: 'Connect Four',
-    description: `Connect Four is the brilliant strategic falling-piece game invented by Howard Wexler and Ned Scheidt in 1974. Two players take turns dropping colored discs into a vertical 7×6 grid, with gravity pulling each disc to the lowest available position in the chosen column. The first player to connect four of their discs in a row — horizontally, vertically, or diagonally — wins. First to four in a row takes the game.
+    slug: 'four-in-a-row',
+    title: 'Four in a Row',
+    description: `Four in a Row is a brilliant strategic falling-piece game invented by Howard Wexler and Ned Scheidt in 1974. Two players take turns dropping colored discs into a vertical 7×6 grid, with gravity pulling each disc to the lowest available position in the chosen column. The first player to connect four of their discs in a row — horizontally, vertically, or diagonally — wins. First to four in a row takes the game.
 
-While Connect Four appears simpler than Chess or Checkers, it has surprising strategic depth. In 1988, mathematicians proved that the first player can always force a win with perfect play — but that solution requires following a complex sequence of moves that is impossible to memorize in practice. Against a real opponent, the game feels genuinely balanced and competitive.
+While Four in a Row appears simpler than Chess or Checkers, it has surprising strategic depth. In 1988, mathematicians proved that the first player can always force a win with perfect play — but that solution requires following a complex sequence of moves that is impossible to memorize in practice. Against a real opponent, the game feels genuinely balanced and competitive.
 
-The strategic vocabulary of Connect Four is rich. "Threats" are positions where a player has three in a row with one open space — a single move from winning. "Double threats" (two simultaneous threats) are unblockable and form the basis of most winning strategies. Setting up a double threat while preventing your opponent from doing the same is the game's central tactical challenge.
+The strategic vocabulary of Four in a Row is rich. "Threats" are positions where a player has three in a row with one open space — a single move from winning. "Double threats" (two simultaneous threats) are unblockable and form the basis of most winning strategies. Setting up a double threat while preventing your opponent from doing the same is the game's central tactical challenge.
 
 Column control matters: the center column offers the most connectivity (connections can extend left, right, and diagonally), making it the most valuable real estate. Players who control the center and one adjacent column early in the game consistently have more strategic options. However, being too predictable in column preference allows your opponent to build threats on your neglected side.
 
@@ -646,8 +646,8 @@ Our version features two modes: two-player (local) and single-player against an 
 
 **Strategy tip:** The first player's power move is center column. Follow up by building diagonal threats in both directions. Force your opponent to block in one direction, then complete the other.`,
     category: 'multiplayer',
-    thumbnailUrl: '/thumbnails/connect-four.webp',
-    gameUrl: '/games/connect-four/index.html',
+    thumbnailUrl: '/thumbnails/four-in-a-row.webp',
+    gameUrl: '/games/four-in-a-row/index.html',
     controls: 'Click a column to drop your disc. Play against a friend or the AI.',
     featured: false,
     isNew: true,
@@ -797,13 +797,13 @@ Your best score is saved locally so every session is a personal best attempt. Ea
   },
   {
     id: '54',
-    slug: 'simon-says',
-    title: 'Simon Says',
-    description: `Simon Says is the iconic electronic memory game that has challenged and delighted players since 1978. Named after the children's game of the same name, the electronic version — the classic round device with four colored buttons — became one of the best-selling games of the late 20th century. Our digital recreation faithfully captures the essence of the original: watch the sequence of flashing lights and sounds, then reproduce it exactly.
+    slug: 'color-memory',
+    title: 'Color Memory',
+    description: `Color Memory is an exciting electronic memory game that has challenged and delighted players since 1978. Named after the children's game of the same name, the electronic version — the classic round device with four colored buttons — became one of the best-selling games of the late 20th century. Our digital recreation faithfully captures the essence of the original: watch the sequence of flashing lights and sounds, then reproduce it exactly.
 
 The game starts simply. One button flashes and plays a tone. You repeat it. Then two in sequence. Then three. Each round adds one more step to the growing pattern. The catch: you must remember the entire sequence from the beginning every single time, not just the new addition. By round 10, you're replaying a 10-step sequence from memory. By round 20, it's a genuine feat of concentration.
 
-Simon Says is primarily a test of sequential working memory — your brain's ability to hold an ordered list of items in mind and reproduce them accurately. Research has shown that the game genuinely improves short-term memory capacity with regular practice. The combination of visual (colored flashes) and auditory (distinct tones for each color) cues engages multiple memory systems simultaneously, which is why the game feels different from, say, memorizing a number list.
+Color Memory is primarily a test of sequential working memory — your brain's ability to hold an ordered list of items in mind and reproduce them accurately. Research has shown that the game genuinely improves short-term memory capacity with regular practice. The combination of visual (colored flashes) and auditory (distinct tones for each color) cues engages multiple memory systems simultaneously, which is why the game feels different from, say, memorizing a number list.
 
 Different players develop different strategies. Some focus purely on visual patterns, watching the sequence like a dance. Others listen to the tones and internalize the melody (each color has a fixed musical pitch). The most effective players combine both, creating a multisensory memory trace that's harder to forget under pressure.
 
@@ -811,8 +811,8 @@ Our version features full audio with authentic tones — each color produces a d
 
 **Tips:** Say each color aloud as it flashes (or subvocalize it). Creating a verbal label for each step dramatically improves recall. Try to hear the "melody" of the sequence rather than individual notes.`,
     category: 'arcade',
-    thumbnailUrl: '/thumbnails/simon-says.webp',
-    gameUrl: '/games/simon-says/index.html',
+    thumbnailUrl: '/thumbnails/color-memory.webp',
+    gameUrl: '/games/color-memory/index.html',
     controls: 'Click or tap the colored buttons in the correct sequence. Watch and listen carefully!',
     featured: false,
     isNew: true,
