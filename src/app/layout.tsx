@@ -52,6 +52,12 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema()) }}
         />
+        {/* Google AdSense */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2048397891774932"
+          crossOrigin="anonymous"
+        />
         {/* Plausible Analytics — privacy-friendly, no cookies, GDPR compliant */}
         <script
           defer
