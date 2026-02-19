@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: 'https://playheap.io/sitemap.xml',
+    sitemap: 'https://arcadeheap.com/sitemap.xml',
   };
 }

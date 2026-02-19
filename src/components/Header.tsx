@@ -27,7 +27,7 @@ export default function Header() {
           <Link href="/" className="flex items-center gap-2 flex-shrink-0" onClick={() => setMenuOpen(false)}>
             <span className="text-2xl">🎮</span>
             <span className="text-xl font-extrabold text-white tracking-tight">
-              Play<span className="text-[#8b5cf6]">Heap</span>
+              Arcade<span className="text-[#8b5cf6]">Heap</span>
             </span>
           </Link>
 

@@ -8,12 +8,6 @@ interface GameCardProps {
   size?: 'normal' | 'large';
 }
 
-function formatPlays(plays: number): string {
-  if (plays >= 1_000_000) return `${(plays / 1_000_000).toFixed(1)}M`;
-  if (plays >= 1_000) return `${(plays / 1_000).toFixed(0)}K`;
-  return plays.toString();
-}
-
 export default function GameCard({ game, size = 'normal' }: GameCardProps) {
   return (
     <Link
@@ -27,7 +21,6 @@ export default function GameCard({ game, size = 'normal' }: GameCardProps) {
           fill
           className="object-cover transition-all duration-300 group-hover:brightness-75 group-hover:scale-110"
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          unoptimized
         />
 
         {/* Hover overlay */}
@@ -63,12 +56,6 @@ export default function GameCard({ game, size = 'normal' }: GameCardProps) {
         </div>
         <div className="flex items-center justify-between">
           <CategoryBadge category={game.category} />
-          <span className="text-gray-500 text-xs flex items-center gap-1">
-            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
-            </svg>
-            {formatPlays(game.plays)}
-          </span>
         </div>
       </div>
     </Link>

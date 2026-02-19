@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'About Us | PlayHeap',
-  description: 'Learn about PlayHeap — your ultimate destination for free HTML5 browser games.',
+  title: 'About Us | ArcadeHeap',
+  description: 'Learn about ArcadeHeap — your ultimate destination for free HTML5 browser games.',
 };
 
 export default function AboutPage() {
@@ -17,7 +17,7 @@ export default function AboutPage() {
 
       <div className="text-center mb-12">
         <div className="text-6xl mb-4">🎮</div>
-        <h1 className="text-4xl font-extrabold text-white mb-4">About PlayHeap</h1>
+        <h1 className="text-4xl font-extrabold text-white mb-4">About ArcadeHeap</h1>
         <p className="text-gray-400 text-lg">
           Your ultimate destination for free HTML5 browser games.
         </p>
@@ -27,7 +27,7 @@ export default function AboutPage() {
         <section className="bg-[#1a1a2e] border border-gray-800 rounded-2xl p-8">
           <h2 className="text-xl font-bold text-white mb-4">Our Mission</h2>
           <p>
-            At PlayHeap, we believe gaming should be accessible to everyone — no downloads, no installs, no paywalls.
+            At ArcadeHeap, we believe gaming should be accessible to everyone — no downloads, no installs, no paywalls.
             Our mission is to bring you high-quality HTML5 games that you can play instantly in your browser,
             on any device, for free.
           </p>
@@ -58,8 +58,8 @@ export default function AboutPage() {
           </p>
           <p className="mt-3">
             Email us at:{' '}
-            <a href="mailto:hello@playheap.io" className="text-[#8b5cf6] hover:underline">
-              hello@playheap.io
+            <a href="mailto:hello@arcadeheap.com" className="text-[#8b5cf6] hover:underline">
+              hello@arcadeheap.com
             </a>
           </p>
         </section>

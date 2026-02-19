@@ -1,21 +1,22 @@
 import Link from 'next/link';
 import { games, getFeaturedGames, getPopularGames, getNewGames, categories, categoryEmoji } from '@/data/games';
 import GameGrid from '@/components/GameGrid';
+import RecentlyPlayed from '@/components/RecentlyPlayed';
 
 export default function HomePage() {
   const featured = getFeaturedGames();
   const popular = getPopularGames(8);
   const newGames = getNewGames().slice(0, 8);
 
-  // Build category sections — only show categories that have games
+  // Build category sections — only show categories with 3+ games
   const categorySections = categories
     .map(cat => ({
       slug: cat.slug,
       label: `${categoryEmoji[cat.slug] ?? '🎮'} ${cat.label} Games`,
       games: games.filter(g => g.category === cat.slug).slice(0, 4),
     }))
-    .filter(section => section.games.length > 0)
-    .slice(0, 4); // Show top 4 category sections on homepage
+    .filter(section => section.games.length >= 3)
+    .slice(0, 5); // Show up to 5 category sections on homepage
 
   return (
     <div>
@@ -33,7 +34,7 @@ export default function HomePage() {
             <span className="text-[#8b5cf6]">No Downloads, Just Play</span>
           </h1>
           <p className="text-gray-400 text-lg md:text-xl mb-8 max-w-2xl mx-auto">
-            Over {games.length} free browser games. Click and play instantly — no installs, no sign-ups.
+            {games.length}+ free browser games. Click and play instantly — no installs, no sign-ups.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
@@ -43,7 +44,7 @@ export default function HomePage() {
               Browse All Games →
             </Link>
             <Link
-              href="/category/action"
+              href="/games?sort=popular"
               className="bg-gray-800 hover:bg-gray-700 text-white font-semibold px-8 py-3 rounded-full text-lg transition-all hover:scale-105"
             >
               🔥 Hot Games
@@ -51,6 +52,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Recently Played — shows only if user has played games */}
+      <RecentlyPlayed />
 
       {/* Featured Games */}
       <section className="max-w-7xl mx-auto px-4 py-10">

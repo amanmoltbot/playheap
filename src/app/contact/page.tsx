@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Contact Us | PlayHeap',
-  description: 'Get in touch with the PlayHeap team.',
+  title: 'Contact Us | ArcadeHeap',
+  description: 'Get in touch with the ArcadeHeap team.',
 };
 
 export default function ContactPage() {
@@ -24,11 +24,11 @@ export default function ContactPage() {
       <div className="space-y-4">
         <div className="bg-[#1a1a2e] border border-gray-800 rounded-xl p-6">
           <h2 className="text-white font-bold mb-2">📧 Email</h2>
-          <a href="mailto:hello@playheap.io" className="text-[#8b5cf6] hover:underline">hello@playheap.io</a>
+          <a href="mailto:hello@arcadeheap.com" className="text-[#8b5cf6] hover:underline">hello@arcadeheap.com</a>
         </div>
         <div className="bg-[#1a1a2e] border border-gray-800 rounded-xl p-6">
           <h2 className="text-white font-bold mb-2">🎮 Submit a Game</h2>
-          <p className="text-gray-400 text-sm">Are you a developer with an HTML5 game you&apos;d like to list on PlayHeap? Send us a link to your game along with a description and thumbnail.</p>
+          <p className="text-gray-400 text-sm">Are you a developer with an HTML5 game you&apos;d like to list on ArcadeHeap? Send us a link to your game along with a description and thumbnail.</p>
         </div>
         <div className="bg-[#1a1a2e] border border-gray-800 rounded-xl p-6">
           <h2 className="text-white font-bold mb-2">🤝 Partnerships & Advertising</h2>

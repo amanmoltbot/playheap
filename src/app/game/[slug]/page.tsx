@@ -5,6 +5,7 @@ import { games, getGameBySlug, getRelatedGames, categories } from '@/data/games'
 import GameEmbed from '@/components/GameEmbed';
 import GameGrid from '@/components/GameGrid';
 import CategoryBadge from '@/components/CategoryBadge';
+import { videoGameSchema, breadcrumbSchema } from '@/lib/schema';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -17,14 +18,25 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const game = getGameBySlug(slug);
-  if (!game) return { title: 'Game Not Found | PlayHeap' };
+  if (!game) return { title: 'Game Not Found | ArcadeHeap' };
   return {
-    title: `Play ${game.title} Free Online | PlayHeap`,
+    title: `Play ${game.title} Free Online | ArcadeHeap`,
     description: game.description,
     openGraph: {
-      title: `Play ${game.title} Free Online | PlayHeap`,
+      title: `Play ${game.title} Free Online | ArcadeHeap`,
       description: game.description,
-      images: [game.thumbnailUrl],
+      images: [
+        {
+          url: `https://arcadeheap.com${game.thumbnailUrl}`,
+          width: 400,
+          height: 300,
+          alt: `${game.title} - Play Free Online at ArcadeHeap`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      images: [`https://arcadeheap.com${game.thumbnailUrl}`],
     },
   };
 }
@@ -37,7 +49,23 @@ export default async function GamePage({ params }: Props) {
   const related = getRelatedGames(game, 4);
   const categoryLabel = categories.find(c => c.slug === game.category)?.label ?? game.category;
 
+  const schemaData = videoGameSchema(game, categoryLabel);
+  const breadcrumb = breadcrumbSchema([
+    { name: 'Home', url: 'https://arcadeheap.com' },
+    { name: categoryLabel, url: `https://arcadeheap.com/category/${game.category}` },
+    { name: game.title, url: `https://arcadeheap.com/game/${game.slug}` },
+  ]);
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+      />
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Main content */}
@@ -54,10 +82,18 @@ export default async function GamePage({ params }: Props) {
           </nav>
 
           {/* Game title */}
-          <h1 className="text-2xl md:text-3xl font-extrabold text-white mb-4">{game.title}</h1>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-white mb-4">
+            Play {game.title} Free Online
+          </h1>
 
           {/* Game embed */}
-          <GameEmbed gameUrl={game.gameUrl} title={game.title} />
+          <GameEmbed
+            gameUrl={game.gameUrl}
+            title={game.title}
+            slug={game.slug}
+            thumbnailUrl={game.thumbnailUrl}
+            aspectRatio={game.aspectRatio}
+          />
 
           {/* Game info */}
           <div className="mt-8 bg-[#1a1a2e] border border-gray-800 rounded-xl p-6">
@@ -74,7 +110,7 @@ export default async function GamePage({ params }: Props) {
                 </span>
               )}
               <span className="ml-auto text-gray-500 text-sm">
-                🎮 {game.plays.toLocaleString()} plays
+                🆓 Free to Play
               </span>
             </div>
 
@@ -152,5 +188,6 @@ export default async function GamePage({ params }: Props) {
         </div>
       </div>
     </div>
+    </>
   );
 }

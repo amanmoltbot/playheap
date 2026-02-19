@@ -5,17 +5,35 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 interface GameEmbedProps {
   gameUrl: string;
   title: string;
+  slug?: string;
+  thumbnailUrl?: string;
+  aspectRatio?: string;
 }
 
-export default function GameEmbed({ gameUrl, title }: GameEmbedProps) {
+export default function GameEmbed({ gameUrl, title, slug, thumbnailUrl, aspectRatio = '16/9' }: GameEmbedProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [hasError, setHasError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleLoad = useCallback(() => {
-    setIsLoading(false);
-  }, []);
+    // Save to recently played
+    if (slug && typeof window !== 'undefined') {
+      try {
+        const recentKey = 'ah_recent';
+        const recent = JSON.parse(localStorage.getItem(recentKey) || '[]');
+        const updated = [
+          { slug, title, thumbnailUrl: thumbnailUrl || '', ts: Date.now() },
+          ...recent.filter((g: { slug: string }) => g.slug !== slug),
+        ].slice(0, 10);
+        localStorage.setItem(recentKey, JSON.stringify(updated));
+      } catch {
+        // localStorage may be unavailable
+      }
+    }
+    // Delay hiding loader slightly so game title screens are covered
+    setTimeout(() => setIsLoading(false), 1200);
+  }, [slug, title, thumbnailUrl]);
 
   const handleError = useCallback(() => {
     setIsLoading(false);
@@ -77,16 +95,22 @@ export default function GameEmbed({ gameUrl, title }: GameEmbedProps) {
       <div
         ref={containerRef}
         className="relative w-full bg-black rounded-xl overflow-hidden shadow-2xl shadow-[#8b5cf6]/10"
-        style={{ aspectRatio: '16/9' }}
+        style={{ aspectRatio: aspectRatio.replace('/', '/'), minHeight: '300px' }}
       >
-        {/* Loading spinner */}
+        {/* Loading screen with ArcadeHeap branding */}
         {isLoading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0f0f1a] z-10">
-            <div className="relative w-16 h-16 mb-4">
-              <div className="absolute inset-0 border-4 border-gray-800 rounded-full" />
-              <div className="absolute inset-0 border-4 border-t-[#8b5cf6] rounded-full animate-spin" />
+            <div className="flex flex-col items-center gap-4">
+              <span className="text-4xl mb-1">🎮</span>
+              <span className="text-xl font-extrabold text-white">
+                Arcade<span className="text-[#8b5cf6]">Heap</span>
+              </span>
+              <div className="relative w-12 h-12">
+                <div className="absolute inset-0 border-4 border-gray-800 rounded-full" />
+                <div className="absolute inset-0 border-4 border-t-[#8b5cf6] rounded-full animate-spin" />
+              </div>
+              <p className="text-gray-400 text-sm animate-pulse">Loading {title}…</p>
             </div>
-            <p className="text-gray-400 text-sm animate-pulse">Loading {title}…</p>
           </div>
         )}
 
@@ -108,6 +132,7 @@ export default function GameEmbed({ gameUrl, title }: GameEmbedProps) {
           className="w-full h-full border-0"
           allow="fullscreen; autoplay; gamepad"
           allowFullScreen
+          sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-forms allow-modals"
           onLoad={handleLoad}
           onError={handleError}
           referrerPolicy="no-referrer"

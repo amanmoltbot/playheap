@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { games, categories } from '@/data/games';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://playheap.io';
+  const baseUrl = 'https://arcadeheap.com';
   const now = new Date();
 
   const staticPages: MetadataRoute.Sitemap = [

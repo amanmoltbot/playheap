@@ -15,10 +15,11 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const cat = categories.find(c => c.slug === slug);
-  if (!cat) return { title: 'Category Not Found | PlayHeap' };
+  if (!cat) return { title: 'Category Not Found | ArcadeHeap' };
+  const catGames = getGamesByCategory(slug);
   return {
-    title: `Free ${cat.label} Games — Play Online | PlayHeap`,
-    description: `Play the best free ${cat.label.toLowerCase()} games online. No downloads required. Hundreds of ${cat.label.toLowerCase()} games at PlayHeap.io`,
+    title: `Free ${cat.label} Games — Play Online | ArcadeHeap`,
+    description: `Play ${catGames.length} free ${cat.label.toLowerCase()} games online. No downloads required. Instant browser play at ArcadeHeap.com`,
   };
 }
 

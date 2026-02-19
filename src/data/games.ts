@@ -10,6 +10,7 @@ export interface Game {
   featured: boolean;
   isNew: boolean;
   plays: number;
+  aspectRatio?: string; // e.g. '16/9', '1/1', '3/4', '9/16', '4/3'
 }
 
 export const categories = [
@@ -53,6 +54,7 @@ export const games: Game[] = [
     featured: true,
     isNew: false,
     plays: 489756,
+    aspectRatio: '3/4',
   },
   {
     id: '2',
@@ -66,6 +68,7 @@ export const games: Game[] = [
     featured: true,
     isNew: false,
     plays: 412345,
+    aspectRatio: '9/16',
   },
   {
     id: '5',
@@ -79,6 +82,7 @@ export const games: Game[] = [
     featured: false,
     isNew: false,
     plays: 354321,
+    aspectRatio: '4/3',
   },
   {
     id: '7',
@@ -92,6 +96,7 @@ export const games: Game[] = [
     featured: false,
     isNew: true,
     plays: 187654,
+    aspectRatio: '4/3',
   },
   {
     id: '11',
@@ -105,6 +110,7 @@ export const games: Game[] = [
     featured: false,
     isNew: true,
     plays: 265432,
+    aspectRatio: '1/1',
   },
   // ─── Arcade ───────────────────────────────────────────────────────────────
   {
@@ -119,6 +125,7 @@ export const games: Game[] = [
     featured: false,
     isNew: false,
     plays: 376543,
+    aspectRatio: '16/9',
   },
   {
     id: '4',
@@ -132,6 +139,7 @@ export const games: Game[] = [
     featured: true,
     isNew: true,
     plays: 289012,
+    aspectRatio: '16/9',
   },
   {
     id: '9',
@@ -145,6 +153,7 @@ export const games: Game[] = [
     featured: false,
     isNew: false,
     plays: 210987,
+    aspectRatio: '9/16',
   },
   {
     id: '10',
@@ -158,6 +167,7 @@ export const games: Game[] = [
     featured: false,
     isNew: false,
     plays: 412345,
+    aspectRatio: '4/3',
   },
   {
     id: '12',
@@ -171,6 +181,7 @@ export const games: Game[] = [
     featured: false,
     isNew: false,
     plays: 376543,
+    aspectRatio: '4/3',
   },
   {
     id: '13',
@@ -184,6 +195,7 @@ export const games: Game[] = [
     featured: false,
     isNew: false,
     plays: 332109,
+    aspectRatio: '4/3',
   },
   // ─── Shooting ─────────────────────────────────────────────────────────────
   {
@@ -198,6 +210,7 @@ export const games: Game[] = [
     featured: true,
     isNew: true,
     plays: 298765,
+    aspectRatio: '4/3',
   },
   {
     id: '15',
@@ -211,6 +224,7 @@ export const games: Game[] = [
     featured: false,
     isNew: false,
     plays: 143210,
+    aspectRatio: '1/1',
   },
   // ─── Adventure ────────────────────────────────────────────────────────────
   {
@@ -225,6 +239,7 @@ export const games: Game[] = [
     featured: false,
     isNew: false,
     plays: 123456,
+    aspectRatio: '16/9',
   },
   // ─── Strategy ─────────────────────────────────────────────────────────────
   {
@@ -239,6 +254,7 @@ export const games: Game[] = [
     featured: false,
     isNew: false,
     plays: 265432,
+    aspectRatio: '1/1',
   },
   // ─── Action (NEW) ─────────────────────────────────────────────────────────
   {
@@ -253,6 +269,7 @@ export const games: Game[] = [
     featured: true,
     isNew: true,
     plays: 98234,
+    aspectRatio: '16/9',
   },
   {
     id: '17',
@@ -266,6 +283,7 @@ export const games: Game[] = [
     featured: false,
     isNew: true,
     plays: 76543,
+    aspectRatio: '16/9',
   },
   // ─── Racing (NEW) ─────────────────────────────────────────────────────────
   {
@@ -280,6 +298,7 @@ export const games: Game[] = [
     featured: true,
     isNew: true,
     plays: 112345,
+    aspectRatio: '9/16',
   },
   {
     id: '19',
@@ -293,6 +312,7 @@ export const games: Game[] = [
     featured: false,
     isNew: true,
     plays: 87654,
+    aspectRatio: '16/9',
   },
   // ─── Sports (NEW) ─────────────────────────────────────────────────────────
   {
@@ -307,6 +327,7 @@ export const games: Game[] = [
     featured: true,
     isNew: true,
     plays: 134567,
+    aspectRatio: '16/9',
   },
   {
     id: '21',
@@ -320,6 +341,7 @@ export const games: Game[] = [
     featured: false,
     isNew: true,
     plays: 95432,
+    aspectRatio: '9/16',
   },
   // ─── Multiplayer (NEW) ────────────────────────────────────────────────────
   {
@@ -334,6 +356,7 @@ export const games: Game[] = [
     featured: true,
     isNew: true,
     plays: 67890,
+    aspectRatio: '16/9',
   },
   // ─── IO Games (NEW) ───────────────────────────────────────────────────────
   {
@@ -348,6 +371,7 @@ export const games: Game[] = [
     featured: true,
     isNew: true,
     plays: 89012,
+    aspectRatio: '16/9',
   },
   {
     id: '24',
@@ -361,6 +385,7 @@ export const games: Game[] = [
     featured: false,
     isNew: true,
     plays: 72345,
+    aspectRatio: '16/9',
   },
 ];
 

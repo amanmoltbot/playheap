@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | PlayHeap',
-  description: 'Read the PlayHeap Terms of Service.',
+  title: 'Terms of Service | ArcadeHeap',
+  description: 'Read the ArcadeHeap Terms of Service.',
 };
 
 export default function TermsPage() {
@@ -21,23 +21,23 @@ export default function TermsPage() {
       <div className="space-y-6 text-gray-400 leading-relaxed">
         <div className="bg-[#1a1a2e] border border-gray-800 rounded-xl p-6">
           <h2 className="text-white font-bold text-lg mb-3">1. Acceptance of Terms</h2>
-          <p>By accessing and using PlayHeap, you agree to be bound by these Terms of Service. If you do not agree, please discontinue use of our services.</p>
+          <p>By accessing and using ArcadeHeap, you agree to be bound by these Terms of Service. If you do not agree, please discontinue use of our services.</p>
         </div>
         <div className="bg-[#1a1a2e] border border-gray-800 rounded-xl p-6">
           <h2 className="text-white font-bold text-lg mb-3">2. Use of Service</h2>
-          <p>PlayHeap is provided for personal, non-commercial entertainment purposes. You agree not to misuse our services, attempt to gain unauthorized access, or use automated tools to scrape our content.</p>
+          <p>ArcadeHeap is provided for personal, non-commercial entertainment purposes. You agree not to misuse our services, attempt to gain unauthorized access, or use automated tools to scrape our content.</p>
         </div>
         <div className="bg-[#1a1a2e] border border-gray-800 rounded-xl p-6">
           <h2 className="text-white font-bold text-lg mb-3">3. Intellectual Property</h2>
-          <p>Games hosted on PlayHeap remain the property of their respective developers. PlayHeap branding and website design are our intellectual property and may not be reproduced without permission.</p>
+          <p>Games hosted on ArcadeHeap remain the property of their respective developers. ArcadeHeap branding and website design are our intellectual property and may not be reproduced without permission.</p>
         </div>
         <div className="bg-[#1a1a2e] border border-gray-800 rounded-xl p-6">
           <h2 className="text-white font-bold text-lg mb-3">4. Disclaimer</h2>
-          <p>PlayHeap is provided &quot;as is&quot; without warranties of any kind. We do not guarantee uninterrupted access or that games will always function correctly.</p>
+          <p>ArcadeHeap is provided &quot;as is&quot; without warranties of any kind. We do not guarantee uninterrupted access or that games will always function correctly.</p>
         </div>
         <div className="bg-[#1a1a2e] border border-gray-800 rounded-xl p-6">
           <h2 className="text-white font-bold text-lg mb-3">5. Contact</h2>
-          <p>Questions about these terms? Email us at <a href="mailto:hello@playheap.io" className="text-[#8b5cf6] hover:underline">hello@playheap.io</a></p>
+          <p>Questions about these terms? Email us at <a href="mailto:hello@arcadeheap.com" className="text-[#8b5cf6] hover:underline">hello@arcadeheap.com</a></p>
         </div>
       </div>
     </div>
