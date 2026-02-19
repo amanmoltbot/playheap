@@ -291,6 +291,38 @@ function loop() {
   draw();
 }
 
+// Touch swipe support for mobile
+let tX = null, tY = null;
+document.addEventListener('touchstart', e => { tX = e.touches[0].clientX; tY = e.touches[0].clientY; }, {passive:true});
+document.addEventListener('touchend', e => {
+  if (tX === null) return;
+  const dx = e.changedTouches[0].clientX - tX;
+  const dy = e.changedTouches[0].clientY - tY;
+  if (Math.abs(dx) < 8 && Math.abs(dy) < 8) {
+    // Tap = rotate
+    if (state === 'playing') {
+      const rot = rotate(current.shape);
+      if (valid(rot, current.x, current.y)) current.shape = rot;
+      else if (valid(rot, current.x+1, current.y)) { current.shape = rot; current.x++; }
+      else if (valid(rot, current.x-1, current.y)) { current.shape = rot; current.x--; }
+    } else if (state === 'idle' || state === 'gameover') newGame();
+    tX = null; tY = null; return;
+  }
+  if (Math.abs(dx) > Math.abs(dy)) {
+    if (dx > 0 && valid(current.shape, current.x+1, current.y)) current.x++;
+    else if (dx < 0 && valid(current.shape, current.x-1, current.y)) current.x--;
+  } else {
+    if (dy > 0) {
+      if (Math.abs(dy) > 80) hardDrop();
+      else if (valid(current.shape, current.x, current.y+1)) current.y++;
+    } else {
+      const rot = rotate(current.shape);
+      if (valid(rot, current.x, current.y)) current.shape = rot;
+    }
+  }
+  tX = null; tY = null;
+}, {passive:true});
+
 state = 'idle';
 current = newPiece();
 next = newPiece();

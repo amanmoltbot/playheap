@@ -101,7 +101,8 @@ export default function GameEmbed({ gameUrl, title, slug, thumbnailUrl, aspectRa
         {isLoading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0f0f1a] z-10">
             <div className="flex flex-col items-center gap-4">
-              <span className="text-4xl mb-1">🎮</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.svg" alt="ArcadeHeap" className="w-12 h-12 mb-1" />
               <span className="text-xl font-extrabold text-white">
                 Arcade<span className="text-[#8b5cf6]">Heap</span>
               </span>

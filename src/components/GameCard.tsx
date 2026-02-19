@@ -46,6 +46,14 @@ export default function GameCard({ game, size = 'normal' }: GameCardProps) {
             </span>
           )}
         </div>
+        {/* Mobile badge */}
+        {game.mobileSupported === false && (
+          <div className="absolute top-2 right-2">
+            <span className="bg-black/60 text-gray-400 text-xs px-1.5 py-0.5 rounded backdrop-blur-sm" title="Best on desktop">
+              🖥️
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="p-3">

@@ -25,7 +25,8 @@ export default function Header() {
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0" onClick={() => setMenuOpen(false)}>
-            <span className="text-2xl">🎮</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.svg" alt="ArcadeHeap" className="w-8 h-8" />
             <span className="text-xl font-extrabold text-white tracking-tight">
               Arcade<span className="text-[#8b5cf6]">Heap</span>
             </span>

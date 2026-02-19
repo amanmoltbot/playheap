@@ -319,6 +319,27 @@ function loop() {
   draw();
   requestAnimationFrame(loop);
 }
+
+// Touch / mobile controls
+let touchMoveX = null;
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  touchMoveX = e.touches[0].clientX;
+  if (state === 'title' || state === 'gameover') {
+    score = 0; lives = 3; wave = 1; updateHUD(); initGame();
+  } else launch();
+}, {passive:false});
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (touchMoveX === null || state !== 'playing') return;
+  const dx = e.touches[0].clientX - touchMoveX;
+  const rect = canvas.getBoundingClientRect();
+  const scaledDx = dx * (W / rect.width);
+  player.x = Math.max(0, Math.min(W - player.w, player.x + scaledDx * 0.8));
+  touchMoveX = e.touches[0].clientX;
+}, {passive:false});
+canvas.addEventListener('touchend', e => { touchMoveX = null; }, {passive:true});
+
 loop();
 </script>
 </body>

@@ -109,6 +109,15 @@ export default async function GamePage({ params }: Props) {
                   ✨ New
                 </span>
               )}
+              {game.mobileSupported === true ? (
+                <span className="bg-sky-500/20 text-sky-400 border border-sky-500/30 text-sm font-medium px-3 py-1 rounded-full" title="Works great on mobile and tablet">
+                  📱 Mobile Friendly
+                </span>
+              ) : game.mobileSupported === false ? (
+                <span className="bg-gray-700/40 text-gray-400 border border-gray-600/30 text-sm font-medium px-3 py-1 rounded-full" title="Best played on desktop with keyboard/mouse">
+                  🖥️ Desktop Only
+                </span>
+              ) : null}
               <span className="ml-auto text-gray-500 text-sm">
                 🆓 Free to Play
               </span>

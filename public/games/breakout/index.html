@@ -196,6 +196,20 @@ canvas.addEventListener('mousemove', e => {
   paddle.x = Math.max(0, Math.min(W - paddle.w, mx - paddle.w/2));
 });
 canvas.addEventListener('click', handleAction);
+// Touch support
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const mx = (e.touches[0].clientX - rect.left) * (W / rect.width);
+  paddle.x = Math.max(0, Math.min(W - paddle.w, mx - paddle.w/2));
+}, {passive:false});
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const mx = (e.touches[0].clientX - rect.left) * (W / rect.width);
+  paddle.x = Math.max(0, Math.min(W - paddle.w, mx - paddle.w/2));
+  handleAction();
+}, {passive:false});
 document.addEventListener('keydown', e => {
   keys[e.key] = true;
   if (e.key === ' ') { e.preventDefault(); handleAction(); }

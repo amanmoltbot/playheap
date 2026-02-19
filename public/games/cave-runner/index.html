@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Cave Runner</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#0a0a0a;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:100vh; font-family:'Segoe UI',sans-serif; color:#ddd;
+    overflow:hidden; user-select:none; touch-action:none;
+  }
+  #gameWrap { position:relative; }
+  canvas { display:block; border-radius:8px; box-shadow:0 0 40px rgba(251,146,60,0.2); }
+  #ui { display:flex; gap:32px; margin-bottom:10px; font-size:0.9rem; color:#aaa; }
+  #ui span { color:#fb923c; font-weight:bold; font-size:1rem; }
+  #tapHint {
+    position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
+    color:rgba(255,255,255,0.4); font-size:0.75rem; pointer-events:none;
+  }
+</style>
+</head>
+<body>
+<div id="ui">Score: <span id="score">0</span> &nbsp;|&nbsp; Best: <span id="best">0</span> &nbsp;|&nbsp; Lives: <span id="lives">3</span></div>
+<div id="gameWrap">
+  <canvas id="c"></canvas>
+  <div id="tapHint">Tap / Space / Click to jump</div>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+// Responsive sizing
+function resize() {
+  const vw = Math.min(window.innerWidth, 700);
+  const vh = Math.min(window.innerHeight - 80, 420);
+  const ar = 700 / 420;
+  if (vw / vh > ar) {
+    canvas.height = vh;
+    canvas.width = vh * ar;
+  } else {
+    canvas.width = vw;
+    canvas.height = vw / ar;
+  }
+  scale = canvas.width / 700;
+}
+let scale = 1;
+resize();
+window.addEventListener('resize', () => { resize(); });
+
+const W = () => canvas.width;
+const H = () => canvas.height;
+
+// Game constants (in "design units" scaled by `scale`)
+const GROUND_Y = () => H() * 0.75;
+const GRAVITY = 0.6;
+const JUMP_V = -13;
+const DBL_JUMP_V = -11;
+const BASE_SPEED = 4;
+const OBSTACLE_MIN_GAP = 260;
+
+// Colors
+const CAVE_BG = '#0d0d1a';
+const STONE_COLOR = '#3d3d5c';
+const STONE_LIGHT = '#555577';
+const PLAYER_COLOR = '#fb923c';
+const OBSTACLE_COLOR = '#4a4a70';
+const OBSTACLE_LIGHT = '#6b6b99';
+const GEM_COLORS = ['#38bdf8','#34d399','#f472b6','#facc15'];
+const TORCH_COLOR = '#fb923c';
+const PARTICLE_COLORS = ['#fb923c','#fbbf24','#fed7aa'];
+
+let player, obstacles, gems, particles, torches;
+let score, best, lives, speed, state, jumpCount, frame, distanceMeter;
+let lastObstacleX;
+
+function initGame() {
+  player = { x: 100 * scale, y: GROUND_Y(), w: 32 * scale, h: 40 * scale, vy: 0, onGround: true, dead: false, deathTimer: 0 };
+  obstacles = [];
+  gems = [];
+  particles = [];
+  torches = [{x: 150, flicker: 0}, {x: 400, flicker: 0.5}, {x: 650, flicker: 0.3}];
+  score = 0;
+  if (!best) best = parseInt(localStorage.getItem('cr_best') || '0');
+  lives = 3;
+  speed = BASE_SPEED;
+  state = 'start';
+  jumpCount = 0;
+  frame = 0;
+  distanceMeter = 0;
+  lastObstacleX = 700 + 150;
+  updateHUD();
+}
+
+function spawnObstacle() {
+  const types = ['rock', 'spike', 'gap'];
+  const type = types[Math.floor(Math.random() * 3)];
+  const h = (30 + Math.random() * 35) * scale;
+  const x = lastObstacleX + OBSTACLE_MIN_GAP * scale + Math.random() * 180 * scale;
+  lastObstacleX = x;
+  obstacles.push({ x, y: GROUND_Y() - h + player.h, w: 28 * scale, h, type });
+}
+
+function spawnGem() {
+  const x = W() + 50 * scale + Math.random() * 300 * scale;
+  const y = GROUND_Y() - (60 + Math.random() * 80) * scale;
+  gems.push({ x, y, r: 8 * scale, color: GEM_COLORS[Math.floor(Math.random() * GEM_COLORS.length)], collected: false });
+}
+
+function emitParticles(x, y, count, color) {
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const spd = (1 + Math.random() * 3) * scale;
+    particles.push({ x, y, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd, life: 1, color });
+  }
+}
+
+function jump() {
+  if (state === 'start' || state === 'gameover') { start(); return; }
+  if (state !== 'playing') return;
+  if (player.onGround) {
+    player.vy = JUMP_V * scale;
+    player.onGround = false;
+    jumpCount = 1;
+    emitParticles(player.x + player.w/2, player.y + player.h, 5, '#fb923c');
+  } else if (jumpCount < 2) {
+    player.vy = DBL_JUMP_V * scale;
+    jumpCount = 2;
+    emitParticles(player.x + player.w/2, player.y + player.h/2, 8, '#fbbf24');
+  }
+}
+
+function start() {
+  state = 'playing';
+  player.y = GROUND_Y();
+  player.vy = 0;
+  player.onGround = true;
+  player.dead = false;
+  obstacles = [];
+  gems = [];
+  particles = [];
+  if (lives <= 0) {
+    if (score > best) { best = score; localStorage.setItem('cr_best', String(best)); }
+    lives = 3;
+    score = 0;
+    speed = BASE_SPEED;
+    distanceMeter = 0;
+  }
+  lastObstacleX = 700 + 150;
+  updateHUD();
+}
+
+function die() {
+  if (player.dead) return;
+  player.dead = true;
+  emitParticles(player.x + player.w/2, player.y + player.h/2, 20, '#fb923c');
+  lives--;
+  updateHUD();
+  setTimeout(() => {
+    state = lives <= 0 ? 'gameover' : 'dead';
+  }, 600);
+}
+
+function tick() {
+  if (state !== 'playing') return;
+  frame++;
+  distanceMeter++;
+  score = Math.floor(distanceMeter / 10);
+  updateHUD();
+  speed = BASE_SPEED + distanceMeter / 600;
+
+  // Player physics
+  if (!player.onGround) {
+    player.vy += GRAVITY * scale;
+    player.y += player.vy;
+  }
+  if (player.y >= GROUND_Y()) {
+    player.y = GROUND_Y();
+    player.vy = 0;
+    player.onGround = true;
+    jumpCount = 0;
+  }
+
+  // Move obstacles
+  for (const o of obstacles) o.x -= speed * scale;
+  obstacles = obstacles.filter(o => o.x > -100 * scale);
+
+  // Move gems
+  for (const g of gems) g.x -= speed * scale;
+  gems = gems.filter(g => g.x > -100 * scale);
+
+  // Spawn
+  if (!obstacles.length || W() - obstacles[obstacles.length - 1].x > OBSTACLE_MIN_GAP * scale) {
+    if (Math.random() < 0.4) spawnObstacle();
+  }
+  if (gems.length < 2 && Math.random() < 0.01) spawnGem();
+
+  // Particle update
+  for (const p of particles) {
+    p.x += p.vx; p.y += p.vy; p.vy += 0.1 * scale;
+    p.life -= 0.04;
+    p.vx *= 0.95;
+  }
+  particles = particles.filter(p => p.life > 0);
+
+  // Torch flicker
+  for (const t of torches) { t.x -= speed * scale; t.flicker = (t.flicker + 0.1) % (Math.PI * 2); }
+  torches = torches.filter(t => t.x > -50);
+  if (torches.length < 3) torches.push({ x: W() + 80 * scale + Math.random() * 200 * scale, flicker: Math.random() * Math.PI * 2 });
+
+  // Collision check
+  if (!player.dead) {
+    for (const o of obstacles) {
+      const px = player.x + 4 * scale, pw = player.w - 8 * scale;
+      if (px < o.x + o.w && px + pw > o.x && player.y + player.h > o.y && player.y < o.y + o.h) {
+        die(); break;
+      }
+    }
+    // Gem collection
+    for (const g of gems) {
+      if (!g.collected) {
+        const dx = player.x + player.w/2 - g.x;
+        const dy = player.y + player.h/2 - g.y;
+        if (Math.sqrt(dx*dx + dy*dy) < g.r + 16 * scale) {
+          g.collected = true;
+          score += 5;
+          emitParticles(g.x, g.y, 8, g.color);
+        }
+      }
+    }
+    gems = gems.filter(g => !g.collected);
+  }
+}
+
+function drawBackground() {
+  // Sky/cave gradient
+  const grad = ctx.createLinearGradient(0, 0, 0, H());
+  grad.addColorStop(0, '#0d0d1a');
+  grad.addColorStop(0.6, '#1a1a2e');
+  grad.addColorStop(1, '#0a0a14');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W(), H());
+
+  // Stalactites
+  ctx.fillStyle = '#252540';
+  for (let i = 0; i < 12; i++) {
+    const sx = (i * 62 + frame * speed * 0.3) % (W() + 100) - 50;
+    const sh = 20 + (i * 17) % 35;
+    ctx.beginPath();
+    ctx.moveTo(sx - 12 * scale, 0);
+    ctx.lineTo(sx + 12 * scale, 0);
+    ctx.lineTo(sx, sh * scale);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Ground
+  ctx.fillStyle = STONE_COLOR;
+  ctx.fillRect(0, GROUND_Y() + player.h, W(), H() - GROUND_Y() - player.h);
+  ctx.fillStyle = STONE_LIGHT;
+  ctx.fillRect(0, GROUND_Y() + player.h, W(), 4 * scale);
+
+  // Torches
+  for (const t of torches) {
+    const tx = t.x;
+    const ty = GROUND_Y() + player.h - 24 * scale;
+    // Torch body
+    ctx.fillStyle = '#8B5E3C';
+    ctx.fillRect(tx - 4 * scale, ty, 8 * scale, 18 * scale);
+    // Flame
+    const flameSize = (1 + 0.2 * Math.sin(t.flicker * 4 + frame * 0.3)) * scale;
+    ctx.shadowBlur = 20; ctx.shadowColor = '#fb923c';
+    ctx.fillStyle = `rgba(251,146,60,0.9)`;
+    ctx.beginPath();
+    ctx.ellipse(tx, ty - 8 * flameSize, 6 * flameSize, 10 * flameSize, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = `rgba(254,215,170,0.7)`;
+    ctx.beginPath();
+    ctx.ellipse(tx, ty - 6 * flameSize, 3 * flameSize, 6 * flameSize, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+}
+
+function drawPlayer() {
+  const px = player.x, py = player.y;
+  const pw = player.w, ph = player.h;
+  const bob = player.onGround ? Math.sin(frame * 0.15) * 2 * scale : 0;
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.beginPath();
+  ctx.ellipse(px + pw/2, GROUND_Y() + ph + 2 * scale, pw * 0.5, 4 * scale, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  if (player.dead) return;
+
+  ctx.shadowBlur = 15; ctx.shadowColor = PLAYER_COLOR;
+  // Body
+  ctx.fillStyle = PLAYER_COLOR;
+  ctx.beginPath();
+  ctx.roundRect(px, py - bob, pw, ph, 6 * scale);
+  ctx.fill();
+  // Visor
+  ctx.fillStyle = '#1e293b';
+  ctx.beginPath();
+  ctx.roundRect(px + 6 * scale, py + 6 * scale - bob, pw - 12 * scale, 12 * scale, 3 * scale);
+  ctx.fill();
+  // Visor glow
+  ctx.fillStyle = 'rgba(56,189,248,0.5)';
+  ctx.fillRect(px + 8 * scale, py + 8 * scale - bob, pw - 16 * scale, 4 * scale);
+  ctx.shadowBlur = 0;
+}
+
+function drawObstacles() {
+  for (const o of obstacles) {
+    ctx.fillStyle = OBSTACLE_COLOR;
+    ctx.shadowBlur = 8; ctx.shadowColor = '#3b3b5e';
+    ctx.beginPath();
+    if (o.type === 'spike') {
+      ctx.moveTo(o.x, o.y + o.h);
+      ctx.lineTo(o.x + o.w/2, o.y);
+      ctx.lineTo(o.x + o.w, o.y + o.h);
+      ctx.closePath();
+    } else {
+      ctx.roundRect(o.x, o.y, o.w, o.h, 4 * scale);
+    }
+    ctx.fill();
+    ctx.fillStyle = OBSTACLE_LIGHT;
+    ctx.fillRect(o.x + 2 * scale, o.y + 2 * scale, o.w - 4 * scale, 3 * scale);
+    ctx.shadowBlur = 0;
+  }
+}
+
+function drawGems() {
+  for (const g of gems) {
+    ctx.shadowBlur = 12; ctx.shadowColor = g.color;
+    ctx.fillStyle = g.color;
+    ctx.beginPath();
+    // Diamond shape
+    ctx.moveTo(g.x, g.y - g.r);
+    ctx.lineTo(g.x + g.r, g.y);
+    ctx.lineTo(g.x, g.y + g.r);
+    ctx.lineTo(g.x - g.r, g.y);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.beginPath();
+    ctx.moveTo(g.x, g.y - g.r);
+    ctx.lineTo(g.x + g.r * 0.3, g.y - g.r * 0.2);
+    ctx.lineTo(g.x, g.y);
+    ctx.lineTo(g.x - g.r * 0.3, g.y - g.r * 0.2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+}
+
+function drawParticles() {
+  for (const p of particles) {
+    ctx.globalAlpha = p.life;
+    ctx.fillStyle = p.color;
+    ctx.shadowBlur = 6; ctx.shadowColor = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 3 * scale * p.life, 0, Math.PI*2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawOverlay() {
+  if (state === 'start') {
+    ctx.fillStyle = 'rgba(10,10,20,0.8)';
+    ctx.fillRect(0, 0, W(), H());
+    ctx.fillStyle = '#fb923c';
+    ctx.font = `bold ${32 * scale}px Segoe UI`;
+    ctx.textAlign = 'center';
+    ctx.fillText('CAVE RUNNER', W()/2, H()/2 - 40 * scale);
+    ctx.fillStyle = '#aaa';
+    ctx.font = `${16 * scale}px Segoe UI`;
+    ctx.fillText('Tap / Click / Space to jump', W()/2, H()/2);
+    ctx.fillText('Double-tap for double jump!', W()/2, H()/2 + 24 * scale);
+    ctx.fillStyle = '#fb923c';
+    ctx.font = `bold ${14 * scale}px Segoe UI`;
+    ctx.fillText('▶ TAP TO START', W()/2, H()/2 + 60 * scale);
+  } else if (state === 'dead') {
+    ctx.fillStyle = 'rgba(10,10,20,0.75)';
+    ctx.fillRect(0, 0, W(), H());
+    ctx.fillStyle = '#f43f5e';
+    ctx.font = `bold ${28 * scale}px Segoe UI`;
+    ctx.textAlign = 'center';
+    ctx.fillText('OUCH!', W()/2, H()/2 - 20 * scale);
+    ctx.fillStyle = '#aaa';
+    ctx.font = `${14 * scale}px Segoe UI`;
+    ctx.fillText(`Lives remaining: ${lives}  |  Score: ${score}`, W()/2, H()/2 + 14 * scale);
+    ctx.fillText('Tap to continue', W()/2, H()/2 + 40 * scale);
+  } else if (state === 'gameover') {
+    ctx.fillStyle = 'rgba(10,10,20,0.85)';
+    ctx.fillRect(0, 0, W(), H());
+    ctx.fillStyle = '#f43f5e';
+    ctx.font = `bold ${30 * scale}px Segoe UI`;
+    ctx.textAlign = 'center';
+    ctx.fillText('GAME OVER', W()/2, H()/2 - 40 * scale);
+    ctx.fillStyle = '#fb923c';
+    ctx.font = `${18 * scale}px Segoe UI`;
+    ctx.fillText(`Score: ${score}`, W()/2, H()/2 - 6 * scale);
+    ctx.fillStyle = '#888';
+    ctx.font = `${14 * scale}px Segoe UI`;
+    ctx.fillText(`Best: ${best}`, W()/2, H()/2 + 20 * scale);
+    ctx.fillStyle = '#fb923c';
+    ctx.font = `bold ${14 * scale}px Segoe UI`;
+    ctx.fillText('Tap to play again', W()/2, H()/2 + 50 * scale);
+  }
+}
+
+function updateHUD() {
+  document.getElementById('score').textContent = score;
+  document.getElementById('best').textContent = Math.max(score, best);
+  document.getElementById('lives').textContent = '❤️'.repeat(Math.max(0, lives));
+}
+
+function loop() {
+  ctx.clearRect(0, 0, W(), H());
+  drawBackground();
+  drawObstacles();
+  drawGems();
+  drawPlayer();
+  drawParticles();
+  drawOverlay();
+  tick();
+  requestAnimationFrame(loop);
+}
+
+// Input
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' || e.key === 'ArrowUp') { e.preventDefault(); jump(); }
+});
+canvas.addEventListener('click', jump);
+canvas.addEventListener('touchstart', e => { e.preventDefault(); jump(); }, { passive: false });
+
+initGame();
+loop();
+</script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkers</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:#0f0f1a;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:100vh; font-family:'Segoe UI',sans-serif; color:#e2e8f0;
+  user-select:none;
+}
+h1 { font-size:1.6rem; color:#8b5cf6; margin-bottom:6px; letter-spacing:2px; }
+#status { font-size:0.9rem; color:#a0a0c0; margin-bottom:10px; min-height:1.2em; }
+canvas { border-radius:8px; box-shadow:0 0 40px rgba(139,92,246,0.25); cursor:pointer; }
+#scores { display:flex; gap:48px; margin-top:10px; font-size:0.85rem; color:#888; }
+#scores span { color:#c084fc; font-weight:bold; font-size:1rem; }
+#controls { margin-top:8px; color:#555; font-size:0.75rem; }
+</style>
+</head>
+<body>
+<h1>♟ CHECKERS</h1>
+<div id="status">Your turn (Red)</div>
+<canvas id="c"></canvas>
+<div id="scores">Red: <span id="rScore">12</span> &nbsp;&nbsp; Black: <span id="bScore">12</span></div>
+<div id="controls">Click a piece to select, then click destination. Captures are mandatory.</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+const CELL = Math.min(Math.floor(Math.min(window.innerWidth * 0.95, window.innerHeight * 0.75) / 8), 72);
+const N = 8;
+canvas.width = CELL * N;
+canvas.height = CELL * N;
+
+// Board: 0=empty, 1=red, 2=black, 3=red king, 4=black king
+let board, selected, validMoves, turn, gameOver, mustCapture;
+
+function initGame() {
+  board = Array.from({length: N}, () => Array(N).fill(0));
+  // Place pieces
+  for (let r = 0; r < 3; r++) for (let c = 0; c < N; c++) if ((r+c)%2===1) board[r][c] = 2; // black
+  for (let r = 5; r < 8; r++) for (let c = 0; c < N; c++) if ((r+c)%2===1) board[r][c] = 1; // red
+  selected = null; validMoves = []; turn = 1; gameOver = false;
+  updateStatus();
+  updateScores();
+}
+
+function isRed(v) { return v === 1 || v === 3; }
+function isBlack(v) { return v === 2 || v === 4; }
+function isKing(v) { return v === 3 || v === 4; }
+function isEnemy(v, turn) { return turn === 1 ? isBlack(v) : isRed(v); }
+function isFriend(v, turn) { return turn === 1 ? isRed(v) : isBlack(v); }
+
+function getDirs(v) {
+  if (v === 1) return [[-1,-1],[-1,1]];
+  if (v === 2) return [[1,-1],[1,1]];
+  return [[-1,-1],[-1,1],[1,-1],[1,1]];
+}
+
+function getCaptures(board, r, c) {
+  const v = board[r][c];
+  if (!v) return [];
+  const dirs = getDirs(v);
+  const caps = [];
+  for (const [dr,dc] of dirs) {
+    const mr = r+dr, mc = c+dc;
+    const lr = r+dr*2, lc = c+dc*2;
+    if (lr>=0 && lr<N && lc>=0 && lc<N && isEnemy(board[mr][mc], isRed(v)?1:2) && board[lr][lc]===0) {
+      caps.push({r:lr, c:lc, capR:mr, capC:mc});
+    }
+  }
+  return caps;
+}
+
+function getMoves(board, r, c, capturesOnly=false) {
+  const v = board[r][c];
+  if (!v) return [];
+  const caps = getCaptures(board, r, c);
+  if (caps.length) return caps;
+  if (capturesOnly) return [];
+  const dirs = getDirs(v);
+  return dirs.map(([dr,dc])=>({r:r+dr,c:c+dc,capR:-1,capC:-1}))
+    .filter(m=>m.r>=0&&m.r<N&&m.c>=0&&m.c<N&&board[m.r][m.c]===0);
+}
+
+function getAllCaptures(b, t) {
+  const caps = [];
+  for (let r=0;r<N;r++) for (let c=0;c<N;c++) {
+    if (isFriend(b[r][c], t)) {
+      const cs = getCaptures(b,r,c);
+      if (cs.length) caps.push({r,c});
+    }
+  }
+  return caps;
+}
+
+function selectPiece(r, c) {
+  if (!isFriend(board[r][c], turn)) return;
+  const capturers = getAllCaptures(board, turn);
+  const isForced = capturers.length > 0;
+  if (isForced && !capturers.find(p=>p.r===r&&p.c===c)) {
+    setStatus('⚠ You must capture!', '#f87171');
+    return;
+  }
+  const moves = getMoves(board, r, c);
+  if (!moves.length) return;
+  selected = {r,c};
+  validMoves = moves;
+  draw();
+}
+
+function makeMove(mr, mc) {
+  if (!selected) return;
+  const move = validMoves.find(m=>m.r===mr&&m.c===mc);
+  if (!move) { selected=null; validMoves=[]; draw(); return; }
+  const {r,c} = selected;
+  const v = board[r][c];
+  board[mr][mc] = v;
+  board[r][c] = 0;
+  if (move.capR >= 0) board[move.capR][move.capC] = 0;
+  // Promote to king
+  if (v===1 && mr===0) board[mr][mc]=3;
+  if (v===2 && mr===7) board[mr][mc]=4;
+  selected = null; validMoves = [];
+  updateScores();
+  // Check if can capture again
+  if (move.capR >= 0) {
+    const moreCaps = getCaptures(board, mr, mc);
+    if (moreCaps.length) {
+      selected = {r:mr,c:mc};
+      validMoves = moreCaps;
+      draw(); return;
+    }
+  }
+  // Check win
+  const redPieces = board.flat().filter(isRed).length;
+  const blkPieces = board.flat().filter(isBlack).length;
+  if (!redPieces || !blkPieces) {
+    gameOver = true;
+    setStatus((!redPieces ? 'Black wins! 🎉' : 'Red wins! 🎉'), '#22c55e');
+    draw(); return;
+  }
+  turn = turn===1?2:1;
+  updateStatus();
+  draw();
+  if (turn===2) setTimeout(aiMove, 300);
+}
+
+// Simple greedy AI for black
+function aiMove() {
+  if (gameOver) return;
+  const all = [];
+  const capturers = getAllCaptures(board, 2);
+  const hasCaps = capturers.length > 0;
+  for (let r=0;r<N;r++) for (let c=0;c<N;c++) {
+    if (isBlack(board[r][c])) {
+      const moves = hasCaps ? getCaptures(board,r,c) : getMoves(board,r,c);
+      for (const m of moves) all.push({r,c,m});
+    }
+  }
+  if (!all.length) {
+    gameOver=true; setStatus('Red wins! (No moves for Black)','#22c55e'); draw(); return;
+  }
+  // Score moves: prefer captures, king promotions, center
+  all.sort((a,b)=>{
+    const aScore = (a.m.capR>=0?100:0)+(a.m.r===7?50:0)+(4-Math.abs(a.m.c-3.5));
+    const bScore = (b.m.capR>=0?100:0)+(b.m.r===7?50:0)+(4-Math.abs(b.m.c-3.5));
+    return bScore - aScore + (Math.random()-0.5)*20;
+  });
+  const best = all[0];
+  selected = {r:best.r,c:best.c};
+  validMoves = [best.m];
+  makeMove(best.m.r, best.m.c);
+}
+
+function updateStatus() {
+  const capturers = getAllCaptures(board, turn);
+  const all = [];
+  for (let r=0;r<N;r++) for (let c=0;c<N;c++) {
+    if (isFriend(board[r][c],turn)) {
+      const ms = getMoves(board,r,c);
+      if (ms.length) all.push(1);
+    }
+  }
+  if (!all.length && !gameOver) {
+    gameOver=true;
+    setStatus(turn===1?'Black wins! (No moves)':'Red wins! (No moves)', '#22c55e');
+    return;
+  }
+  const forced = capturers.length > 0;
+  if (turn===1) {
+    setStatus(forced ? '⚡ Your turn (Red) — MUST capture!' : 'Your turn (Red)', '#fb7185');
+  } else {
+    setStatus('AI thinking... (Black)', '#60a5fa');
+  }
+}
+
+function setStatus(txt, color='#a0a0c0') {
+  const el = document.getElementById('status');
+  el.textContent = txt;
+  el.style.color = color;
+}
+
+function updateScores() {
+  const red = board.flat().filter(isRed).length;
+  const blk = board.flat().filter(isBlack).length;
+  document.getElementById('rScore').textContent = red;
+  document.getElementById('bScore').textContent = blk;
+}
+
+function draw() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // Board
+  for (let r=0;r<N;r++) for (let c=0;c<N;c++) {
+    ctx.fillStyle = (r+c)%2===0 ? '#2d1b4e' : '#1a1030';
+    ctx.fillRect(c*CELL, r*CELL, CELL, CELL);
+  }
+  // Highlight selected
+  if (selected) {
+    ctx.fillStyle='rgba(139,92,246,0.35)';
+    ctx.fillRect(selected.c*CELL, selected.r*CELL, CELL, CELL);
+  }
+  // Valid move targets
+  for (const m of validMoves) {
+    ctx.fillStyle='rgba(34,197,94,0.3)';
+    ctx.fillRect(m.c*CELL, m.r*CELL, CELL, CELL);
+    ctx.strokeStyle='#22c55e'; ctx.lineWidth=2;
+    ctx.strokeRect(m.c*CELL+1, m.r*CELL+1, CELL-2, CELL-2);
+  }
+  // Pieces
+  for (let r=0;r<N;r++) for (let c=0;c<N;c++) {
+    const v = board[r][c];
+    if (!v) continue;
+    const cx = c*CELL+CELL/2, cy = r*CELL+CELL/2, cr = CELL*0.38;
+    // Shadow
+    ctx.shadowBlur=10; ctx.shadowColor=isRed(v)?'#ef4444':'#334155';
+    // Base color
+    const grad = ctx.createRadialGradient(cx-cr*0.3,cy-cr*0.3,cr*0.1,cx,cy,cr);
+    if (isRed(v)) {
+      grad.addColorStop(0,'#fca5a5'); grad.addColorStop(1,'#dc2626');
+    } else {
+      grad.addColorStop(0,'#94a3b8'); grad.addColorStop(1,'#1e293b');
+    }
+    ctx.fillStyle=grad;
+    ctx.beginPath(); ctx.arc(cx,cy,cr,0,Math.PI*2); ctx.fill();
+    ctx.shadowBlur=0;
+    // Rim
+    ctx.strokeStyle = isRed(v)?'#fecaca':'#475569'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(cx,cy,cr,0,Math.PI*2); ctx.stroke();
+    // King crown
+    if (isKing(v)) {
+      ctx.fillStyle='#fbbf24'; ctx.font=`bold ${CELL*0.4}px Segoe UI`; ctx.textAlign='center';
+      ctx.fillText('♔',cx,cy+CELL*0.14);
+    }
+  }
+}
+
+canvas.addEventListener('click', e => {
+  if (gameOver || turn===2) return;
+  const rect=canvas.getBoundingClientRect();
+  const sx=canvas.width/rect.width, sy=canvas.height/rect.height;
+  const c=Math.floor((e.clientX-rect.left)*sx/CELL);
+  const r=Math.floor((e.clientY-rect.top)*sy/CELL);
+  if (r<0||r>=N||c<0||c>=N) return;
+  if (selected && validMoves.find(m=>m.r===r&&m.c===c)) {
+    makeMove(r,c);
+  } else {
+    selectPiece(r,c);
+  }
+});
+
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const t=e.touches[0];
+  const evt = {clientX:t.clientX, clientY:t.clientY};
+  canvas.dispatchEvent(new MouseEvent('click',{...evt, bubbles:true}));
+},{passive:false});
+
+initGame();
+draw();
+</script>
+</body>
+</html>

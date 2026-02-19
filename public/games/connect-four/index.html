@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connect Four</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:#0f0f1a; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; min-height:100vh; font-family:'Segoe UI',sans-serif;
+  color:#e2e8f0; user-select:none;
+}
+h1 { font-size:1.6rem; color:#8b5cf6; margin-bottom:6px; letter-spacing:2px; }
+#status { font-size:0.95rem; color:#a0a0c0; margin-bottom:10px; min-height:1.4em; text-align:center; }
+canvas { border-radius:10px; box-shadow:0 0 40px rgba(139,92,246,0.25); cursor:pointer; }
+#ui { display:flex; gap:32px; margin-top:10px; align-items:center; }
+#mode { background:#1e1e30; border:1px solid #3b3b5e; color:#a0a0c0; font-size:0.8rem; padding:5px 10px; border-radius:6px; cursor:pointer; }
+#mode:hover { border-color:#8b5cf6; color:#8b5cf6; }
+#restart { background:#8b5cf6; color:white; border:none; font-size:0.8rem; padding:5px 14px; border-radius:6px; cursor:pointer; font-weight:bold; }
+#restart:hover { background:#7c3aed; }
+#scores { display:flex; gap:48px; margin-top:8px; font-size:0.85rem; color:#888; }
+.p1c { color:#f97316; font-weight:bold; }
+.p2c { color:#8b5cf6; font-weight:bold; }
+</style>
+</head>
+<body>
+<h1>🟡 CONNECT FOUR</h1>
+<div id="status">Player 1's turn</div>
+<canvas id="c"></canvas>
+<div id="ui">
+  <button id="mode">👥 2 Players</button>
+  <button id="restart">↺ Restart</button>
+</div>
+<div id="scores"><span class="p1c">P1 (Yellow): <span id="s1">0</span></span> &nbsp; <span class="p2c">P2 (Purple): <span id="s2">0</span></span></div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+const COLS = 7, ROWS = 6;
+const CELL = Math.min(Math.floor(Math.min(window.innerWidth * 0.92, window.innerHeight * 0.65) / COLS), 80);
+const PAD = Math.floor(CELL * 0.1);
+const R = Math.floor(CELL * 0.38);
+
+canvas.width = COLS * CELL;
+canvas.height = (ROWS + 1) * CELL;
+
+let board, turn, gameOver, scores, vsAI, hoverCol, animPieces;
+
+function initGame(keepScores=false) {
+  board = Array.from({length:ROWS},()=>Array(COLS).fill(0));
+  turn = 1; gameOver = false; hoverCol = -1; animPieces = [];
+  if (!keepScores) scores = [0,0];
+  setStatus();
+  draw();
+}
+
+function setStatus(msg, color) {
+  const el = document.getElementById('status');
+  if (msg) { el.textContent = msg; el.style.color = color || '#a0a0c0'; }
+  else {
+    el.textContent = turn===1 ? (vsAI?'Your turn (Yellow)':'Player 1 (Yellow)') : (vsAI?'AI thinking...':'Player 2 (Purple)');
+    el.style.color = turn===1 ? '#f97316' : '#8b5cf6';
+  }
+  document.getElementById('s1').textContent = scores[0];
+  document.getElementById('s2').textContent = scores[1];
+}
+
+function getLowestEmpty(col) {
+  for (let r=ROWS-1;r>=0;r--) if (!board[r][col]) return r;
+  return -1;
+}
+
+function checkWin(b, player) {
+  // Horizontal
+  for (let r=0;r<ROWS;r++) for (let c=0;c<=COLS-4;c++)
+    if (b[r][c]===player&&b[r][c+1]===player&&b[r][c+2]===player&&b[r][c+3]===player)
+      return [[r,c],[r,c+1],[r,c+2],[r,c+3]];
+  // Vertical
+  for (let r=0;r<=ROWS-4;r++) for (let c=0;c<COLS;c++)
+    if (b[r][c]===player&&b[r+1][c]===player&&b[r+2][c]===player&&b[r+3][c]===player)
+      return [[r,c],[r+1,c],[r+2,c],[r+3,c]];
+  // Diagonal /
+  for (let r=3;r<ROWS;r++) for (let c=0;c<=COLS-4;c++)
+    if (b[r][c]===player&&b[r-1][c+1]===player&&b[r-2][c+2]===player&&b[r-3][c+3]===player)
+      return [[r,c],[r-1,c+1],[r-2,c+2],[r-3,c+3]];
+  // Diagonal \
+  for (let r=0;r<=ROWS-4;r++) for (let c=0;c<=COLS-4;c++)
+    if (b[r][c]===player&&b[r+1][c+1]===player&&b[r+2][c+2]===player&&b[r+3][c+3]===player)
+      return [[r,c],[r+1,c+1],[r+2,c+2],[r+3,c+3]];
+  return null;
+}
+
+function isDraw(b) { return b[0].every(v=>v!==0); }
+
+let winLine = null;
+
+function dropPiece(col, player) {
+  const row = getLowestEmpty(col);
+  if (row < 0) return false;
+  board[row][col] = player;
+  // Animate
+  animPieces.push({col, row, y: 0, targetY: row+1, player, done:false});
+  const win = checkWin(board, player);
+  if (win) {
+    winLine = win;
+    scores[player-1]++;
+    gameOver = true;
+    setTimeout(()=>{
+      setStatus(vsAI && player===2 ? '🤖 AI wins! Click to restart' : `Player ${player} wins! 🎉 Click to restart`, player===1?'#f97316':'#8b5cf6');
+    }, 300);
+    return true;
+  }
+  if (isDraw(board)) {
+    gameOver = true;
+    setTimeout(()=>setStatus('Draw! Click to restart', '#888'), 300);
+    return true;
+  }
+  return true;
+}
+
+// Simple AI — score columns
+function scoreBoard(b, player) {
+  let s = 0;
+  const opp = player===1?2:1;
+  // Center column bonus
+  for (let r=0;r<ROWS;r++) { if (b[r][3]===player) s+=3; }
+  // Window scoring
+  function scoreWindow(w) {
+    const pc = w.filter(v=>v===player).length;
+    const oc = w.filter(v=>v===opp).length;
+    if (pc===4) return 100;
+    if (pc===3&&!oc) return 5;
+    if (pc===2&&!oc) return 2;
+    if (oc===3&&!pc) return -4;
+    return 0;
+  }
+  // Horizontal
+  for (let r=0;r<ROWS;r++) for (let c=0;c<=COLS-4;c++) s+=scoreWindow([b[r][c],b[r][c+1],b[r][c+2],b[r][c+3]]);
+  // Vertical
+  for (let c=0;c<COLS;c++) for (let r=0;r<=ROWS-4;r++) s+=scoreWindow([b[r][c],b[r+1][c],b[r+2][c],b[r+3][c]]);
+  // Diagonals
+  for (let r=3;r<ROWS;r++) for (let c=0;c<=COLS-4;c++) s+=scoreWindow([b[r][c],b[r-1][c+1],b[r-2][c+2],b[r-3][c+3]]);
+  for (let r=0;r<=ROWS-4;r++) for (let c=0;c<=COLS-4;c++) s+=scoreWindow([b[r][c],b[r+1][c+1],b[r+2][c+2],b[r+3][c+3]]);
+  return s;
+}
+
+function minimax(b, depth, alpha, beta, maximizing) {
+  const win2 = checkWin(b,2);
+  if (win2) return {score:1000+depth};
+  const win1 = checkWin(b,1);
+  if (win1) return {score:-1000-depth};
+  if (isDraw(b)||depth===0) return {score:scoreBoard(b,2)};
+  let best = maximizing ? {score:-Infinity,col:3} : {score:Infinity,col:3};
+  for (let c=0;c<COLS;c++) {
+    const r = getLowestEmptyB(b,c);
+    if (r<0) continue;
+    const nb = b.map(row=>[...row]);
+    nb[r][c] = maximizing?2:1;
+    const res = minimax(nb, depth-1, alpha, beta, !maximizing);
+    if (maximizing ? res.score>best.score : res.score<best.score) { best.score=res.score; best.col=c; }
+    if (maximizing) alpha=Math.max(alpha,best.score); else beta=Math.min(beta,best.score);
+    if (beta<=alpha) break;
+  }
+  return best;
+}
+
+function getLowestEmptyB(b,col) {
+  for (let r=ROWS-1;r>=0;r--) if (!b[r][col]) return r;
+  return -1;
+}
+
+function aiTurn() {
+  if (gameOver) return;
+  const result = minimax(board.map(r=>[...r]), 5, -Infinity, Infinity, true);
+  dropPiece(result.col, 2);
+  turn = 1;
+  if (!gameOver) setStatus();
+  draw();
+}
+
+function handleClick(col) {
+  if (gameOver) { initGame(true); return; }
+  if (vsAI && turn===2) return;
+  if (!dropPiece(col, turn)) return;
+  if (!gameOver) {
+    turn = turn===1?2:1;
+    setStatus();
+    if (vsAI && turn===2) setTimeout(aiTurn, 350);
+  }
+  draw();
+}
+
+function draw() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // Board background
+  const grad = ctx.createLinearGradient(0,0,0,canvas.height);
+  grad.addColorStop(0,'#1e1e38'); grad.addColorStop(1,'#12122a');
+  ctx.fillStyle=grad;
+  ctx.beginPath();
+  ctx.roundRect(0,CELL,canvas.width,ROWS*CELL,8);
+  ctx.fill();
+  // Grid border glow
+  ctx.strokeStyle='#3b3b6e'; ctx.lineWidth=2;
+  ctx.strokeRect(1,CELL+1,canvas.width-2,ROWS*CELL-2);
+
+  // Hover indicator
+  if (hoverCol>=0 && !gameOver) {
+    const cx = hoverCol*CELL+CELL/2;
+    ctx.fillStyle=turn===1?'rgba(249,115,22,0.3)':'rgba(139,92,246,0.3)';
+    ctx.beginPath(); ctx.arc(cx, CELL/2, R, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle=turn===1?'rgba(249,115,22,0.7)':'rgba(139,92,246,0.7)';
+    ctx.lineWidth=2; ctx.beginPath(); ctx.arc(cx,CELL/2,R,0,Math.PI*2); ctx.stroke();
+    // Arrow
+    ctx.fillStyle=turn===1?'rgba(249,115,22,0.7)':'rgba(139,92,246,0.7)';
+    ctx.font=`${CELL*0.4}px sans-serif`; ctx.textAlign='center';
+    ctx.fillText('▼',cx,CELL*0.85);
+  }
+
+  // Cells (holes)
+  for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
+    const cx=c*CELL+CELL/2, cy=(r+1)*CELL+CELL/2;
+    const v = board[r][c];
+    // Hole shadow
+    ctx.fillStyle='rgba(0,0,0,0.4)';
+    ctx.beginPath(); ctx.arc(cx+2,cy+2,R,0,Math.PI*2); ctx.fill();
+    // Hole bg
+    ctx.fillStyle='#0a0a14';
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.fill();
+    if (v) {
+      const isWin = winLine && winLine.some(([wr,wc])=>wr===r&&wc===c);
+      const col1 = v===1 ? '#f97316' : '#8b5cf6';
+      const col2 = v===1 ? '#fb923c' : '#a78bfa';
+      const pgr = ctx.createRadialGradient(cx-R*0.3,cy-R*0.3,R*0.1,cx,cy,R);
+      pgr.addColorStop(0, col2); pgr.addColorStop(1, col1);
+      ctx.shadowBlur = isWin ? 20 : 8;
+      ctx.shadowColor = isWin ? '#fbbf24' : col1;
+      ctx.fillStyle = pgr;
+      ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.fill();
+      if (isWin) {
+        ctx.strokeStyle='#fbbf24'; ctx.lineWidth=3;
+        ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.stroke();
+      }
+      ctx.shadowBlur=0;
+      // Shine
+      ctx.fillStyle='rgba(255,255,255,0.18)';
+      ctx.beginPath(); ctx.arc(cx-R*0.25,cy-R*0.25,R*0.3,0,Math.PI*2); ctx.fill();
+    }
+  }
+
+  // Column separators
+  ctx.strokeStyle='rgba(59,59,110,0.5)'; ctx.lineWidth=1;
+  for (let c=1;c<COLS;c++) {
+    ctx.beginPath(); ctx.moveTo(c*CELL,CELL); ctx.lineTo(c*CELL,(ROWS+1)*CELL); ctx.stroke();
+  }
+}
+
+canvas.addEventListener('mousemove', e => {
+  const rect=canvas.getBoundingClientRect();
+  const col = Math.floor((e.clientX-rect.left)/(rect.width/COLS));
+  hoverCol = (col>=0&&col<COLS)?col:-1;
+  draw();
+});
+canvas.addEventListener('mouseleave', ()=>{hoverCol=-1; draw();});
+canvas.addEventListener('click', e => {
+  const rect=canvas.getBoundingClientRect();
+  const col=Math.floor((e.clientX-rect.left)/(rect.width/COLS));
+  if (col>=0&&col<COLS) handleClick(col);
+});
+canvas.addEventListener('touchstart', e=>{
+  e.preventDefault();
+  const t=e.touches[0];
+  const rect=canvas.getBoundingClientRect();
+  const col=Math.floor((t.clientX-rect.left)/(rect.width/COLS));
+  if (col>=0&&col<COLS) handleClick(col);
+},{passive:false});
+
+document.getElementById('mode').addEventListener('click', () => {
+  vsAI = !vsAI;
+  document.getElementById('mode').textContent = vsAI ? '🤖 vs AI' : '👥 2 Players';
+  winLine = null;
+  initGame(false);
+});
+document.getElementById('restart').addEventListener('click', () => { winLine=null; initGame(true); });
+
+vsAI = false;
+initGame(false);
+</script>
+</body>
+</html>

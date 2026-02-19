@@ -177,6 +177,24 @@ document.addEventListener('keydown', e => {
   }
   if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) e.preventDefault();
 });
+
+// Touch swipe support
+let touchX = null, touchY = null;
+document.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }, {passive:true});
+document.addEventListener('touchend', e => {
+  if (touchX === null) return;
+  const dx = e.changedTouches[0].clientX - touchX;
+  const dy = e.changedTouches[0].clientY - touchY;
+  if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+  if (Math.abs(dx) > Math.abs(dy)) {
+    if (dx > 0 && dir.x !== -1) nextDir = {x:1,y:0};
+    else if (dx < 0 && dir.x !== 1) nextDir = {x:-1,y:0};
+  } else {
+    if (dy > 0 && dir.y !== -1) nextDir = {x:0,y:1};
+    else if (dy < 0 && dir.y !== 1) nextDir = {x:0,y:-1};
+  }
+  touchX = null; touchY = null;
+}, {passive:true});
 </script>
 </body>
 </html>

@@ -7,8 +7,15 @@ import { webSiteSchema } from '@/lib/schema';
 export const metadata: Metadata = {
   metadataBase: new URL('https://arcadeheap.com'),
   title: 'Free Online Games - Play Now | ArcadeHeap',
-  description: 'Play free HTML5 games online. No downloads, no installs. Action, puzzle, racing, shooting, and more — all free at ArcadeHeap.com',
-  keywords: 'free online games, HTML5 games, browser games, play now, no download games',
+  description: 'Play 28+ free HTML5 games online. No downloads, no installs. Puzzle, action, racing, arcade, shooting, strategy, multiplayer and more — all free at ArcadeHeap.com',
+  keywords: 'free online games, HTML5 games, browser games, play now, no download games, free puzzle games, free arcade games, online multiplayer games',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/logo.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/favicon.ico',
+  },
   openGraph: {
     siteName: 'ArcadeHeap',
     type: 'website',

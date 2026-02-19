@@ -9,7 +9,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-1 sm:col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">🎮</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.svg" alt="ArcadeHeap" className="w-8 h-8" />
               <span className="text-xl font-extrabold text-white">
                 Arcade<span className="text-[#8b5cf6]">Heap</span>
               </span>
