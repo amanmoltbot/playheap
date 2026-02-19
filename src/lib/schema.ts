@@ -38,13 +38,6 @@ export function videoGameSchema(game: Game, categoryLabel: string) {
       name: 'ArcadeHeap',
       url: 'https://arcadeheap.com',
     },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.5',
-      bestRating: '5',
-      worstRating: '1',
-      ratingCount: Math.max(50, Math.floor(game.plays / 100)),
-    },
   };
 }
 
@@ -63,6 +56,23 @@ export function webSiteSchema() {
       },
       'query-input': 'required name=search_term_string',
     },
+  };
+}
+
+export function organizationSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'ArcadeHeap',
+    url: 'https://arcadeheap.com',
+    logo: 'https://arcadeheap.com/logo.svg',
+    description: 'Free HTML5 browser games — no downloads, no installs. Play instantly on any device.',
+    contactPoint: {
+      '@type': 'ContactPoint',
+      email: 'hello@arcadeheap.com',
+      contactType: 'customer support',
+    },
+    sameAs: [],
   };
 }
 

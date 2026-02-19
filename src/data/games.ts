@@ -12,6 +12,9 @@ export interface Game {
   plays: number;
   aspectRatio?: string; // e.g. '16/9', '1/1', '3/4', '9/16', '4/3'
   mobileSupported?: boolean; // true = works great on mobile, false = desktop recommended
+  license?: string; // e.g. 'MIT', 'GPL-3.0', 'Apache-2.0', 'Custom', 'Public Domain'
+  author?: string; // Original author/creator
+  sourceUrl?: string; // Link to original source/repo
 }
 
 export const categories = [
@@ -65,34 +68,13 @@ Beyond reaching 2048, the game has no true ending. The board keeps going, and pl
     featured: true,
     isNew: false,
     plays: 489756,
+    license: 'MIT',
+    author: 'Gabriele Cirulli',
+    sourceUrl: 'https://github.com/gabrielecirulli/2048',
     aspectRatio: '3/4',
     mobileSupported: true,
   },
-  {
-    id: '2',
-    slug: 'tetris',
-    title: 'Tetris',
-    description: `Tetris is the undisputed king of puzzle games — a game so perfectly designed that it has been played by over a billion people and remains just as compelling today as when it was invented in 1984. The premise is timeless: geometric pieces called tetrominoes fall from the top of the screen, and you must rotate and position them to create complete horizontal lines. When a line fills completely with no gaps, it clears from the board and scores you points. If the stack of pieces reaches the top, the game ends.
 
-There are seven unique tetrominoes, each named after letters they resemble: the I-piece (a straight line of four), the O-piece (a 2×2 square), the T-piece, S-piece, Z-piece, J-piece, and L-piece. Each falls in a random sequence, and the art of Tetris is figuring out where to place each piece to keep your stack low, flat, and full of clean lines. Placing pieces awkwardly leaves gaps that become increasingly difficult to fill as the game speeds up.
-
-Tetris is famous for being "easy to learn, impossible to master." The first few levels crawl along, giving you plenty of time to think. By level 10, pieces are screaming down the screen and you're relying on pure muscle memory. Advanced players chase "Tetrises" — clearing four lines at once with the I-piece for maximum points — and maintain ultra-thin stacks that leave a single-column gap for the I-piece to drop down and clean house. The "T-spin" maneuver, where you twist a T-piece into a tight space at the last moment, is one of gaming's most satisfying advanced techniques.
-
-The psychological phenomenon of "the Tetris effect" — where players see falling blocks in their dreams and start mentally fitting objects into spaces in real life — speaks to how deeply the game embeds itself in your brain. Scientists have actually used Tetris to study memory formation and spatial cognition.
-
-Our browser version of Tetris captures the classic experience faithfully: the familiar color-coded pieces, increasing speed as you level up, and the relentless pressure that keeps you coming back for just one more game. Soft drop, hard drop, and wall kicks are all supported. Whether you're chasing a personal best score or playing Tetris for the very first time, this is the real deal.
-
-**Controls:** ← → to move, ↑ to rotate, ↓ for soft drop, Space for instant hard drop, P to pause. On mobile, use the on-screen buttons.`,
-    category: 'puzzle',
-    thumbnailUrl: '/thumbnails/tetris.webp',
-    gameUrl: '/games/tetris/index.html',
-    controls: '← → to move, ↑ rotate, ↓ soft drop, Space hard drop, P pause. Mobile: on-screen controls.',
-    featured: true,
-    isNew: false,
-    plays: 412345,
-    aspectRatio: '9/16',
-    mobileSupported: true,
-  },
   {
     id: '5',
     slug: 'minesweeper',
@@ -115,6 +97,8 @@ Play Minesweeper free in your browser — choose a difficulty, click your first 
     featured: false,
     isNew: false,
     plays: 354321,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '4/3',
     mobileSupported: false,
   },
@@ -140,6 +124,8 @@ Memory Match is perfect for all ages — young children developing their memory,
     featured: false,
     isNew: true,
     plays: 187654,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '4/3',
     mobileSupported: true,
   },
@@ -165,6 +151,9 @@ Hextris is one of the most innovative browser puzzle games available. It runs en
     featured: false,
     isNew: true,
     plays: 265432,
+    license: 'GPL-3.0',
+    author: 'Hextris Team',
+    sourceUrl: 'https://github.com/Hextris/hextris',
     aspectRatio: '1/1',
     mobileSupported: true,
   },
@@ -191,6 +180,8 @@ Snake is perfect for short sessions (a few minutes while waiting) and marathon h
     featured: false,
     isNew: false,
     plays: 376543,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '16/9',
     mobileSupported: true,
   },
@@ -216,6 +207,8 @@ Breakout is the perfect casual game — easy enough to start playing instantly, 
     featured: true,
     isNew: true,
     plays: 289012,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '16/9',
     mobileSupported: true,
   },
@@ -241,34 +234,12 @@ Tower Stack is one of the best tap/click games available — pure, distilled, ru
     featured: false,
     isNew: false,
     plays: 210987,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '9/16',
     mobileSupported: true,
   },
-  {
-    id: '10',
-    slug: 'pacman',
-    title: 'Pac-Man',
-    description: `Pac-Man is arguably the most recognizable video game character in history — a yellow, chomping circle that devoured his way into global pop culture when Namco released the original arcade cabinet in 1980. Designed by Toru Iwatani, Pac-Man was the first game to target a broad audience beyond typical arcade-goers, and it succeeded spectacularly, becoming the highest-grossing arcade game of all time. Forty-five years later, the game is as fun, tense, and satisfying as ever.
 
-The concept is elegantly simple: guide Pac-Man through a maze, eating every pellet (dot) while avoiding four colorful ghosts — Blinky (red), Pinky (pink), Inky (cyan), and Clyde (orange). Each ghost has a distinct AI behavior: Blinky relentlessly chases Pac-Man directly, Pinky tries to get ahead of him, Inky takes an unpredictable wide arc, and Clyde alternates between chasing and retreating. Understanding and exploiting these behaviors is the key to advanced play.
-
-Scattered around the maze are four Power Pellets — large flashing dots in the corners. Eating one turns all four ghosts blue and vulnerable for a brief window. Chase them down and eat them for bonus points (200, 400, 800, then 1600 per ghost in a single power-up). The pressure game of staying alive while hunting blue ghosts — knowing the timer is counting down — is one of gaming's most intense experiences.
-
-As you progress through levels, ghosts move faster, power-ups last shorter, and the maze dynamics intensify. Experienced Pac-Man players learn "ghost patterns" — the precise routes each ghost follows in specific situations — and exploit them to navigate safely even without power-ups. The fruit bonuses that appear in the center of the maze mid-level (cherry, strawberry, orange, apple…) reward risky positioning with escalating bonus scores.
-
-Our browser version is a faithful HTML5 recreation with authentic maze layout, true ghost AI behaviors, all four ghost personalities, power pellets, fruit bonuses, and progressive level difficulty. Play it on desktop with keyboard controls or switch to mobile with virtual directional input.
-
-Pac-Man is more than nostalgia — it's a genuinely brilliant game that rewards study and practice. Waka waka.`,
-    category: 'arcade',
-    thumbnailUrl: '/thumbnails/pacman.webp',
-    gameUrl: '/games/pacman/index.html',
-    controls: 'Arrow keys to move Pac-Man through the maze. Mobile: use virtual D-pad.',
-    featured: false,
-    isNew: false,
-    plays: 412345,
-    aspectRatio: '4/3',
-    mobileSupported: true,
-  },
   {
     id: '12',
     slug: 'flappy-bird',
@@ -291,6 +262,9 @@ Our version is a pixel-perfect HTML5 implementation with responsive physics, aut
     featured: false,
     isNew: false,
     plays: 376543,
+    license: 'MIT',
+    author: 'Nebez Briefkani',
+    sourceUrl: 'https://github.com/nebez/flern',
     aspectRatio: '4/3',
     mobileSupported: true,
   },
@@ -316,35 +290,14 @@ Our browser version plays identically to the original Clumsy Bird web game — n
     featured: false,
     isNew: false,
     plays: 332109,
+    license: 'MIT',
+    author: 'ellisonleao',
+    sourceUrl: 'https://github.com/ellisonleao/clumsy-bird',
     aspectRatio: '4/3',
     mobileSupported: true,
   },
   // ─── Shooting ─────────────────────────────────────────────────────────────
-  {
-    id: '6',
-    slug: 'space-invaders',
-    title: 'Space Invaders',
-    description: `Space Invaders is the game that created the modern video game industry. Released by Taito in 1978, it was the first fixed shooter and the first game to feature a high score system. It caused a nationwide coin shortage in Japan, where arcades bought so many of the machines that entire amusement centers were devoted to nothing else. In the United States, it quadrupled the revenue of the Atari 2600 console when it became an exclusive title. Space Invaders didn't just succeed — it defined what a video game could be.
 
-The setup is iconic: rows of alien invaders descend slowly toward Earth, marching back and forth and stepping lower with each pass. You control a laser cannon at the bottom of the screen, moving left and right to shoot the aliens one by one while four defensive barriers offer brief cover. The aliens shoot back. Shoot all 55 aliens before they reach the bottom, or die trying.
-
-What made Space Invaders revolutionary — and still makes it brilliant — is one mechanical detail: as you kill aliens, the remaining ones move faster. A full formation crawls along; five survivors race back and forth at terrifying speed. This means the game always gets more intense as you succeed, creating a terrifying endgame where a handful of fast-moving aliens dodge your shots with maddening efficiency. The game constantly accelerates toward maximum tension.
-
-The UFO saucer that flies across the top of the screen occasionally awards massive bonus points — but the value depends on how many shots you've fired, creating a hidden depth that reward precision shooting over spray-and-pray. Veterans of the game "count shots" to maximize saucer value, adding a layer of strategy beneath the frantic shooting.
-
-Our HTML5 version faithfully recreates the classic Space Invaders experience: authentic alien formation, descending march, barrier erosion, UFO bonuses, and the brutal speed escalation. Play it with arrow keys and space bar on desktop, or use on-screen mobile controls. How many waves can you survive?
-
-**Tips:** Target the far-right column first (they march the shortest distance to your edge). Use the barriers strategically — they protect you from above but you can also shoot through them to hit aliens directly. Save shots for when invaders are nearly overhead.`,
-    category: 'shooting',
-    thumbnailUrl: '/thumbnails/space-invaders.webp',
-    gameUrl: '/games/space-invaders/index.html',
-    controls: '← → to move, Space to shoot. Mobile: on-screen buttons.',
-    featured: true,
-    isNew: true,
-    plays: 298765,
-    aspectRatio: '4/3',
-    mobileSupported: true,
-  },
   {
     id: '15',
     slug: 'radius-raid',
@@ -367,6 +320,9 @@ This is a game for players who love old-school arcade shooters but want somethin
     featured: false,
     isNew: false,
     plays: 143210,
+    license: 'MIT',
+    author: 'Matt Hackmann',
+    sourceUrl: 'https://github.com/mattbdean/radius-raid',
     aspectRatio: '1/1',
     mobileSupported: false,
   },
@@ -393,6 +349,9 @@ Astray is a showcase of what's possible with HTML5 and modern JavaScript game en
     featured: false,
     isNew: false,
     plays: 123456,
+    license: 'MIT',
+    author: 'wwwtyro',
+    sourceUrl: 'https://github.com/wwwtyro/astray',
     aspectRatio: '16/9',
     mobileSupported: false,
   },
@@ -418,6 +377,8 @@ It's a game that anyone can pick up instantly — one button, infinite obstacles
     featured: false,
     isNew: true,
     plays: 54321,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '16/9',
     mobileSupported: true,
   },
@@ -444,6 +405,8 @@ For children, Tic Tac Toe is an ideal introduction to strategy, planning ahead, 
     featured: false,
     isNew: false,
     plays: 265432,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '1/1',
     mobileSupported: true,
   },
@@ -469,6 +432,8 @@ Play Checkers free in your browser — no downloads, no registration needed.`,
     featured: false,
     isNew: true,
     plays: 42100,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '1/1',
     mobileSupported: true,
   },
@@ -495,6 +460,8 @@ Ninja Slash works on both desktop (click-drag) and mobile (swipe), making it one
     featured: true,
     isNew: true,
     plays: 98234,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '16/9',
     mobileSupported: true,
   },
@@ -520,6 +487,8 @@ A love letter to classic overhead survival shooters, Zombie Survivor delivers ad
     featured: false,
     isNew: true,
     plays: 76543,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '16/9',
     mobileSupported: false,
   },
@@ -546,6 +515,8 @@ Mobile play is well-supported: swipe left and right to change lanes, or use the 
     featured: true,
     isNew: true,
     plays: 112345,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '9/16',
     mobileSupported: true,
   },
@@ -571,6 +542,8 @@ Drift King's top-down view gives you full situational awareness of the track and
     featured: false,
     isNew: true,
     plays: 87654,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '16/9',
     mobileSupported: true,
   },
@@ -597,6 +570,8 @@ The game has been reimplemented thousands of times across every platform imagina
     featured: true,
     isNew: true,
     plays: 134567,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '16/9',
     mobileSupported: false,
   },
@@ -622,6 +597,8 @@ Basketball Shoot is one of the most mobile-optimized games in the library — th
     featured: false,
     isNew: true,
     plays: 95432,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '9/16',
     mobileSupported: true,
   },
@@ -648,6 +625,8 @@ No screen peeking — the map is fully visible to both players, so strategy is e
     featured: true,
     isNew: true,
     plays: 67890,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '16/9',
     mobileSupported: false,
   },
@@ -673,6 +652,8 @@ Our version features two modes: two-player (local) and single-player against an 
     featured: false,
     isNew: true,
     plays: 38900,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '4/3',
     mobileSupported: true,
   },
@@ -699,6 +680,8 @@ Dot Eater runs in your browser, needs no download or account, and a full session
     featured: true,
     isNew: true,
     plays: 89012,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '16/9',
     mobileSupported: true,
   },
@@ -724,35 +707,13 @@ Slither Solo sessions typically run 5-15 minutes, scaling with your skill and lu
     featured: false,
     isNew: true,
     plays: 72345,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '16/9',
     mobileSupported: true,
   },
   // ─── Cycle 3 Games ────────────────────────────────────────────────────────
-  {
-    id: '50',
-    slug: 'wordle',
-    title: 'Wordle',
-    description: `Wordle is the sensational word-guessing game that took the world by storm in 2022 and became a daily ritual for millions of people worldwide. The rules are brilliantly simple: you have six attempts to guess a secret five-letter word. After each guess, the game gives you color-coded feedback — green tiles tell you a letter is correct and in the right position, yellow tiles show a correct letter in the wrong position, and gray tiles mean the letter doesn't appear in the word at all.
 
-What makes Wordle special is how much strategy fits inside such simple rules. Your first guess is crucial: experienced players favor "starter words" that cover the most common letters — words like CRANE, SLATE, AUDIO, or RAISE, chosen to maximize information gain on the first try. A perfect opener can immediately eliminate 10+ letters from contention and reveal 2-3 correctly placed ones, putting you in a strong position for guess two.
-
-From there, every guess is a logic puzzle. You're using Boolean algebra in your head — ruling out letter positions, confirming letter presence, combining clues from multiple rows to narrow the solution space. The satisfaction of cracking a difficult word in three guesses feels like a genuine intellectual triumph. The frustration of hitting guess six with multiple possibilities remaining is equally intense.
-
-Our version of Wordle lets you play unlimited games with a rotating dictionary of common English words. Unlike the original daily Wordle, you can play as many rounds as you like. The game tracks your streak — how many consecutive puzzles you've solved — which quickly becomes addictive. Six guesses. Five letters. Can you crack the code?
-
-The game also makes an excellent vocabulary-building tool. You'll inevitably encounter words you didn't know and learn them from context. Wordle has introduced millions of people to unusual but legitimate English words, turning a daily brain teaser into a genuine learning experience.
-
-**Tips:** Use a strong opener covering vowels and common consonants. Track yellow letters carefully — they must appear elsewhere in the word. Avoid reusing gray letters in later guesses. And never guess a word you already know contains an impossible letter.`,
-    category: 'puzzle',
-    thumbnailUrl: '/thumbnails/wordle.webp',
-    gameUrl: '/games/wordle/index.html',
-    controls: 'Type letters with keyboard or click the on-screen keyboard. Enter to submit, Backspace to delete.',
-    featured: true,
-    isNew: true,
-    plays: 523000,
-    aspectRatio: '3/4',
-    mobileSupported: true,
-  },
   {
     id: '51',
     slug: 'sudoku',
@@ -775,6 +736,8 @@ The game includes a notes mode — tap any cell and enter multiple candidate dig
     featured: false,
     isNew: true,
     plays: 341000,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '3/4',
     mobileSupported: true,
   },
@@ -800,6 +763,8 @@ The game tracks your move count and time, making every solve a new personal best
     featured: false,
     isNew: true,
     plays: 156000,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '3/4',
     mobileSupported: true,
   },
@@ -825,6 +790,8 @@ Your best score is saved locally so every session is a personal best attempt. Ea
     featured: false,
     isNew: true,
     plays: 218000,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '3/4',
     mobileSupported: true,
   },
@@ -850,34 +817,12 @@ Our version features full audio with authentic tones — each color produces a d
     featured: false,
     isNew: true,
     plays: 189000,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '1/1',
     mobileSupported: true,
   },
-  {
-    id: '55',
-    slug: 'asteroids',
-    title: 'Asteroids',
-    description: `Asteroids is one of the most legendary arcade games ever made — a golden-age classic from Atari (1979) that defined an era of gaming and remains deeply playable over four decades later. You pilot a lone triangular spaceship adrift in an asteroid field, using rotation thrusters and a forward engine to navigate, while firing bullets to shatter the rocks hurtling toward you. Large asteroids break into medium ones; medium ones break into small fast-moving fragments. Clear every rock to advance to the next level.
 
-What makes Asteroids timeless is its physics. Your ship has inertia: thrust in one direction and you keep moving that way until you thrust again or friction slows you down. There is no friction in space, so poor thrusting decisions can send you drifting helplessly into a rock. Mastering the momentum — applying brief thrust pulses to reposition rather than holding down the accelerator — is the core skill that separates novices from veterans.
-
-The asteroid-splitting mechanic creates a cascade of danger. Shooting a large asteroid feels like progress until the two medium pieces rocket off in unpredictable directions, and you realize you've traded one slow threat for two faster ones. Shooting those creates four small asteroids — the fastest, most maneuverable, hardest-to-hit fragments. Managing this cascading danger while dodging everything is genuine spatial intelligence under pressure.
-
-Our version features the iconic vector-art aesthetic translated into glowing purple graphics, a thrust flame that animates during acceleration, screen-wrapping where ships and rocks teleport from one edge to the opposite, and escalating difficulty through faster rocks and denser fields at higher levels. The double-jump allows maneuvering through tight gaps.
-
-The game supports both keyboard and on-screen touch controls, making it fully playable on mobile — though the spacious experience of a desktop and keyboard is arguably optimal for the split-second decisions this game demands.
-
-**Tips:** Always keep moving but in controlled bursts. Shoot large rocks near the edges so fragments have room to spread. When overwhelmed, stay near the center for maximum escape routes in all directions.`,
-    category: 'shooting',
-    thumbnailUrl: '/thumbnails/asteroids.webp',
-    gameUrl: '/games/asteroids/index.html',
-    controls: 'Arrow keys / WASD to rotate and thrust. Space to shoot. On mobile: use on-screen buttons.',
-    featured: true,
-    isNew: true,
-    plays: 267000,
-    aspectRatio: '1/1',
-    mobileSupported: true,
-  },
   {
     id: '56',
     slug: 'air-hockey',
@@ -900,6 +845,8 @@ Three difficulty levels provide a complete progression path. Easy lets you pract
     featured: false,
     isNew: true,
     plays: 198000,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '9/16',
     mobileSupported: true,
   },
@@ -925,6 +872,8 @@ Lives give you breathing room but not much. Three failed crossings and it's back
     featured: false,
     isNew: true,
     plays: 234000,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '9/16',
     mobileSupported: true,
   },
@@ -950,6 +899,8 @@ The game tracks your best score locally, creating a personal best progression sy
     featured: false,
     isNew: true,
     plays: 177000,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '9/16',
     mobileSupported: true,
   },
@@ -975,6 +926,8 @@ The scoring system rewards longevity. Every second of survival translates direct
     featured: false,
     isNew: true,
     plays: 312000,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '16/9',
     mobileSupported: true,
   },
@@ -1000,6 +953,8 @@ The dealer follows house rules: stands on all 17s, including soft 17. This is th
     featured: false,
     isNew: true,
     plays: 298000,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '3/4',
     mobileSupported: true,
   },
@@ -1025,6 +980,8 @@ A timer tracks your solve time, making each puzzle a speed challenge. Can you fi
     featured: false,
     isNew: true,
     plays: 143000,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '3/4',
     mobileSupported: true,
   },
@@ -1050,6 +1007,8 @@ The game progressively adds new rows as you play (if you take too long) and incr
     featured: true,
     isNew: true,
     plays: 456000,
+    license: 'MIT',
+    author: 'ArcadeHeap',
     aspectRatio: '9/16',
     mobileSupported: true,
   },

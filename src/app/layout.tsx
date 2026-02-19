@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { webSiteSchema } from '@/lib/schema';
+import CookieConsent from '@/components/CookieConsent';
+import { webSiteSchema, organizationSchema } from '@/lib/schema';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://arcadeheap.com'),
@@ -47,6 +48,10 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteSchema()) }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema()) }}
+        />
         {/* Plausible Analytics — privacy-friendly, no cookies, GDPR compliant */}
         <script
           defer
@@ -60,6 +65,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <CookieConsent />
       </body>
     </html>
   );

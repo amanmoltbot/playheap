@@ -18,27 +18,10 @@ export default function Footer() {
             <p className="text-gray-500 text-sm leading-relaxed mb-4">
               Your ultimate destination for free HTML5 games. Play instantly — no downloads, no installs.
             </p>
-            {/* Social Links */}
-            <div className="flex gap-3">
-              <a
-                href="https://twitter.com/arcadeheap"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-600 hover:text-[#8b5cf6] transition-colors text-sm"
-                aria-label="ArcadeHeap on Twitter"
-              >
-                𝕏 Twitter
-              </a>
-              <a
-                href="https://discord.gg/arcadeheap"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-600 hover:text-[#8b5cf6] transition-colors text-sm"
-                aria-label="ArcadeHeap Discord"
-              >
-                💬 Discord
-              </a>
-            </div>
+            {/* Contact */}
+            <p className="text-gray-600 text-sm">
+              Contact: hello@arcadeheap.com
+            </p>
           </div>
 
           {/* Pages */}
@@ -95,6 +78,7 @@ export default function Footer() {
               {[
                 { href: '/privacy', label: 'Privacy Policy' },
                 { href: '/terms', label: 'Terms of Service' },
+                { href: '/dmca', label: 'DMCA & Copyright' },
                 { href: '/about', label: 'About Us' },
               ].map(link => (
                 <li key={link.href}>

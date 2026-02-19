@@ -132,6 +132,20 @@ export default async function GamePage({ params }: Props) {
                 <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-2">🕹️ Controls</h3>
                 <p className="text-gray-400 text-sm">{game.controls}</p>
               </div>
+
+              {/* Attribution */}
+              {(game.author || game.license) && (
+                <div className="border-t border-gray-800 pt-4">
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-2">📜 Credits</h3>
+                  <div className="text-gray-500 text-sm space-y-1">
+                    {game.author && <p>Created by: {game.sourceUrl ? (
+                      <a href={game.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-[#8b5cf6] hover:text-violet-400">{game.author}</a>
+                    ) : game.author}</p>}
+                    {game.license && <p>License: {game.license}</p>}
+                  </div>
+                </div>
+              )}
+
               <div className="border-t border-gray-800 pt-4">
                 <ShareButtons title={game.title} slug={game.slug} />
               </div>
