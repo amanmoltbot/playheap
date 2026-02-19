@@ -110,7 +110,7 @@ function newGame() {
   document.getElementById('mines-left').textContent = MINES;
   document.getElementById('timer').textContent = '0';
   document.getElementById('smiley').textContent = '🙂';
-  document.getElementById('msg').textContent = '';
+  if(window.ahRequestAd)window.ahRequestAd('next'); document.getElementById('msg').textContent = '';
   render();
 }
 
@@ -236,6 +236,23 @@ function render(deadR, deadC) {
 }
 
 newGame();
+</script>
+<script>
+/* ArcadeHeap Ad Placement API bridge */
+(function(){
+  if(window.parent===window)return;
+  function requestAd(t){
+    window.parent.postMessage({type:"adBreak",breakType:t||"next"},"*");
+  }
+  window.ahRequestAd=requestAd;
+  var origAlert=window.alert;
+  window.alert=function(msg){
+    if(/game over|you win|you lose|congratulations|well done/i.test(msg)){
+      requestAd("next");
+    }
+    return origAlert.apply(this,arguments);
+  };
+})();
 </script>
 </body>
 </html>

@@ -9,7 +9,6 @@ export interface Game {
   controls: string;
   featured: boolean;
   isNew: boolean;
-  plays: number;
   aspectRatio?: string; // e.g. '16/9', '1/1', '3/4', '9/16', '4/3'
   mobileSupported?: boolean; // true = works great on mobile, false = desktop recommended
   license?: string; // e.g. 'MIT', 'GPL-3.0', 'Apache-2.0', 'Custom', 'Public Domain'
@@ -67,7 +66,6 @@ Beyond reaching 2048, the game has no true ending. The board keeps going, and pl
     controls: 'Arrow keys to slide tiles. Works on mobile with swipe gestures.',
     featured: true,
     isNew: false,
-    plays: 489756,
     license: 'MIT',
     author: 'Gabriele Cirulli',
     sourceUrl: 'https://github.com/gabrielecirulli/2048',
@@ -96,7 +94,6 @@ Play Minesweeper free in your browser — choose a difficulty, click your first 
     controls: 'Left-click to reveal a cell. Right-click to place or remove a flag. Best played on desktop.',
     featured: false,
     isNew: false,
-    plays: 354321,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '4/3',
@@ -123,7 +120,6 @@ Memory Match is perfect for all ages — young children developing their memory,
     controls: 'Click or tap cards to flip them. Match all pairs to complete the board.',
     featured: false,
     isNew: true,
-    plays: 187654,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '4/3',
@@ -150,7 +146,6 @@ Hextris is one of the most innovative browser puzzle games available. It runs en
     controls: '← → arrow keys to rotate the hexagon. Mobile: swipe left/right.',
     featured: false,
     isNew: true,
-    plays: 265432,
     license: 'GPL-3.0',
     author: 'Logan Engstrom, Hextris Team',
     sourceUrl: 'https://github.com/Hextris/hextris',
@@ -179,7 +174,6 @@ Snake is perfect for short sessions (a few minutes while waiting) and marathon h
     controls: 'Arrow keys or WASD to change direction. P to pause. Mobile: use on-screen D-pad.',
     featured: false,
     isNew: false,
-    plays: 376543,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '16/9',
@@ -206,7 +200,6 @@ Breakout is the perfect casual game — easy enough to start playing instantly, 
     controls: 'Mouse or ← → arrow keys to move paddle. Click or Space to launch. Mobile: touch-drag the paddle.',
     featured: true,
     isNew: true,
-    plays: 289012,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '16/9',
@@ -233,7 +226,6 @@ Tower Stack is one of the best tap/click games available — pure, distilled, ru
     controls: 'Click, Space, or tap to drop the block. Works perfectly on mobile.',
     featured: false,
     isNew: false,
-    plays: 210987,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '9/16',
@@ -242,26 +234,25 @@ Tower Stack is one of the best tap/click games available — pure, distilled, ru
 
   {
     id: '12',
-    slug: 'flappy-bird',
-    title: 'Floppy Bird',
-    description: `Floppy Bird is a lovingly faithful recreation of Flappy Bird — the viral phenomenon that spent two weeks as the #1 downloaded app in the world before its creator famously pulled it from app stores in February 2014. Dong Nguyen's original was criticized for being "too addictive," and he removed it out of genuine concern for players. The legend only made the game more mythologized, and today countless clones and spiritual successors keep the Flappy Bird spirit alive — this one among the best of them.
+    slug: 'floppy-wings',
+    title: 'Floppy Wings',
+    description: `Floppy Wings is a lovingly faithful HTML5 recreation of the classic one-tap flyer genre — the viral phenomenon that spent two weeks as the #1 downloaded app in the world before its creator famously pulled it from app stores in February 2014. Dong Nguyen's original was criticized for being "too addictive," and he removed it out of genuine concern for players. The legend only made the game more mythologized, and today countless clones and spiritual successors keep the one-tap flyer spirit alive — this one among the best of them.
 
 The game could not be simpler: tap or click to make your bird flap its wings and gain altitude. Stop tapping and gravity pulls the bird down. Navigate through an endless series of vertical pipe obstacles, each pair with a gap you must thread through precisely. One wrong move — hitting a pipe, the floor, or the ceiling — and it's over. Each pipe you pass scores you one point. The world record is in the hundreds. Most players struggle to reach 10.
 
-What Floppy Bird accomplishes that almost no other game does is delivering genuine, earned difficulty through pure, minimal mechanics. There are no power-ups, no unlocks, no progression system, no story. Just you, a bird, and pipes. The physics engine is finely tuned to that cruel sweet spot where success feels achievable but failure feels deserved — you're never wondering if the game cheated you, only if your timing was perfect enough. This accountability is addictive.
+What Floppy Wings accomplishes that almost no other game does is delivering genuine, earned difficulty through pure, minimal mechanics. There are no power-ups, no unlocks, no progression system, no story. Just you, a bird, and pipes. The physics engine is finely tuned to that cruel sweet spot where success feels achievable but failure feels deserved — you're never wondering if the game cheated you, only if your timing was perfect enough. This accountability is addictive.
 
 The psychological loop is powerful: fail, restart instantly, try again. Each death takes milliseconds to recover from. The barrier to "one more try" is zero. This immediacy — no loading screens, no menus, no delay between death and restart — creates a hypnotic rhythm of attempt, failure, and re-attempt that can consume an hour before you realize it.
 
-Our version is a pixel-perfect HTML5 implementation with responsive physics, authentic animation, and that signature style of punishing-but-fair one-tap gameplay. It runs at 60fps for the smooth motion that proper Flappy Bird judgment requires. Play free in your browser, on desktop or mobile.
+Our version is a pixel-perfect HTML5 implementation with responsive physics, authentic animation, and that signature style of punishing-but-fair one-tap gameplay. It runs at 60fps for the smooth motion that proper one-tap flyer judgment requires. Play free in your browser, on desktop or mobile.
 
 **Tip:** Don't look at the bird — watch the gap you're aiming for. Consistent tap rhythm beats frantic clicking every time.`,
     category: 'arcade',
-    thumbnailUrl: '/thumbnails/flappy-bird.webp',
-    gameUrl: '/games/flappy-bird/index.html',
+    thumbnailUrl: '/thumbnails/floppy-wings.webp',
+    gameUrl: '/games/floppy-wings/index.html',
     controls: 'Space or click to flap. Mobile: tap anywhere on screen.',
     featured: false,
     isNew: false,
-    plays: 376543,
     license: 'Apache-2.0',
     author: 'Nebez Briefkani',
     sourceUrl: 'https://github.com/nebez/floppybird',
@@ -272,24 +263,23 @@ Our version is a pixel-perfect HTML5 implementation with responsive physics, aut
     id: '13',
     slug: 'clumsy-bird',
     title: 'Clumsy Bird',
-    description: `Clumsy Bird is a charming, polished Flappy Bird tribute built using MelonJS, a professional-grade HTML5 game engine. While the DNA is unmistakably Flappy Bird — tap to flap, dodge pipes, one hit kills — Clumsy Bird brings its own distinct personality through smoother animations, a character with comedic flair, and a slightly more forgiving feel that makes it accessible to players who find the original brutally unforgiving.
+    description: `Clumsy Bird is a charming, polished one-tap flyer tribute built using MelonJS, a professional-grade HTML5 game engine. While the DNA is unmistakably inspired by the one-tap flyer genre — tap to flap, dodge pipes, one hit kills — Clumsy Bird brings its own distinct personality through smoother animations, a character with comedic flair, and a slightly more forgiving feel that makes it accessible to players who find the original brutally unforgiving.
 
-The "clumsy" in the title isn't accidental — this bird flaps with an endearing lack of grace, tumbling slightly with each failed attempt in a way that feels funny rather than frustrating. It's a small design choice that completely changes the emotional tone. Where Flappy Bird feels tense and merciless, Clumsy Bird feels playful and lighthearted, making failure feel like a punchline rather than a punishment.
+The "clumsy" in the title isn't accidental — this bird flaps with an endearing lack of grace, tumbling slightly with each failed attempt in a way that feels funny rather than frustrating. It's a small design choice that completely changes the emotional tone. Where the original genre feels tense and merciless, Clumsy Bird feels playful and lighthearted, making failure feel like a punchline rather than a punishment.
 
 Under the hood, Clumsy Bird showcases what MelonJS can do: fluid sprite animation, smooth parallax scrolling backgrounds that create a sense of depth, proper physics simulation, and audio that fires reliably without browser compatibility issues. The game loads fast, runs at consistent frame rates on any modern browser, and scales cleanly for different screen sizes.
 
-For players who want to explore the Flappy Bird formula with a fresh coat of paint — or who want a game that's just slightly kinder to beginners — Clumsy Bird delivers. The core challenge is identical: precise timing, consistent rhythm, and the iron discipline to stop tapping at exactly the right moment. But the mood is warmer, the stakes feel lower, and the "just one more try" pull is just as strong.
+For players who want to explore the one-tap flyer formula with a fresh coat of paint — or who want a game that's just slightly kinder to beginners — Clumsy Bird delivers. The core challenge is identical: precise timing, consistent rhythm, and the iron discipline to stop tapping at exactly the right moment. But the mood is warmer, the stakes feel lower, and the "just one more try" pull is just as strong.
 
 Our browser version plays identically to the original Clumsy Bird web game — no modifications, no ads injected, just pure gameplay. Click or tap to play, beat your high score, and share your record with friends.
 
-**Difference from Floppy Bird:** Clumsy Bird has slightly more forgiving hitboxes and smoother animation; Floppy Bird is a closer recreation of Dong Nguyen's original with pixel-art aesthetics. Try both and pick your favorite!`,
+**Difference from Floppy Wings:** Clumsy Bird has slightly more forgiving hitboxes and smoother animation; Floppy Wings is a closer recreation of the original with pixel-art aesthetics. Try both and pick your favorite!`,
     category: 'arcade',
     thumbnailUrl: '/thumbnails/clumsy-bird.webp',
     gameUrl: '/games/clumsy-bird/index.html',
     controls: 'Click or tap anywhere to make the bird jump.',
     featured: false,
     isNew: false,
-    plays: 332109,
     license: 'GPL-3.0',
     author: 'Ellison Leão',
     sourceUrl: 'https://github.com/ellisonleao/clumsy-bird',
@@ -319,7 +309,6 @@ This is a game for players who love old-school arcade shooters but want somethin
     controls: 'Mouse to aim, Left-click to shoot. Best on desktop — requires precise mouse control.',
     featured: false,
     isNew: false,
-    plays: 143210,
     license: 'MIT',
     author: 'Jack Rugile',
     sourceUrl: 'https://github.com/jackrugile/radius-raid-js13k',
@@ -348,7 +337,6 @@ Astray is a showcase of what's possible with HTML5 and modern JavaScript game en
     controls: 'Arrow keys to navigate the maze. Desktop only — requires keyboard.',
     featured: false,
     isNew: false,
-    plays: 123456,
     license: 'Unlicense (Public Domain)',
     author: 'Rye Terrell',
     sourceUrl: 'https://github.com/wwwtyro/Astray',
@@ -376,7 +364,6 @@ It's a game that anyone can pick up instantly — one button, infinite obstacles
     controls: 'Click, Space, or tap to jump. Double-tap for double jump.',
     featured: false,
     isNew: true,
-    plays: 54321,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '16/9',
@@ -404,7 +391,6 @@ For children, Tic Tac Toe is an ideal introduction to strategy, planning ahead, 
     controls: 'Click or tap a cell to place your mark. Works on all devices.',
     featured: false,
     isNew: false,
-    plays: 265432,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '1/1',
@@ -431,7 +417,6 @@ Play Checkers free in your browser — no downloads, no registration needed.`,
     controls: 'Click a piece to select it, then click the destination to move. Forced captures are highlighted.',
     featured: false,
     isNew: true,
-    plays: 42100,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '1/1',
@@ -459,7 +444,6 @@ Ninja Slash works on both desktop (click-drag) and mobile (swipe), making it one
     controls: 'Click and drag or swipe across enemies to slash them. Works on mobile.',
     featured: true,
     isNew: true,
-    plays: 98234,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '16/9',
@@ -486,7 +470,6 @@ A love letter to classic overhead survival shooters, Zombie Survivor delivers ad
     controls: 'WASD to move, Mouse to aim, Left-click to shoot, R to reload. Desktop only.',
     featured: false,
     isNew: true,
-    plays: 76543,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '16/9',
@@ -514,7 +497,6 @@ Mobile play is well-supported: swipe left and right to change lanes, or use the 
     controls: '← → arrow keys or swipe to change lanes. Mobile-friendly.',
     featured: true,
     isNew: true,
-    plays: 112345,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '9/16',
@@ -541,7 +523,6 @@ Drift King's top-down view gives you full situational awareness of the track and
     controls: 'Arrow keys to steer, accelerate, and brake. Mobile: on-screen controls.',
     featured: false,
     isNew: true,
-    plays: 87654,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '16/9',
@@ -569,7 +550,6 @@ The game has been reimplemented thousands of times across every platform imagina
     controls: 'W/S = Left paddle, ↑/↓ = Right paddle. Desktop only — requires keyboard.',
     featured: true,
     isNew: true,
-    plays: 134567,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '16/9',
@@ -596,7 +576,6 @@ Basketball Shoot is one of the most mobile-optimized games in the library — th
     controls: 'Click and drag away from the ball to aim, release to shoot. Works great on mobile.',
     featured: false,
     isNew: true,
-    plays: 95432,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '9/16',
@@ -624,7 +603,6 @@ No screen peeking — the map is fully visible to both players, so strategy is e
     controls: 'P1: WASD move, Space shoot. P2: Arrow keys move, Enter shoot. Desktop only.',
     featured: true,
     isNew: true,
-    plays: 67890,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '16/9',
@@ -651,7 +629,6 @@ Our version features two modes: two-player (local) and single-player against an 
     controls: 'Click a column to drop your disc. Play against a friend or the AI.',
     featured: false,
     isNew: true,
-    plays: 38900,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '4/3',
@@ -679,7 +656,6 @@ Dot Eater runs in your browser, needs no download or account, and a full session
     controls: 'Move mouse or touch to steer your circle. Works on mobile.',
     featured: true,
     isNew: true,
-    plays: 89012,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '16/9',
@@ -706,7 +682,6 @@ Slither Solo sessions typically run 5-15 minutes, scaling with your skill and lu
     controls: 'Move mouse or touch to steer. Left-click or tap to boost.',
     featured: false,
     isNew: true,
-    plays: 72345,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '16/9',
@@ -735,7 +710,6 @@ The game includes a notes mode — tap any cell and enter multiple candidate dig
     controls: 'Click a cell to select it, then click a number or press keyboard 1-9. Arrow keys to navigate. N for notes mode.',
     featured: false,
     isNew: true,
-    plays: 341000,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '3/4',
@@ -762,7 +736,6 @@ The game tracks your move count and time, making every solve a new personal best
     controls: 'Click tiles adjacent to the empty space to slide them. Keyboard arrow keys move the blank space. Swipe on mobile.',
     featured: false,
     isNew: true,
-    plays: 156000,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '3/4',
@@ -789,7 +762,6 @@ Your best score is saved locally so every session is a personal best attempt. Ea
     controls: 'Click or tap moles to whack them. Works great on touchscreen devices.',
     featured: false,
     isNew: true,
-    plays: 218000,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '3/4',
@@ -816,7 +788,6 @@ Our version features full audio with authentic tones — each color produces a d
     controls: 'Click or tap the colored buttons in the correct sequence. Watch and listen carefully!',
     featured: false,
     isNew: true,
-    plays: 189000,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '1/1',
@@ -844,7 +815,6 @@ Three difficulty levels provide a complete progression path. Easy lets you pract
     controls: 'Move mouse or drag finger to control your paddle. First to 7 goals wins.',
     featured: false,
     isNew: true,
-    plays: 198000,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '9/16',
@@ -871,7 +841,6 @@ Lives give you breathing room but not much. Three failed crossings and it's back
     controls: 'Arrow keys or WASD to move the frog. On mobile: use on-screen directional buttons.',
     featured: false,
     isNew: true,
-    plays: 234000,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '9/16',
@@ -898,7 +867,6 @@ The game tracks your best score locally, creating a personal best progression sy
     controls: 'Move mouse or drag finger to move the basket. Arrow keys also work.',
     featured: false,
     isNew: true,
-    plays: 177000,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '9/16',
@@ -925,7 +893,6 @@ The scoring system rewards longevity. Every second of survival translates direct
     controls: 'Space bar or click/tap to jump. Double-tap/press for a second jump mid-air.',
     featured: false,
     isNew: true,
-    plays: 312000,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '16/9',
@@ -952,7 +919,6 @@ The dealer follows house rules: stands on all 17s, including soft 17. This is th
     controls: 'Click chip buttons to place bets. Click Deal, Hit, Stand, or Double to play your hand.',
     featured: false,
     isNew: true,
-    plays: 298000,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '3/4',
@@ -979,7 +945,6 @@ A timer tracks your solve time, making each puzzle a speed challenge. Can you fi
     controls: 'Click and drag to select words in the grid. Works great on touchscreen.',
     featured: false,
     isNew: true,
-    plays: 143000,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '3/4',
@@ -1006,7 +971,6 @@ The game progressively adds new rows as you play (if you take too long) and incr
     controls: 'Move mouse to aim, click to shoot. Bubbles bounce off walls. On mobile: touch to aim and release to shoot.',
     featured: true,
     isNew: true,
-    plays: 456000,
     license: 'MIT',
     author: 'ArcadeHeap',
     aspectRatio: '9/16',
@@ -1031,7 +995,7 @@ export function getNewGames(): Game[] {
 }
 
 export function getPopularGames(limit = 8): Game[] {
-  return [...games].sort((a, b) => b.plays - a.plays).slice(0, limit);
+  return games.filter(g => g.featured).slice(0, limit);
 }
 
 export function getRelatedGames(game: Game, limit = 4): Game[] {

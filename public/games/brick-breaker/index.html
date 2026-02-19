@@ -98,7 +98,7 @@ function tick() {
   if (ball.y > H + 20) {
     lives--;
     updateHUD();
-    if (lives <= 0) { state = 'gameover'; return; }
+    if (lives <= 0) { state = 'gameover'; if (window.parent !== window) { window.parent.postMessage({ type: 'adBreak', breakType: 'next' }, '*'); } return; }
     ball.attached = true;
     ball.x = paddle.x + paddle.w/2;
     ball.y = PADDLE_Y - BALL_R - 2;
@@ -231,6 +231,23 @@ function loop() {
   requestAnimationFrame(loop);
 }
 loop();
+</script>
+<script>
+/* ArcadeHeap Ad Placement API bridge */
+(function(){
+  if(window.parent===window)return;
+  function requestAd(t){
+    window.parent.postMessage({type:"adBreak",breakType:t||"next"},"*");
+  }
+  window.ahRequestAd=requestAd;
+  var origAlert=window.alert;
+  window.alert=function(msg){
+    if(/game over|you win|you lose|congratulations|well done/i.test(msg)){
+      requestAd("next");
+    }
+    return origAlert.apply(this,arguments);
+  };
+})();
 </script>
 </body>
 </html>

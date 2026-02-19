@@ -1,6 +1,6 @@
 import { Game } from '@/data/games';
 
-export function videoGameSchema(game: Game, categoryLabel: string) {
+export function videoGameSchema(game: Game, categoryLabel: string, author?: string) {
   const playModes = ['SinglePlayer'];
   if (game.category === 'multiplayer') playModes.push('MultiPlayer');
 
@@ -33,6 +33,14 @@ export function videoGameSchema(game: Game, categoryLabel: string) {
     },
     gamePlatform: ['Web Browser', 'HTML5'],
     accessibilityFeature: game.mobileSupported ? ['touchControl', 'keyboardControl'] : ['keyboardControl', 'mouseControl'],
+    author: author && author !== 'ArcadeHeap' ? {
+      '@type': 'Person',
+      name: author,
+    } : {
+      '@type': 'Organization',
+      name: 'ArcadeHeap',
+      url: 'https://arcadeheap.com',
+    },
     publisher: {
       '@type': 'Organization',
       name: 'ArcadeHeap',

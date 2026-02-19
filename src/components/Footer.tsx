@@ -79,6 +79,7 @@ export default function Footer() {
                 { href: '/privacy', label: 'Privacy Policy' },
                 { href: '/terms', label: 'Terms of Service' },
                 { href: '/dmca', label: 'DMCA & Copyright' },
+                { href: '/licenses', label: 'Game Licenses' },
                 { href: '/about', label: 'About Us' },
               ].map(link => (
                 <li key={link.href}>

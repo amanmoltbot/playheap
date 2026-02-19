@@ -215,5 +215,22 @@ document.addEventListener('keydown',e=>{
 
 buildNumpad(); newGame();
 </script>
+<script>
+/* ArcadeHeap Ad Placement API bridge */
+(function(){
+  if(window.parent===window)return;
+  function requestAd(t){
+    window.parent.postMessage({type:"adBreak",breakType:t||"next"},"*");
+  }
+  window.ahRequestAd=requestAd;
+  var origAlert=window.alert;
+  window.alert=function(msg){
+    if(/game over|you win|you lose|congratulations|well done/i.test(msg)){
+      requestAd("next");
+    }
+    return origAlert.apply(this,arguments);
+  };
+})();
+</script>
 </body>
 </html>

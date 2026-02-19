@@ -50,7 +50,7 @@ export default async function GamePage({ params }: Props) {
   const related = getRelatedGames(game, 4);
   const categoryLabel = categories.find(c => c.slug === game.category)?.label ?? game.category;
 
-  const schemaData = videoGameSchema(game, categoryLabel);
+  const schemaData = videoGameSchema(game, categoryLabel, game.author);
   const breadcrumb = breadcrumbSchema([
     { name: 'Home', url: 'https://arcadeheap.com' },
     { name: categoryLabel, url: `https://arcadeheap.com/category/${game.category}` },

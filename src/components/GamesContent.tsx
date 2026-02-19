@@ -33,7 +33,7 @@ function GamesInner() {
     }
 
     // Sort
-    if (sortBy === 'popular') result.sort((a, b) => b.plays - a.plays);
+    if (sortBy === 'popular') result.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
     else if (sortBy === 'new') result.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
     else if (sortBy === 'az') result.sort((a, b) => a.title.localeCompare(b.title));
 

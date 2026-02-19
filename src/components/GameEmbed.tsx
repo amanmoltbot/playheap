@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useAdPlacement } from './AdPlacement';
 
 interface GameEmbedProps {
   gameUrl: string;
@@ -15,6 +16,18 @@ export default function GameEmbed({ gameUrl, title, slug, thumbnailUrl, aspectRa
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [hasError, setHasError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { showInterstitial } = useAdPlacement();
+
+  // Listen for ad break requests from game iframes via postMessage
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'adBreak') {
+        showInterstitial();
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [showInterstitial]);
 
   const handleLoad = useCallback(() => {
     // Save to recently played

@@ -140,7 +140,7 @@ function makeMove(mr, mc) {
   const redPieces = board.flat().filter(isRed).length;
   const blkPieces = board.flat().filter(isBlack).length;
   if (!redPieces || !blkPieces) {
-    gameOver = true;
+    gameOver = true; if(window.ahRequestAd)window.ahRequestAd("next");
     setStatus((!redPieces ? 'Black wins! 🎉' : 'Red wins! 🎉'), '#22c55e');
     draw(); return;
   }
@@ -282,6 +282,23 @@ canvas.addEventListener('touchstart', e => {
 
 initGame();
 draw();
+</script>
+<script>
+/* ArcadeHeap Ad Placement API bridge */
+(function(){
+  if(window.parent===window)return;
+  function requestAd(t){
+    window.parent.postMessage({type:"adBreak",breakType:t||"next"},"*");
+  }
+  window.ahRequestAd=requestAd;
+  var origAlert=window.alert;
+  window.alert=function(msg){
+    if(/game over|you win|you lose|congratulations|well done/i.test(msg)){
+      requestAd("next");
+    }
+    return origAlert.apply(this,arguments);
+  };
+})();
 </script>
 </body>
 </html>

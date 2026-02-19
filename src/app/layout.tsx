@@ -52,12 +52,17 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema()) }}
         />
-        {/* Google AdSense */}
+        {/* Google AdSense + Ad Placement API */}
         <script
           async
+          data-ad-frequency-hint="120s"
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2048397891774932"
           crossOrigin="anonymous"
         />
+        <script dangerouslySetInnerHTML={{ __html: `
+          window.adsbygoogle = window.adsbygoogle || [];
+          var adBreak = adConfig = function(o) { adsbygoogle.push(o); };
+        `}} />
         {/* Plausible Analytics — privacy-friendly, no cookies, GDPR compliant */}
         <script
           defer
